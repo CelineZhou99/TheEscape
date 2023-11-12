@@ -21,6 +21,12 @@
     <ClCompile Include="stb_image\stb_image.cpp">
       <Filter>stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="Vector2D.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -48,6 +54,12 @@
     <ClInclude Include="stb_image\stb_image.h">
       <Filter>stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="Actor.h" />
+    <ClInclude Include="Vector2D.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="NextAPI">

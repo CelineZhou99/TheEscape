@@ -5,39 +5,28 @@
 //------------------------------------------------------------------------
 #include <windows.h> 
 #include <math.h>  
+#include <sstream>
+#include <string>
 //------------------------------------------------------------------------
 #include "app\app.h"
 //------------------------------------------------------------------------
-
+#include "Actor.h"
+#include "Player.h"
 //------------------------------------------------------------------------
-// Eample data....
-//------------------------------------------------------------------------
-CSimpleSprite *testSprite;
-enum
-{
-	ANIM_FORWARDS,
-	ANIM_BACKWARDS,
-	ANIM_LEFT,
-	ANIM_RIGHT,
-};
-//------------------------------------------------------------------------
-
+Player* player;
+Player* square;
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
 //------------------------------------------------------------------------
 void Init()
 {
-	//------------------------------------------------------------------------
-	// Example Sprite Code....
-	testSprite = App::CreateSprite(".\\TestData\\Test.bmp", 8, 4);
-	testSprite->SetPosition(400.0f, 400.0f);
-	float speed = 1.0f / 15.0f;
-	testSprite->CreateAnimation(ANIM_BACKWARDS, speed, { 0,1,2,3,4,5,6,7 });
-	testSprite->CreateAnimation(ANIM_LEFT, speed, { 8,9,10,11,12,13,14,15 });
-	testSprite->CreateAnimation(ANIM_RIGHT, speed, { 16,17,18,19,20,21,22,23 });
-	testSprite->CreateAnimation(ANIM_FORWARDS, speed, { 24,25,26,27,28,29,30,31 });
-	testSprite->SetScale(1.0f);
-	//------------------------------------------------------------------------
+	player = new Player(".\\TestData\\square.bmp", 1, 1, 400.0f, 400.0f);
+	if (player)
+	{
+		float speed = 1.0f / 8.0f;
+		player->GetRenderer()->CreateSpriteAnimation(speed, { 0,1,2,3,4,5,6,7 }, { 8,9,10,11,12,13,14,15 }, { 16,17,18,19,20,21,22,23 }, { 24,25,26,27,28,29,30,31 });
+	}
+	square = new Player(".\\TestData\\square.bmp", 1, 1, 500.0f, 500.0f);
 }
 
 //------------------------------------------------------------------------
@@ -46,61 +35,59 @@ void Init()
 //------------------------------------------------------------------------
 void Update(float deltaTime)
 {
+	if (!player) { return; }
+	player->GetRenderer()->UpdateSprite(deltaTime);
 	//------------------------------------------------------------------------
-	// Example Sprite Code....
-	testSprite->Update(deltaTime);
-	if (App::GetController().GetLeftThumbStickX() > 0.5f)
+	// Handle player movement
+	//------------------------------------------------------------------------
+	float x = player->GetCollider()->GetPosition()->X();
+	float y = player->GetCollider()->GetPosition()->Y();
+	Vector2D* new_pos = new Vector2D(x, y);
+	BoxCollider* collider = new BoxCollider(new_pos, player->GetCollider()->GetWidth(), player->GetCollider()->GetHeight());
+	// ASK ABOUT WHY THIS DOESN'T WORK
+	// BoxCollider* collider = new BoxCollider(*player->GetCollider()); 
+
+	if (App::IsKeyPressed('W'))
 	{
-		testSprite->SetAnimation(ANIM_RIGHT);
-		float x, y;
-		testSprite->GetPosition(x, y);
-		x += 1.0f;
-		testSprite->SetPosition(x, y);
+		collider->UpdatePosition(0, 1);
+
+		if (!player->GetCollider()->CheckCollision(collider, square->GetCollider()))
+		{
+			player->GetRenderer()->SetAnimation(FacingDirection::UP);
+			player->GetCollider()->UpdatePosition(0, 1);
+		}
 	}
-	if (App::GetController().GetLeftThumbStickX() < -0.5f)
+	else if (App::IsKeyPressed('S'))
 	{
-		testSprite->SetAnimation(ANIM_LEFT);
-		float x, y;
-		testSprite->GetPosition(x, y);
-		x -= 1.0f;
-		testSprite->SetPosition(x, y);
+		collider->UpdatePosition(0, -1);
+
+		if (!player->GetCollider()->CheckCollision(collider, square->GetCollider()))
+		{
+			player->GetRenderer()->SetAnimation(FacingDirection::DOWN);
+			player->GetCollider()->UpdatePosition(0, -1);
+		}
 	}
-    if (App::GetController().GetLeftThumbStickY() > 0.5f)
-    {
-        testSprite->SetAnimation(ANIM_FORWARDS);
-        float x, y;
-        testSprite->GetPosition(x, y);
-        y += 1.0f;
-        testSprite->SetPosition(x, y);
-    }
-	if (App::GetController().GetLeftThumbStickY() < -0.5f)
+	else if (App::IsKeyPressed('A'))
 	{
-		testSprite->SetAnimation(ANIM_BACKWARDS);
-		float x, y;
-		testSprite->GetPosition(x, y);
-		y -= 1.0f;
-		testSprite->SetPosition(x, y);
+		collider->UpdatePosition(-1, 0);
+
+		if (!player->GetCollider()->CheckCollision(collider, square->GetCollider()))
+		{
+			player->GetRenderer()->SetAnimation(FacingDirection::LEFT);
+			player->GetCollider()->UpdatePosition(-1, 0);
+		}
 	}
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
+	else if (App::IsKeyPressed('D'))
 	{
-		testSprite->SetScale(testSprite->GetScale() + 0.1f);
+		collider->UpdatePosition(1, 0);
+
+		if (!player->GetCollider()->CheckCollision(collider, square->GetCollider()))
+		{
+			player->GetRenderer()->SetAnimation(FacingDirection::RIGHT);
+			player->GetCollider()->UpdatePosition(1, 0);
+		}
 	}
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
-	{
-		testSprite->SetScale(testSprite->GetScale() - 0.1f);
-	}
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
-	{
-		testSprite->SetAngle(testSprite->GetAngle() + 0.1f);
-	}
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
-	{
-		testSprite->SetAngle(testSprite->GetAngle() - 0.1f);
-	}
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_A, true))
-	{
-		testSprite->SetAnimation(-1);
-	}
+
 	//------------------------------------------------------------------------
 	// Sample Sound.
 	//------------------------------------------------------------------------
@@ -108,6 +95,7 @@ void Update(float deltaTime)
 	{
 		App::PlaySound(".\\TestData\\Test.wav");
 	}
+	
 }
 
 //------------------------------------------------------------------------
@@ -116,16 +104,14 @@ void Update(float deltaTime)
 //------------------------------------------------------------------------
 void Render()
 {	
-	//------------------------------------------------------------------------
-	// Example Sprite Code....
-	testSprite->Draw();
-	//------------------------------------------------------------------------
+	square->GetRenderer()->DrawSprite();
+	if (!player) { return; }
+	player->GetRenderer()->DrawSprite();
 
 	//------------------------------------------------------------------------
 	// Example Text.
 	//------------------------------------------------------------------------
 	App::Print(100, 100, "Sample Text");
-
 	//------------------------------------------------------------------------
 	// Example Line Drawing.
 	//------------------------------------------------------------------------
@@ -152,8 +138,6 @@ void Render()
 //------------------------------------------------------------------------
 void Shutdown()
 {	
-	//------------------------------------------------------------------------
-	// Example Sprite Code....
-	delete testSprite;
-	//------------------------------------------------------------------------
+	delete player;
+	delete square;
 }
