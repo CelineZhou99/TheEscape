@@ -33,5 +33,5 @@
 
 # Added
 .vs/
-x64/
-GameTest/x64/
+*x64/*
+*GameTest/x64/*
