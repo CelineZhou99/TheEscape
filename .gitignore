@@ -32,5 +32,5 @@
 *.app
 
 # Added
-vs/
+.vs/
 x64/
