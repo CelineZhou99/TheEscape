@@ -1,2 +1,2 @@
 # TheEscape
-DAU project based on the theme "The Escape" 
+C++ project based on the theme "The Escape" 
