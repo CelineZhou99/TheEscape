@@ -37,5 +37,7 @@ void Renderer::SetAnimation(FacingDirection direction)
 		x += 1.0f;
 		_sprite->SetPosition(x, y);
 		break;
+	case FacingDirection::NONE:
+		break;
 	}
 }

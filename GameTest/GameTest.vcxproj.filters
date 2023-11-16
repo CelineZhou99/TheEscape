@@ -26,7 +26,8 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
-    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SquareActor.cpp" />
+    <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -59,7 +60,8 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="BoxCollider.h" />
-    <ClInclude Include="Player.h" />
+    <ClInclude Include="SquareActor.h" />
+    <ClInclude Include="Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="NextAPI">

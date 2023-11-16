@@ -7,7 +7,8 @@ enum FacingDirection
 	UP,
 	DOWN,
 	LEFT,
-	RIGHT
+	RIGHT,
+	NONE
 };
 //------------------------------------------------------------------------
 class Renderer
