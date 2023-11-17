@@ -13,3 +13,7 @@
 
 
 // TODO: reference additional headers your program requires here
+#include <sstream>
+#include <string>
+#include <fstream>
+#include <math.h>  

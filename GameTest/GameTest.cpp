@@ -4,15 +4,11 @@
 #include "stdafx.h"
 //------------------------------------------------------------------------
 #include <windows.h> 
-#include <math.h>  
-#include <sstream>
-#include <string>
-#include <fstream>
 //------------------------------------------------------------------------
 #include "app\app.h"
 //------------------------------------------------------------------------
-#include "Actor.h"
 #include "SquareActor.h"
+#include "Scene.h"
 //------------------------------------------------------------------------
 SquareActor* player;
 std::vector<SquareActor*> square_actors;
@@ -26,13 +22,8 @@ void Init()
 	float speed = 1.0f / 8.0f;
 	player->GetRenderer().CreateSpriteAnimation(speed, { 0,1,2,3 }, { 4,5,6,7 }, { 8,9,10,11 }, { 12,13,14,15 });
 
-	std::ifstream infile(".\\SceneData\\TestMap.txt");
-	float x, y;
-	while (infile >> x >> y)
-	{
-		SquareActor* actor = new SquareActor(".\\Images\\Brick.bmp", 1, 1, x, y, TagType::STATIC_OBJECT);
-		square_actors.push_back(actor);
-	}
+	Scene scene;
+	scene.InitialiseScene(".\\SceneData\\TestMap.txt", ".\\Images\\Brick.bmp", &square_actors);
 
 	SquareActor* box = new SquareActor(".\\Images\\Box.bmp", 1, 1, 500.f, 600.f, TagType::MOVABLE_OBJECT);
 	square_actors.push_back(box);
