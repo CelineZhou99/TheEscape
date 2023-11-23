@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Renderer.h"
+#include "Actor.h"
 
 void Renderer::CreateSpriteAnimation(float speed, std::vector<int> frames_down, std::vector<int> frames_left, std::vector<int> frames_right, std::vector<int> frames_up)
 {
@@ -22,22 +23,31 @@ void Renderer::SetAnimation(FacingDirection direction)
 	switch (direction)
 	{
 	case FacingDirection::UP:
-		y += 1.0f;
+		y += PLAYER_MOVE_BY;
 		_sprite->SetPosition(x, y);
 		break;
 	case FacingDirection::DOWN:
-		y -= 1.0f;
+		y -= PLAYER_MOVE_BY;
 		_sprite->SetPosition(x, y);
 		break;
 	case FacingDirection::LEFT:
-		x -= 1.0f;
+		x -= PLAYER_MOVE_BY;
 		_sprite->SetPosition(x, y);
 		break;
 	case FacingDirection::RIGHT:
-		x += 1.0f;
+		x += PLAYER_MOVE_BY;
 		_sprite->SetPosition(x, y);
 		break;
 	case FacingDirection::NONE:
 		break;
 	}
+}
+
+void Renderer::MoveSpritePosition(float x, float y)
+{
+	float old_x, old_y;
+	_sprite->GetPosition(old_x, old_y);
+	float new_x = old_x + x;
+	float new_y = old_y + y;
+	_sprite->SetPosition(new_x, new_y);
 }

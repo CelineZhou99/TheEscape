@@ -1,15 +1,20 @@
 #include "stdafx.h"
 #include "Actor.h"
-#include "App/app.h"
 
-bool Actor::IsMoving()
+void Actor::UpdateActorPosition(float move_by_x, float move_by_y)
 {
-	bool is_moving = false;
+	UpdatePosition(move_by_x, move_by_y);
+	GetRenderer()->MoveSpritePosition(move_by_x, move_by_y);
+}
 
-	if (App::IsKeyPressed('W') || App::IsKeyPressed('S') || App::IsKeyPressed('A') || App::IsKeyPressed('D'))
-	{
-		is_moving = true;
-	}
+void Actor::UpdateAnimatedActorPosition(float move_by_x, float move_by_y, FacingDirection direction)
+{
+	UpdatePosition(move_by_x, move_by_y);
+	GetRenderer()->SetAnimation(direction);
+}
 
-	return is_moving;
+void Actor::UpdatePosition(float move_by_x, float move_by_y)
+{
+	GetTransform().MoveVectorPosition(move_by_x, move_by_y);
+	GetCollider()->MoveColliderPosition(move_by_x, move_by_y);
 }

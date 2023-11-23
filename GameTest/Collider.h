@@ -11,8 +11,9 @@ public:
 		_collider_height = height;
 	}
 	// pure virtual function
-	virtual bool CheckCollision(Collider* obj_1_collider, Collider* obj_2_collider) = 0;
-	void UpdatePosition(float x, float y) { _position.UpdateVector2D(x, y); }
+	virtual bool CheckCollision(Collider* obj_1_collider, Collider* obj_2_collider) = 0;\
+	// move collider position by the provided x, y amount
+	void MoveColliderPosition(float x, float y) { _position.MoveVectorPosition(x, y); }
 
 	Vector2D GetPosition() { return _position; }
 

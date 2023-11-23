@@ -176,7 +176,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Actor.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="App\app.h" />
     <ClInclude Include="App\AppSettings.h" />
     <ClInclude Include="App\main.h" />
@@ -185,7 +185,8 @@
     <ClInclude Include="App\SimpleSprite.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Collider.h" />
-    <ClInclude Include="SquareActor.h" />
+    <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="Actor.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="stb_image\stb_image.h" />
@@ -194,7 +195,7 @@
     <ClInclude Include="Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="App\app.cpp" />
     <ClCompile Include="App\main.cpp" />
     <ClCompile Include="App\SimpleController.cpp" />
@@ -203,7 +204,8 @@
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="GameTest.cpp" />
-    <ClCompile Include="SquareActor.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />

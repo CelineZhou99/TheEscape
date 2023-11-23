@@ -7,26 +7,24 @@
 //------------------------------------------------------------------------
 #include "app\app.h"
 //------------------------------------------------------------------------
-#include "SquareActor.h"
+#include "Actor.h"
 #include "Scene.h"
 //------------------------------------------------------------------------
-SquareActor* player;
-std::vector<SquareActor*> square_actors;
-std::map<float, Vector2D> test_map;
+Actor* player;
+std::vector<Actor*> actors;
+std::vector<GameObject*> game_objects;
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
 //------------------------------------------------------------------------
 void Init()
 {
-	player = new SquareActor(".\\Images\\Player.bmp", 1, 1, 400.0f, 400.0f, TagType::PLAYER);
+	player = new Actor(new Renderer(".\\Images\\Player.bmp", 1, 1, 400.0f, 400.0f), 400.0f, 400.0f, TagType::PLAYER);
 	float speed = 1.0f / 8.0f;
-	player->GetRenderer().CreateSpriteAnimation(speed, { 0,1,2,3 }, { 4,5,6,7 }, { 8,9,10,11 }, { 12,13,14,15 });
+	player->GetRenderer()->CreateSpriteAnimation(speed, { 0,1,2,3 }, { 4,5,6,7 }, { 8,9,10,11 }, { 12,13,14,15 });
 
 	Scene scene;
-	scene.InitialiseScene(".\\SceneData\\TestMap.txt", ".\\Images\\Brick.bmp", &square_actors);
+	scene.LoadMap(".\\SceneData\\TestMap2.txt", &actors, &game_objects);
 
-	SquareActor* box = new SquareActor(".\\Images\\Box.bmp", 1, 1, 500.f, 600.f, TagType::MOVABLE_OBJECT);
-	square_actors.push_back(box);
 }
 
 //------------------------------------------------------------------------
@@ -36,60 +34,73 @@ void Init()
 void Update(float deltaTime)
 {
 	if (!player) { return; }
-	player->GetRenderer().UpdateSprite(deltaTime);
+	player->GetRenderer()->UpdateSprite(deltaTime);
 	//------------------------------------------------------------------------
 	// Handle player movement
 	//------------------------------------------------------------------------
 	BoxCollider collider = BoxCollider(*player->GetCollider()); 
 	FacingDirection direction = FacingDirection::NONE;
-	float move_to_x = 0;
-	float move_to_y = 0;
+	float player_move_by_x = 0;
+	float player_move_by_y = 0;
 
 	if (App::IsKeyPressed('W'))
 	{
-		collider.UpdatePosition(0, 1);
+		collider.MoveColliderPosition(0, 1);
 		direction = FacingDirection::UP;
-		move_to_y = 1;
+		player_move_by_y = PLAYER_MOVE_BY;
 	}
 	else if (App::IsKeyPressed('S'))
 	{
-		collider.UpdatePosition(0, -1);
+		collider.MoveColliderPosition(0, -1);
 		direction = FacingDirection::DOWN;
-		move_to_y = -1;
+		player_move_by_y = -PLAYER_MOVE_BY;
 	}
 	else if (App::IsKeyPressed('A'))
 	{
-		collider.UpdatePosition(-1, 0);
+		collider.MoveColliderPosition(-1, 0);
 		direction = FacingDirection::LEFT;
-		move_to_x = -1;
+		player_move_by_x = -PLAYER_MOVE_BY;
 	}
 	else if (App::IsKeyPressed('D'))
 	{
-		collider.UpdatePosition(1, 0);
+		collider.MoveColliderPosition(1, 0);
 		direction = FacingDirection::RIGHT;
-		move_to_x = 1;
+		player_move_by_x = PLAYER_MOVE_BY;
 	}
 	bool should_move = true;
 	
-	for (SquareActor* actor : square_actors)
+	for (Actor* actor : actors)
 	{
 		if (player->GetCollider()->CheckCollision(&collider, actor->GetCollider()))
 		{
 			if (actor->GetTag() == TagType::MOVABLE_OBJECT)
 			{
-				float x_direction = actor->GetTransform().X() - player->GetTransform().X() > 0 ? 1 : -1;
-				float y_direction = actor->GetTransform().Y() - player->GetTransform().Y() > 0 ? 1 : -1;
-				x_direction *= 5;
-				y_direction *= 5;
+				float move_by_x = 0;
+				float move_by_y = 0;
+				switch (direction)
+				{
+				case FacingDirection::UP:
+					move_by_y = MOVABLE_OBJECT_MOVE_BY;
+					break;
+				case FacingDirection::DOWN:
+					move_by_y = -MOVABLE_OBJECT_MOVE_BY;
+					break;
+				case FacingDirection::LEFT:
+					move_by_x = -MOVABLE_OBJECT_MOVE_BY;
+					break;
+				case FacingDirection::RIGHT:
+					move_by_x = MOVABLE_OBJECT_MOVE_BY;
+					break;
+				}
 				// make that actor move in the opposite direction of the player
+				actor->UpdateActorPosition(move_by_x, move_by_y);
 			}
 			should_move = false;
 		}
 	}
 	if (should_move)
 	{
-		player->GetRenderer().SetAnimation(direction);
-		player->GetCollider()->UpdatePosition(move_to_x, move_to_y);
+		player->UpdateAnimatedActorPosition(player_move_by_x, player_move_by_y, direction);
 	}
 
 	//------------------------------------------------------------------------
@@ -108,13 +119,19 @@ void Update(float deltaTime)
 //------------------------------------------------------------------------
 void Render()
 {	
-	if (!player) { return; }
-	player->GetRenderer().DrawSprite();
+	
 
-	for (SquareActor* actor : square_actors)
+	for (GameObject* actor : game_objects)
 	{
-		actor->GetRenderer().DrawSprite();
+		actor->GetRenderer()->DrawSprite();
 	}
+
+	for (Actor* actor : actors)
+	{
+		actor->GetRenderer()->DrawSprite();
+	}
+
+	player->GetRenderer()->DrawSprite();
 	//------------------------------------------------------------------------
 	// Example Text.
 	//------------------------------------------------------------------------
@@ -145,11 +162,13 @@ void Render()
 //------------------------------------------------------------------------
 void Shutdown()
 {	
-	player->CleanUp();
 	delete player;
-	for (SquareActor* actor : square_actors)
+	for (Actor* actor : actors)
 	{
-		actor->CleanUp();
+		delete actor;
+	}
+	for (GameObject* actor : game_objects)
+	{
 		delete actor;
 	}
 }
