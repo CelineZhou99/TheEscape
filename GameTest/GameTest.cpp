@@ -26,11 +26,10 @@ void Init()
 void Update(float deltaTime)
 {
 	if (!world->player) { return; }
-	world->player->GetRenderer()->UpdateSprite(deltaTime);
+	world->player->GetRenderer()->UpdateSpriteAnimation(deltaTime);
 	//------------------------------------------------------------------------
 	// Handle player movement
 	//------------------------------------------------------------------------
-
 	std::shared_ptr<BoxCollider> collider(new BoxCollider(*world->player->GetCollider()));
 	FacingDirection direction = FacingDirection::NONE;
 	float player_move_by_x = 0;
@@ -50,21 +49,11 @@ void Update(float deltaTime)
 //------------------------------------------------------------------------
 void Render()
 {	
-	for (std::shared_ptr<GameObject> actor : world->game_objects)
-	{
-		actor->GetRenderer()->DrawSprite();
-	}
-
-	for (std::shared_ptr<Actor> actor : world->actors)
-	{
-		actor->GetRenderer()->DrawSprite();
-	}
-
-	world->player->GetRenderer()->DrawSprite();
+	world->DrawAllSprites();
 	//------------------------------------------------------------------------
 	// Example Text.
 	//------------------------------------------------------------------------
-	App::Print(100, 100, "Sample Text");
+	/*App::Print(100, 100, "Sample Text");*/
 	//------------------------------------------------------------------------
 	// Example Line Drawing.
 	//------------------------------------------------------------------------

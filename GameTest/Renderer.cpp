@@ -10,7 +10,7 @@ void Renderer::CreateSpriteAnimation(float speed, std::vector<int> frames_down, 
 	_sprite->CreateAnimation(FacingDirection::UP, speed, frames_up);
 }
 
-void Renderer::UpdateSprite(float delta_time)
+void Renderer::UpdateSpriteAnimation(float delta_time)
 {
 	_sprite->Update(delta_time);
 }

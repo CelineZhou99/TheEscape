@@ -84,3 +84,18 @@ void World::UpdateMovableObjects(std::shared_ptr<Actor> actor, FacingDirection d
 		actor->UpdateActorPosition(move_by_x, move_by_y);
 	}
 }
+
+void World::DrawAllSprites()
+{
+	for (std::shared_ptr<GameObject> actor : game_objects)
+	{
+		actor->GetRenderer()->DrawSprite();
+	}
+
+	for (std::shared_ptr<Actor> actor : actors)
+	{
+		actor->GetRenderer()->DrawSprite();
+	}
+
+	player->GetRenderer()->DrawSprite();
+}
