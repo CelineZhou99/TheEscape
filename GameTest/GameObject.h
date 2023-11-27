@@ -22,7 +22,6 @@ public:
 	{
 		delete _renderer;
 	}
-	bool IsMoving();
 	Vector2D GetTransform() { return _transform; }
 	Renderer* GetRenderer() { return _renderer; }
 	TagType GetTag() { return _tag; }

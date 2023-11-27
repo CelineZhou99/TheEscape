@@ -176,6 +176,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="App\app.h" />
     <ClInclude Include="App\AppSettings.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="App\SimpleSprite.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Collider.h" />
+    <ClInclude Include="PlayerController.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Renderer.h" />
@@ -193,8 +195,10 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Vector2D.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="App\app.cpp" />
     <ClCompile Include="App\main.cpp" />
@@ -204,6 +208,7 @@
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="GameTest.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -216,6 +221,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Vector2D.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

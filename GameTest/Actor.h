@@ -16,19 +16,13 @@ public:
 
         _collider = new BoxCollider(collider_position, GetRenderer()->GetSprite()->GetWidth(), GetRenderer()->GetSprite()->GetHeight());
     }
-    ~Actor() 
-    { 
-        delete _collider; 
-    }
+    ~Actor() { delete _collider; }
 
     BoxCollider* GetCollider() { return _collider; }
 
     void UpdateActorPosition(float move_by_x, float move_by_y);
-    void UpdateAnimatedActorPosition(float move_by_x, float move_by_y, FacingDirection direction);
    
 private:
-    void UpdatePosition(float move_by_x, float move_by_y);
-
     BoxCollider* _collider; 
 };
 

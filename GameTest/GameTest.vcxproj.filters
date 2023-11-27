@@ -29,6 +29,9 @@
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -64,6 +67,9 @@
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="Controller.h" />
+    <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="NextAPI">

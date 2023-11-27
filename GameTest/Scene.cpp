@@ -14,9 +14,6 @@ void Scene::LoadMap(const char* file_name_text, std::vector<Actor*>* actors, std
 		float j = 0;
 		while (iss >> scene_obj_type)
 		{
-			std::wstringstream wss;
-			wss << L" " << scene_obj_type << "\n";
-			OutputDebugString(wss.str().c_str());
 			if (scene_obj_type == SceneObjectType::FLOOR)
 			{
 				Renderer* renderer = new Renderer(".\\Images\\FloorL.bmp", 1, 1, i + 32, j + 32);
