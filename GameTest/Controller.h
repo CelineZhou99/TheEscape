@@ -5,13 +5,13 @@
 class Controller
 {
 public:
-	Controller(Actor * actor) : controlled_actor(actor) 
+	Controller(std::shared_ptr<Actor> actor) : controlled_actor(actor)
 	{
 		velocity = 0;
 	}
 
 protected:
-	Actor* controlled_actor;
+	std::shared_ptr<Actor> controlled_actor;
 	float velocity;
 };
 

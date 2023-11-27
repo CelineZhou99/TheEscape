@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "Renderer.h"
 
-void Scene::LoadMap(const char* file_name_text, std::vector<Actor*>* actors, std::vector<GameObject*>* game_objects)
+void Scene::LoadMap(const char* file_name_text, std::vector<std::shared_ptr<Actor>>& actors, std::vector<std::shared_ptr<GameObject>>& game_objects)
 {
 	std::ifstream infile(file_name_text);
 	std::string line;
@@ -16,30 +16,28 @@ void Scene::LoadMap(const char* file_name_text, std::vector<Actor*>* actors, std
 		{
 			if (scene_obj_type == SceneObjectType::FLOOR)
 			{
-				Renderer* renderer = new Renderer(".\\Images\\FloorL.bmp", 1, 1, i + 32, j + 32);
-				GameObject* floor = new GameObject(renderer, i + 32, j + 32, TagType::STATIC_OBJECT);
-				game_objects->push_back(floor);
+				std::shared_ptr<Renderer> renderer(new Renderer(".\\Images\\FloorL.bmp", 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF));
+				std::shared_ptr<GameObject> floor(new GameObject(renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::STATIC_OBJECT));
+				game_objects.push_back(floor);
 			}
 			else if (scene_obj_type == SceneObjectType::WALL)
 			{
-				Renderer* renderer = new Renderer(".\\Images\\WallL.bmp", 1, 1, i + 32, j + 32);
-				Actor* wall = new Actor(renderer, i + 32, j + 32, TagType::STATIC_OBJECT);
-				actors->push_back(wall);
+				std::shared_ptr<Renderer> renderer(new Renderer(".\\Images\\WallL.bmp", 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF));
+				std::shared_ptr<Actor> wall(new Actor(renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::STATIC_OBJECT));
+				actors.push_back(wall);
 			}
 			else if (scene_obj_type == SceneObjectType::BOX)
 			{
-				Renderer* floor_renderer = new Renderer(".\\Images\\FloorL.bmp", 1, 1, i + 32, j + 32);
-				GameObject* floor = new GameObject(floor_renderer, i + 32, j + 32, TagType::STATIC_OBJECT);
-				game_objects->push_back(floor);
+				std::shared_ptr<Renderer> floor_renderer(new Renderer(".\\Images\\FloorL.bmp", 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF));
+				std::shared_ptr<GameObject> floor(new GameObject(floor_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::STATIC_OBJECT));
+				game_objects.push_back(floor);
 
-				Renderer* box_renderer = new Renderer(".\\Images\\BoxL.bmp", 1, 1, i + 32, j + 32);
-				Actor* box = new Actor(box_renderer, i + 32, j + 32, TagType::MOVABLE_OBJECT);
-				actors->push_back(box);
+				std::shared_ptr<Renderer> box_renderer(new Renderer(".\\Images\\BoxL.bmp", 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF));
+				std::shared_ptr<Actor> box(new Actor(box_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::MOVABLE_OBJECT));
+				actors.push_back(box);
 			}
-			j += 64;
+			j += MOVABLE_OBJECT_MOVE_BY;
 		}
-		i += 64;
+		i += MOVABLE_OBJECT_MOVE_BY;
 	}
-	
-
 }

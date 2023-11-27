@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string>
 
-bool BoxCollider::CheckCollision(Collider* obj_1_collider, Collider* obj_2_collider)
+bool BoxCollider::CheckCollision(std::shared_ptr<Collider> obj_1_collider, std::shared_ptr<Collider> obj_2_collider)
 {
     // use AABB collision detection
     float obj_1_top_left_x = obj_1_collider->GetPosition().X();

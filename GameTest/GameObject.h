@@ -15,20 +15,16 @@ enum TagType
 class GameObject
 {
 public:
-	GameObject(Renderer* renderer, float pos_x, float pos_y, TagType tag)
+	GameObject(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag)
 		: _transform(pos_x, pos_y), _renderer(renderer), _tag(tag) {}
 
-	~GameObject() 
-	{
-		delete _renderer;
-	}
 	Vector2D GetTransform() { return _transform; }
-	Renderer* GetRenderer() { return _renderer; }
+	std::shared_ptr<Renderer> GetRenderer() { return _renderer; }
 	TagType GetTag() { return _tag; }
 
 protected:
 	Vector2D _transform;
-	Renderer* _renderer;
+	std::shared_ptr<Renderer> _renderer;
 	TagType _tag;
 };
 

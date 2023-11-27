@@ -9,13 +9,13 @@
 //------------------------------------------------------------------------
 #include "World.h"
 //------------------------------------------------------------------------
-World* world;
+std::unique_ptr<World> world;
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
 //------------------------------------------------------------------------
 void Init()
 {
-	world = new World();
+	world = std::unique_ptr<World>(new World());
 	world->Init();
 }
 
@@ -30,7 +30,8 @@ void Update(float deltaTime)
 	//------------------------------------------------------------------------
 	// Handle player movement
 	//------------------------------------------------------------------------
-	BoxCollider collider = BoxCollider(*world->player->GetCollider());
+
+	std::shared_ptr<BoxCollider> collider(new BoxCollider(*world->player->GetCollider()));
 	FacingDirection direction = FacingDirection::NONE;
 	float player_move_by_x = 0;
 	float player_move_by_y = 0;
@@ -49,12 +50,12 @@ void Update(float deltaTime)
 //------------------------------------------------------------------------
 void Render()
 {	
-	for (GameObject* actor : world->game_objects)
+	for (std::shared_ptr<GameObject> actor : world->game_objects)
 	{
 		actor->GetRenderer()->DrawSprite();
 	}
 
-	for (Actor* actor : world->actors)
+	for (std::shared_ptr<Actor> actor : world->actors)
 	{
 		actor->GetRenderer()->DrawSprite();
 	}
@@ -90,5 +91,4 @@ void Render()
 //------------------------------------------------------------------------
 void Shutdown()
 {	
-	delete world;
 }

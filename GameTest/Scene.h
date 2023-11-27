@@ -11,6 +11,6 @@ enum SceneObjectType
 class Scene
 {
 public:
-	void LoadMap(const char* file_name_text, std::vector<Actor*>* actors, std::vector<GameObject*>* game_objects);
+	void LoadMap(const char* file_name_text, std::vector<std::shared_ptr<Actor>>& actors, std::vector<std::shared_ptr<GameObject>>& game_objects);
 };
 

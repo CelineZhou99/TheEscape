@@ -5,51 +5,52 @@
 
 void World::Init()
 {
-	player = new Actor(new Renderer(".\\Images\\Player.bmp", 1, 1, 400.0f, 400.0f), 400.0f, 400.0f, TagType::PLAYER);
+	std::shared_ptr<Renderer> renderer(new Renderer(".\\Images\\Player.bmp", 1, 1, 400.0f, 400.0f));
+	player = std::shared_ptr<Actor>(new Actor(renderer, 400.0f, 400.0f, TagType::PLAYER));
 	float speed = 1.0f / 8.0f;
 	player->GetRenderer()->CreateSpriteAnimation(speed, { 0,1,2,3 }, { 4,5,6,7 }, { 8,9,10,11 }, { 12,13,14,15 });
 
-	player_controller = new PlayerController(player);
+	player_controller = std::shared_ptr<PlayerController>(new PlayerController(player));
 
 	Scene scene;
-	scene.LoadMap(".\\SceneData\\TestMap2.txt", &actors, &game_objects);
+	scene.LoadMap(".\\SceneData\\TestMap.txt", actors, game_objects);
 }
 
-void World::CalculateNextPlayerMovement(Collider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
+void World::CalculateNextPlayerMovement(std::shared_ptr<Collider> collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
 {
 	if (App::IsKeyPressed('W'))
 	{
-		collider.MoveColliderPosition(0, 1);
+		collider->MoveColliderPosition(0, 1);
 		direction = FacingDirection::UP;
 		player_move_by_y = PLAYER_MOVE_BY;
 	}
 	else if (App::IsKeyPressed('S'))
 	{
-		collider.MoveColliderPosition(0, -1);
+		collider->MoveColliderPosition(0, -1);
 		direction = FacingDirection::DOWN;
 		player_move_by_y = -PLAYER_MOVE_BY;
 	}
 	else if (App::IsKeyPressed('A'))
 	{
-		collider.MoveColliderPosition(-1, 0);
+		collider->MoveColliderPosition(-1, 0);
 		direction = FacingDirection::LEFT;
 		player_move_by_x = -PLAYER_MOVE_BY;
 	}
 	else if (App::IsKeyPressed('D'))
 	{
-		collider.MoveColliderPosition(1, 0);
+		collider->MoveColliderPosition(1, 0);
 		direction = FacingDirection::RIGHT;
 		player_move_by_x = PLAYER_MOVE_BY;
 	}
 }
 
-bool World::ShouldPlayerMove(Collider& collider, FacingDirection& direction)
+bool World::ShouldPlayerMove(std::shared_ptr<Collider> collider, FacingDirection& direction)
 {
 	bool should_move = true;
 
-	for (Actor* actor : actors)
+	for (std::shared_ptr<Actor> actor : actors)
 	{
-		if (player->GetCollider()->CheckCollision(&collider, actor->GetCollider()))
+		if (player->GetCollider()->CheckCollision(collider, actor->GetCollider()))
 		{
 			UpdateMovableObjects(actor, direction);
 			should_move = false;
@@ -58,7 +59,7 @@ bool World::ShouldPlayerMove(Collider& collider, FacingDirection& direction)
 	return should_move;
 }
 
-void World::UpdateMovableObjects(Actor* actor, FacingDirection direction)
+void World::UpdateMovableObjects(std::shared_ptr<Actor> actor, FacingDirection direction)
 {
 	if (actor->GetTag() == TagType::MOVABLE_OBJECT)
 	{
@@ -81,6 +82,5 @@ void World::UpdateMovableObjects(Actor* actor, FacingDirection direction)
 		}
 		// make that actor move in the opposite direction of the player
 		actor->UpdateActorPosition(move_by_x, move_by_y);
-		App::PlaySound(".\\Sounds\\Test.wav");
 	}
 }
