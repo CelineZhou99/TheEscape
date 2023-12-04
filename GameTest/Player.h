@@ -14,6 +14,7 @@ public:
     }
 
     void SetState(std::shared_ptr<PlayerState> state);
+    std::shared_ptr<PlayerState> GetState() { return _player_state; }
 
 protected:
     std::shared_ptr<PlayerState> _player_state;

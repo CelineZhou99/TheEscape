@@ -7,5 +7,7 @@ public:
     PlayerStateIdle(Player* player) : PlayerState(player) {}
 
     void SetSpriteImage() override;
+    PlayerStateType GetStateType() override { return PlayerStateType::IDLE; }
+
 };
 

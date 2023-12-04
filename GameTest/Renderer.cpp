@@ -17,7 +17,6 @@ void Renderer::UpdateSpriteAnimation(float delta_time)
 
 void Renderer::SetAnimation(FacingDirection direction)
 {
-	_sprite->SetAnimation(direction);
 	float x, y;
 	_sprite->GetPosition(x, y);
 	switch (direction)
@@ -41,6 +40,7 @@ void Renderer::SetAnimation(FacingDirection direction)
 	case FacingDirection::NONE:
 		break;
 	}
+	_sprite->SetAnimation(direction);
 }
 
 void Renderer::MoveSpritePosition(float x, float y)

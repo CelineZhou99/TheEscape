@@ -7,10 +7,9 @@
 
 void World::Init()
 {
-	std::shared_ptr<Renderer> renderer(new Renderer(".\\Images\\IdleAnimation.bmp", 3, 4, 400.0f, 400.0f));
+	std::shared_ptr<Renderer> renderer(new Renderer(".\\Images\\IdleAnimationAlt.bmp", 4, 4, 400.0f, 400.0f));
 	player = std::make_shared<Player>(renderer, 400.0f, 400.0f, TagType::PLAYER);
-	
-	player->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 }, { 9, 10, 11 });
+	player->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
 
 	player_controller = std::make_shared<PlayerController>(player.get());
 
@@ -21,30 +20,39 @@ void World::Init()
 void World::Update(float deltaTime)
 {
 	if (!player) { return; }
-	player->GetRenderer()->UpdateSpriteAnimation(deltaTime);
 	//------------------------------------------------------------------------
 	// Handle player movement
 	//------------------------------------------------------------------------
 	std::shared_ptr<BoxCollider> collider(new BoxCollider(*player->GetCollider()));
-	FacingDirection direction = FacingDirection::NONE;
+	// set direction to down by default
+	FacingDirection direction = FacingDirection::DOWN;
 	float player_move_by_x = 0;
 	float player_move_by_y = 0;
 
-	CalculateNextPlayerMovement(*collider, direction, player_move_by_x, player_move_by_y);
+	bool player_will_move = CalculateNextPlayerMovement(*collider, direction, player_move_by_x, player_move_by_y);
+	
+	std::wstringstream wss;
 
-	if (ShouldPlayerMove(*collider, direction))
+	if (player_will_move)
 	{
 		//player->SetState(std::make_shared<PlayerStateWalk>(player.get()));
-		player_controller->UpdatePlayerPosition(player_move_by_x, player_move_by_y, direction);
-	}
-	else 
+		if (ShouldPlayerMove(*collider, direction))
+		{
+			player_controller->UpdatePlayerPosition(player_move_by_x, player_move_by_y, direction);
+		}
+	} 
+	else
 	{
 		//player->SetState(std::make_shared<PlayerStateIdle>(player.get()));
 	}
+
+	player->GetRenderer()->UpdateSpriteAnimation(deltaTime);
+
 }
 
-void World::CalculateNextPlayerMovement(Collider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
+bool World::CalculateNextPlayerMovement(Collider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
 {
+	bool player_will_move = true;
 	if (App::IsKeyPressed('W'))
 	{
 		collider.MoveColliderPosition(0, 1);
@@ -68,7 +76,12 @@ void World::CalculateNextPlayerMovement(Collider& collider, FacingDirection& dir
 		collider.MoveColliderPosition(1, 0);
 		direction = FacingDirection::RIGHT;
 		player_move_by_x = PLAYER_MOVE_BY;
+	} 
+	else
+	{
+		player_will_move = false;
 	}
+	return player_will_move;
 }
 
 bool World::ShouldPlayerMove(Collider& collider, FacingDirection& direction)
@@ -79,14 +92,10 @@ bool World::ShouldPlayerMove(Collider& collider, FacingDirection& direction)
 	{
 		if (player->GetCollider()->CheckCollision(collider, *actor->GetCollider()))
 		{
-			if (actor->GetTag() == TagType::PLATE)
-			{
-				// check state of pressure plate 
-			} 
-			else
+			if (actor->GetTag() != TagType::PLATE)
 			{
 				should_move = false;
-			}
+			} 
 		}
 	}
 	for (std::shared_ptr<Actor> actor : foreground_objects)

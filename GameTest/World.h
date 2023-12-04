@@ -14,7 +14,8 @@ public:
 	// Functions for the update loop
 	//------------------------------------------------------------------------
 	void Update(float deltaTime);
-	void CalculateNextPlayerMovement(Collider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y);
+	// returns whether the player will move
+	bool CalculateNextPlayerMovement(Collider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y);
 	bool ShouldPlayerMove(Collider& collider, FacingDirection& direction);
 	void UpdateMovableObjects(Actor& actor, FacingDirection direction);
 	//------------------------------------------------------------------------

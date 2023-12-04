@@ -5,15 +5,15 @@
 class Controller
 {
 public:
-	Controller(Actor* actor) : controlled_actor(actor)
-	{
-		//velocity = Vector2D();
-	}
+	Controller(Actor* actor) : _controlled_actor(actor), _speed(0) {}
+
+	void SetSpeed(float speed) { _speed = speed; }
+	bool IsMoving();
 
 protected:
-	Actor* controlled_actor;
+	Actor* _controlled_actor;
 
-	// make this speed and direction
-	//Vector2D velocity;
+	// this is speed for now, but will make it velocity (speed and direction) in the future
+	float _speed;
 };
 

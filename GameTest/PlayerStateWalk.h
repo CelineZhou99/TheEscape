@@ -7,5 +7,7 @@ public:
     PlayerStateWalk(Player* player) : PlayerState(player) {}
 
     void SetSpriteImage() override;
+    PlayerStateType GetStateType() override { return PlayerStateType::WALK; }
+
 };
 
