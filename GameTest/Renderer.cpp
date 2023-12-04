@@ -51,3 +51,8 @@ void Renderer::MoveSpritePosition(float x, float y)
 	float new_y = old_y + y;
 	_sprite->SetPosition(new_x, new_y);
 }
+
+void Renderer::SetSprite(const char* file_name, unsigned int columns, unsigned int rows)
+{
+	_sprite = std::make_shared<CSimpleSprite>(*(App::CreateSprite(file_name, columns, rows)));
+}

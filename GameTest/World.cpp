@@ -2,66 +2,107 @@
 #include "World.h"
 #include "Actor.h"
 #include "Scene.h"
+#include "PlayerStateIdle.h"
+#include "PlayerStateWalk.h"
 
 void World::Init()
 {
-	std::shared_ptr<Renderer> renderer(new Renderer(".\\Images\\Player.bmp", 1, 1, 400.0f, 400.0f));
-	player = std::shared_ptr<Actor>(new Actor(renderer, 400.0f, 400.0f, TagType::PLAYER));
-	float speed = 1.0f / 8.0f;
-	player->GetRenderer()->CreateSpriteAnimation(speed, { 0,1,2,3 }, { 4,5,6,7 }, { 8,9,10,11 }, { 12,13,14,15 });
+	std::shared_ptr<Renderer> renderer(new Renderer(".\\Images\\IdleAnimation.bmp", 3, 4, 400.0f, 400.0f));
+	player = std::make_shared<Player>(renderer, 400.0f, 400.0f, TagType::PLAYER);
+	
+	player->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 }, { 9, 10, 11 });
 
-	player_controller = std::shared_ptr<PlayerController>(new PlayerController(player));
+	player_controller = std::make_shared<PlayerController>(player.get());
 
 	Scene scene;
-	scene.LoadMap(".\\SceneData\\TestMap.txt", actors, game_objects);
+	scene.LoadMap(".\\SceneData\\TestMap.txt", background_objects, middleground_objects, foreground_objects);
 }
 
-void World::CalculateNextPlayerMovement(std::shared_ptr<Collider> collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
+void World::Update(float deltaTime)
+{
+	if (!player) { return; }
+	player->GetRenderer()->UpdateSpriteAnimation(deltaTime);
+	//------------------------------------------------------------------------
+	// Handle player movement
+	//------------------------------------------------------------------------
+	std::shared_ptr<BoxCollider> collider(new BoxCollider(*player->GetCollider()));
+	FacingDirection direction = FacingDirection::NONE;
+	float player_move_by_x = 0;
+	float player_move_by_y = 0;
+
+	CalculateNextPlayerMovement(*collider, direction, player_move_by_x, player_move_by_y);
+
+	if (ShouldPlayerMove(*collider, direction))
+	{
+		//player->SetState(std::make_shared<PlayerStateWalk>(player.get()));
+		player_controller->UpdatePlayerPosition(player_move_by_x, player_move_by_y, direction);
+	}
+	else 
+	{
+		//player->SetState(std::make_shared<PlayerStateIdle>(player.get()));
+	}
+}
+
+void World::CalculateNextPlayerMovement(Collider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
 {
 	if (App::IsKeyPressed('W'))
 	{
-		collider->MoveColliderPosition(0, 1);
+		collider.MoveColliderPosition(0, 1);
 		direction = FacingDirection::UP;
 		player_move_by_y = PLAYER_MOVE_BY;
 	}
 	else if (App::IsKeyPressed('S'))
 	{
-		collider->MoveColliderPosition(0, -1);
+		collider.MoveColliderPosition(0, -1);
 		direction = FacingDirection::DOWN;
 		player_move_by_y = -PLAYER_MOVE_BY;
 	}
 	else if (App::IsKeyPressed('A'))
 	{
-		collider->MoveColliderPosition(-1, 0);
+		collider.MoveColliderPosition(-1, 0);
 		direction = FacingDirection::LEFT;
 		player_move_by_x = -PLAYER_MOVE_BY;
 	}
 	else if (App::IsKeyPressed('D'))
 	{
-		collider->MoveColliderPosition(1, 0);
+		collider.MoveColliderPosition(1, 0);
 		direction = FacingDirection::RIGHT;
 		player_move_by_x = PLAYER_MOVE_BY;
 	}
 }
 
-bool World::ShouldPlayerMove(std::shared_ptr<Collider> collider, FacingDirection& direction)
+bool World::ShouldPlayerMove(Collider& collider, FacingDirection& direction)
 {
 	bool should_move = true;
 
-	for (std::shared_ptr<Actor> actor : actors)
+	for (std::shared_ptr<Actor> actor : middleground_objects)
 	{
-		if (player->GetCollider()->CheckCollision(collider, actor->GetCollider()))
+		if (player->GetCollider()->CheckCollision(collider, *actor->GetCollider()))
 		{
-			UpdateMovableObjects(actor, direction);
+			if (actor->GetTag() == TagType::PLATE)
+			{
+				// check state of pressure plate 
+			} 
+			else
+			{
+				should_move = false;
+			}
+		}
+	}
+	for (std::shared_ptr<Actor> actor : foreground_objects)
+	{
+		if (player->GetCollider()->CheckCollision(collider, *actor->GetCollider()))
+		{
+			UpdateMovableObjects(*actor, direction);
 			should_move = false;
 		}
 	}
 	return should_move;
 }
 
-void World::UpdateMovableObjects(std::shared_ptr<Actor> actor, FacingDirection direction)
+void World::UpdateMovableObjects(Actor& actor, FacingDirection direction)
 {
-	if (actor->GetTag() == TagType::MOVABLE_OBJECT)
+	if (actor.GetTag() == TagType::MOVABLE_OBJECT)
 	{
 		float move_by_x = 0;
 		float move_by_y = 0;
@@ -81,18 +122,21 @@ void World::UpdateMovableObjects(std::shared_ptr<Actor> actor, FacingDirection d
 			break;
 		}
 		// make that actor move in the opposite direction of the player
-		actor->UpdateActorPosition(move_by_x, move_by_y);
+		actor.UpdateActorPosition(move_by_x, move_by_y);
 	}
 }
 
 void World::DrawAllSprites()
 {
-	for (std::shared_ptr<GameObject> actor : game_objects)
+	for (std::shared_ptr<GameObject> actor : background_objects)
 	{
 		actor->GetRenderer()->DrawSprite();
 	}
-
-	for (std::shared_ptr<Actor> actor : actors)
+	for (std::shared_ptr<Actor> actor : middleground_objects)
+	{
+		actor->GetRenderer()->DrawSprite();
+	}
+	for (std::shared_ptr<Actor> actor : foreground_objects)
 	{
 		actor->GetRenderer()->DrawSprite();
 	}

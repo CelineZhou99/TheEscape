@@ -186,7 +186,11 @@
     <ClInclude Include="App\SimpleSprite.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Collider.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="PlayerState.h" />
+    <ClInclude Include="PlayerStateIdle.h" />
+    <ClInclude Include="PlayerStateWalk.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Renderer.h" />
@@ -208,7 +212,11 @@
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="GameTest.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerController.cpp" />
+    <ClCompile Include="PlayerState.cpp" />
+    <ClCompile Include="PlayerStateIdle.cpp" />
+    <ClCompile Include="PlayerStateWalk.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Renderer.cpp" />

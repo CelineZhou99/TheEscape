@@ -9,7 +9,8 @@ enum TagType
 	PLAYER,
 	ENEMY,
 	STATIC_OBJECT,
-	MOVABLE_OBJECT
+	MOVABLE_OBJECT,
+	PLATE
 };
 
 class GameObject

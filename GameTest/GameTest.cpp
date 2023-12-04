@@ -15,7 +15,7 @@ std::unique_ptr<World> world;
 //------------------------------------------------------------------------
 void Init()
 {
-	world = std::unique_ptr<World>(new World());
+	world = std::make_unique<World>();
 	world->Init();
 }
 
@@ -25,22 +25,7 @@ void Init()
 //------------------------------------------------------------------------
 void Update(float deltaTime)
 {
-	if (!world->player) { return; }
-	world->player->GetRenderer()->UpdateSpriteAnimation(deltaTime);
-	//------------------------------------------------------------------------
-	// Handle player movement
-	//------------------------------------------------------------------------
-	std::shared_ptr<BoxCollider> collider(new BoxCollider(*world->player->GetCollider()));
-	FacingDirection direction = FacingDirection::NONE;
-	float player_move_by_x = 0;
-	float player_move_by_y = 0;
-
-	world->CalculateNextPlayerMovement(collider, direction, player_move_by_x, player_move_by_y);
-
-	if (world->ShouldPlayerMove(collider, direction))
-	{
-		world->player_controller->UpdatePlayerPosition(player_move_by_x, player_move_by_y, direction);
-	}
+	world->Update(deltaTime);
 }
 
 //------------------------------------------------------------------------

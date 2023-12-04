@@ -11,7 +11,7 @@ public:
 		_collider_height = height;
 	}
 	// pure virtual function
-	virtual bool CheckCollision(std::shared_ptr<Collider> obj_1_collider, std::shared_ptr<Collider> obj_2_collider) = 0;
+	virtual bool CheckCollision(Collider& obj_1_collider, Collider& obj_2_collider) = 0;
 	// move collider position by the provided x, y amount
 	void MoveColliderPosition(float x, float y) { _position.MoveVectorPosition(x, y); }
 

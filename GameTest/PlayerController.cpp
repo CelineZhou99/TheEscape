@@ -1,14 +1,10 @@
 #include "stdafx.h"
 #include "PlayerController.h"
 
-bool PlayerController::IsMoving()
-{
-    if (velocity > 0)
-    {
-        return true;
-    }
-    return false;
-}
+//bool PlayerController::IsMoving()
+//{
+//    
+//}
 
 void PlayerController::UpdatePlayerPosition(float move_by_x, float move_by_y, FacingDirection direction)
 {

@@ -7,6 +7,6 @@ class BoxCollider :
 public:
     BoxCollider(Vector2D position, float width, float height) : Collider(position, width, height) {}
 
-    bool CheckCollision(std::shared_ptr<Collider> obj_1_collider, std::shared_ptr<Collider> obj_2_collider) override; // override the pure virtual function
+    bool CheckCollision(Collider& obj_1_collider, Collider& obj_2_collider) override; // override the pure virtual function
 };
 

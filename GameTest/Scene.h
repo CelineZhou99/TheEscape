@@ -6,11 +6,14 @@ enum SceneObjectType
 {
 	FLOOR,
 	WALL,
-	BOX
+	BOX,
+	PRESSURE_PLATE,
+	DOOR
 };
 class Scene
 {
 public:
-	void LoadMap(const char* file_name_text, std::vector<std::shared_ptr<Actor>>& actors, std::vector<std::shared_ptr<GameObject>>& game_objects);
+	void LoadMap(const char* file_name_text, std::vector<std::shared_ptr<GameObject>>& background_objects, 
+		std::vector<std::shared_ptr<Actor>>& middleground_objects, std::vector<std::shared_ptr<Actor>>& foreground_objects);
 };
 
