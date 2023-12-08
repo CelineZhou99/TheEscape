@@ -50,8 +50,11 @@ void CSimpleSprite::Update(float dt)
         {
             m_animTime = m_animTime - duration;
         }
-        int frame = (int)( m_animTime / anim.m_speed );
-        SetFrame(anim.m_frames[frame]);        
+        // causing crash when testing
+        /*int frame = (int)( m_animTime / anim.m_speed );
+        SetFrame(anim.m_frames[frame]);  */  
+        int frame = (int)(m_animTime / anim.m_speed) % anim.m_frames.size();
+        SetFrame(anim.m_frames[frame]);
     }
 }
 

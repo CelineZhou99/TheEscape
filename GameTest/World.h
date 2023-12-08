@@ -1,7 +1,10 @@
 #pragma once
 
-#include "PlayerController.h"
-#include "Player.h"
+#include "Controllers/PlayerController.h"
+#include "GameObjects/Player.h"
+#include "Scenes/Scene.h"
+#include <vector>
+
 class World
 {
 	// global container 
@@ -15,8 +18,9 @@ public:
 	//------------------------------------------------------------------------
 	void Update(float deltaTime);
 	// returns whether the player will move
-	bool CalculateNextPlayerMovement(Collider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y);
-	bool ShouldPlayerMove(Collider& collider, FacingDirection& direction);
+	bool CalculatePlayerNextMovement(Collider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y);
+	bool ShouldActorMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction);
+	bool ShouldMovableObjectsMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction);
 	void UpdateMovableObjects(Actor& actor, FacingDirection direction);
 	//------------------------------------------------------------------------
 	// Functions for the render loop
@@ -25,8 +29,8 @@ public:
 
 	std::shared_ptr<PlayerController> player_controller = nullptr;
 	std::shared_ptr<Player> player = nullptr;
-	std::vector<std::shared_ptr<GameObject>> background_objects = {};
-	std::vector<std::shared_ptr<Actor>> middleground_objects = {};
-	std::vector<std::shared_ptr<Actor>> foreground_objects = {};
+
+	std::unique_ptr<Scene> current_scene = nullptr;
+	std::shared_ptr<Goal> current_goal = nullptr;
 };
 

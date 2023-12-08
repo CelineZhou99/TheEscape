@@ -173,54 +173,83 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Text Include="glut\Readme.txt" />
     <Text Include="ReadMe.txt" />
+    <Text Include="Scenes\Files\TestMap.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Controller.h" />
-    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Colliders\BoxCollider.h" />
+    <ClInclude Include="Colliders\Collider.h" />
+    <ClInclude Include="Controllers\Controller.h" />
+    <ClInclude Include="Controllers\PlayerController.h" />
     <ClInclude Include="App\app.h" />
     <ClInclude Include="App\AppSettings.h" />
     <ClInclude Include="App\main.h" />
     <ClInclude Include="App\SimpleController.h" />
     <ClInclude Include="App\SimpleSound.h" />
     <ClInclude Include="App\SimpleSprite.h" />
-    <ClInclude Include="BoxCollider.h" />
-    <ClInclude Include="Collider.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="PlayerController.h" />
-    <ClInclude Include="PlayerState.h" />
-    <ClInclude Include="PlayerStateIdle.h" />
-    <ClInclude Include="PlayerStateWalk.h" />
-    <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="Actor.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="Scene.h" />
+    <ClInclude Include="GameObjects\Actor.h" />
+    <ClInclude Include="GameObjects\Door.h" />
+    <ClInclude Include="GameObjects\DungeonDoor.h" />
+    <ClInclude Include="GameObjects\GameObject.h" />
+    <ClInclude Include="GameObjects\InvisibleDoor.h" />
+    <ClInclude Include="GameObjects\Player.h" />
+    <ClInclude Include="GameObjects\Renderer.h" />
+    <ClInclude Include="GameObjects\Vector2D.h" />
+    <ClInclude Include="Goal.h" />
+    <ClInclude Include="PressurePlate.h" />
+    <ClInclude Include="PressurePlateState.h" />
+    <ClInclude Include="PressurePlateStateOff.h" />
+    <ClInclude Include="PressurePlateStateOn.h" />
+    <ClInclude Include="Publisher.h" />
+    <ClInclude Include="Subscriber.h" />
+    <ClInclude Include="Scenes\Scene.h" />
+    <ClInclude Include="Scenes\SceneManager.h" />
+    <ClInclude Include="States\DoorState.h" />
+    <ClInclude Include="States\DoorStateLocked.h" />
+    <ClInclude Include="States\DoorStateUnlocked.h" />
+    <ClInclude Include="States\PlayerState.h" />
+    <ClInclude Include="States\PlayerStateIdle.h" />
+    <ClInclude Include="States\PlayerStateWalk.h" />
     <ClInclude Include="stb_image\stb_image.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Vector2D.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Controller.cpp" />
-    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Colliders\BoxCollider.cpp" />
+    <ClCompile Include="Colliders\Collider.cpp" />
+    <ClCompile Include="Controllers\Controller.cpp" />
+    <ClCompile Include="Controllers\PlayerController.cpp" />
     <ClCompile Include="App\app.cpp" />
     <ClCompile Include="App\main.cpp" />
     <ClCompile Include="App\SimpleController.cpp" />
     <ClCompile Include="App\SimpleSound.cpp" />
     <ClCompile Include="App\SimpleSprite.cpp" />
-    <ClCompile Include="BoxCollider.cpp" />
-    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="GameObjects\Actor.cpp" />
+    <ClCompile Include="GameObjects\Door.cpp" />
+    <ClCompile Include="GameObjects\DungeonDoor.cpp" />
+    <ClCompile Include="GameObjects\GameObject.cpp" />
+    <ClCompile Include="GameObjects\InvisibleDoor.cpp" />
+    <ClCompile Include="GameObjects\Player.cpp" />
+    <ClCompile Include="GameObjects\Renderer.cpp" />
+    <ClCompile Include="GameObjects\Vector2D.cpp" />
     <ClCompile Include="GameTest.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PlayerController.cpp" />
-    <ClCompile Include="PlayerState.cpp" />
-    <ClCompile Include="PlayerStateIdle.cpp" />
-    <ClCompile Include="PlayerStateWalk.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Goal.cpp" />
+    <ClCompile Include="PressurePlate.cpp" />
+    <ClCompile Include="PressurePlateState.cpp" />
+    <ClCompile Include="PressurePlateStateOff.cpp" />
+    <ClCompile Include="PressurePlateStateOn.cpp" />
+    <ClCompile Include="Publisher.cpp" />
+    <ClCompile Include="Subscriber.cpp" />
+    <ClCompile Include="Scenes\Scene.cpp" />
+    <ClCompile Include="Scenes\SceneManager.cpp" />
+    <ClCompile Include="States\DoorState.cpp" />
+    <ClCompile Include="States\DoorStateLocked.cpp" />
+    <ClCompile Include="States\DoorStateUnlocked.cpp" />
+    <ClCompile Include="States\PlayerState.cpp" />
+    <ClCompile Include="States\PlayerStateIdle.cpp" />
+    <ClCompile Include="States\PlayerStateWalk.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -228,8 +257,27 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Vector2D.cpp" />
     <ClCompile Include="World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Images\Box.bmp" />
+    <Image Include="Images\BoxL.bmp" />
+    <Image Include="Images\DungeonDoorLocked.bmp" />
+    <Image Include="Images\DungeonDoorUnlocked.bmp" />
+    <Image Include="Images\Floor.bmp" />
+    <Image Include="Images\FloorL.bmp" />
+    <Image Include="Images\IdleAnimation.bmp" />
+    <Image Include="Images\IdleAnimationAlt.bmp" />
+    <Image Include="Images\InvisibleDoor.bmp" />
+    <Image Include="Images\PressurePlateL.bmp" />
+    <Image Include="Images\Test.bmp" />
+    <Image Include="Images\WalkAnimation.bmp" />
+    <Image Include="Images\WalkAnimationAlt.bmp" />
+    <Image Include="Images\Wall.bmp" />
+    <Image Include="Images\WallL.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Sounds\Test.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
