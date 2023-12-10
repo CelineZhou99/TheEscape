@@ -190,13 +190,15 @@ void World::UpdateMovableObjects(Actor& actor, FacingDirection direction)
 		{
 			if (object->GetTag() == TagType::PLATE)
 			{
-				// TODO: FIX BUG on object and actor transform is incorrect 
-				if (object->GetTransform().X() == actor.GetTransform().X() && object->GetTransform().Y() == actor.GetTransform().Y())
+ 				if (actor.GetCollider()->CheckCollision(*actor.GetCollider(), *object.get()->GetCollider()))
 				{
-					// use static cast to get the derived class
-					PressurePlate& pressure_plate = static_cast<PressurePlate&>(*object.get());
-					pressure_plate.SetState(PressurePlateStateType::OFF, current_goal.get());
-					break;
+					if (object->GetTransform()->X() == actor.GetTransform()->X() && object->GetTransform()->Y() == actor.GetTransform()->Y())
+					{
+						PressurePlate& pressure_plate = static_cast<PressurePlate&>(*object.get());
+						pressure_plate.SetState(PressurePlateStateType::OFF, current_goal.get());
+						break;
+					}
+
 				}
 			}
 		}

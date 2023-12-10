@@ -22,7 +22,7 @@ public:
 
     std::shared_ptr<BoxCollider> GetCollider() { return _collider; }
 
-    void UpdateActorPosition(float move_by_x, float move_by_y);
+    void UpdateActorPosition(float& move_by_x, float& move_by_y);
    
 private:
     std::shared_ptr<BoxCollider> _collider;
