@@ -115,7 +115,7 @@ bool World::ShouldActorMove(Actor& actor_to_move, Collider& collider, FacingDire
 				if (actor->GetTag() == TagType::DOOR)
 				{
 					Door& door = static_cast<Door&>(*actor.get());
-					door.OnPlayerCollision();
+					door.OnPlayerCollision(*this);
 				}
 				should_move = false;
 				break;
@@ -222,4 +222,11 @@ void World::DrawAllSprites()
 	}
 
 	player->GetRenderer()->DrawSprite();
+}
+
+void World::GameEnd()
+{
+	HasGameEnded = true;
+	end_screen_sprite = std::make_unique<CSimpleSprite>(".\\Images\\EndScreen.bmp");
+	end_screen_sprite->SetPosition(512, 384);
 }

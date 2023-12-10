@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Door.h"
+#include "../World.h"
 
 void Door::SetState(DoorStateType state)
 {
@@ -10,7 +11,7 @@ void Door::SetState(DoorStateType state)
 	}
 }
 
-void Door::OnPlayerCollision()
+void Door::OnPlayerCollision(World& world)
 {
-	_door_state_map.find(_state_type)->second->OnCollideWithPlayer();
+	_door_state_map.find(_state_type)->second->OnCollideWithPlayer(world);
 }

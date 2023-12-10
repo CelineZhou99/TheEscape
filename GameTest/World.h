@@ -27,10 +27,15 @@ public:
 	//------------------------------------------------------------------------
 	void DrawAllSprites();
 
+	void GameEnd();
+
 	std::shared_ptr<PlayerController> player_controller = nullptr;
 	std::shared_ptr<Player> player = nullptr;
 
 	std::unique_ptr<Scene> current_scene = nullptr;
 	std::shared_ptr<Goal> current_goal = nullptr;
+
+	bool HasGameEnded = false;
+	std::unique_ptr<CSimpleSprite> end_screen_sprite = nullptr;
 };
 

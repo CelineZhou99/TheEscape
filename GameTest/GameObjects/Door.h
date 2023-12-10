@@ -23,7 +23,7 @@ public:
 	void SetState(DoorStateType state);
 	DoorStateType GetStateType() { return _state_type; }
 
-	void OnPlayerCollision();
+	void OnPlayerCollision(World& world);
 
 protected:
 	std::unordered_map<DoorStateType, std::shared_ptr<DoorState>> _door_state_map;

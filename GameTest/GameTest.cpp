@@ -25,7 +25,10 @@ void Init()
 //------------------------------------------------------------------------
 void Update(float deltaTime)
 {
-	world->Update(deltaTime);
+	if (!world->HasGameEnded)
+	{
+		world->Update(deltaTime);
+	}
 }
 
 //------------------------------------------------------------------------
@@ -34,7 +37,14 @@ void Update(float deltaTime)
 //------------------------------------------------------------------------
 void Render()
 {	
-	world->DrawAllSprites();
+	if (!world->HasGameEnded)
+	{
+		world->DrawAllSprites();
+	}
+	else 
+	{
+		world->end_screen_sprite->Draw();
+	}
 	//------------------------------------------------------------------------
 	// Example Text.
 	//------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "../GameObjects/Door.h"
 #include "DoorStateUnlocked.h"
+#include "../World.h"
 
 void DoorStateUnlocked::SetSpriteImage()
 {
@@ -10,8 +11,8 @@ void DoorStateUnlocked::SetSpriteImage()
 	_door->GetRenderer()->GetSprite()->SetPosition(x, y);
 }
 
-void DoorStateUnlocked::OnCollideWithPlayer()
+void DoorStateUnlocked::OnCollideWithPlayer(World& world)
 {
 	// let player through
-	
+	world.GameEnd();
 }

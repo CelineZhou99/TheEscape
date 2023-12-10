@@ -7,6 +7,6 @@ public:
     DoorStateLocked(Door* door) : DoorState(door) {}
 
     void SetSpriteImage() override;
-    void OnCollideWithPlayer() override;
+    void OnCollideWithPlayer(World& world) override;
 };
 
