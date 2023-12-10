@@ -114,7 +114,7 @@ bool World::ShouldActorMove(Actor& actor_to_move, Collider& collider, FacingDire
 			{
 				if (actor->GetTag() == TagType::DOOR)
 				{
-					Door& door = static_cast<Door&>(*actor);
+					Door& door = static_cast<Door&>(*actor.get());
 					door.OnPlayerCollision();
 				}
 				should_move = false;
@@ -149,7 +149,7 @@ bool World::ShouldMovableObjectsMove(Actor& actor_to_move, Collider& collider, F
 			else if (actor->GetTag() == TagType::PLATE)
 			{
 				// use static cast to get the derived class
-				PressurePlate& pressure_plate = static_cast<PressurePlate&>(*actor);
+				PressurePlate& pressure_plate = static_cast<PressurePlate&>(*actor.get());
 				pressure_plate.SetState(PressurePlateStateType::ON, current_goal.get());
 				break;
 			}
@@ -194,7 +194,7 @@ void World::UpdateMovableObjects(Actor& actor, FacingDirection direction)
 				if (object->GetTransform().X() == actor.GetTransform().X() && object->GetTransform().Y() == actor.GetTransform().Y())
 				{
 					// use static cast to get the derived class
-					PressurePlate& pressure_plate = static_cast<PressurePlate&>(*object);
+					PressurePlate& pressure_plate = static_cast<PressurePlate&>(*object.get());
 					pressure_plate.SetState(PressurePlateStateType::OFF, current_goal.get());
 					break;
 				}
