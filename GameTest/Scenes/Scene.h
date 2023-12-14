@@ -1,8 +1,8 @@
 #pragma once
 #include <math.h>  
 #include "../GameObjects/Actor.h"
-#include "../Subscriber.h"
-#include "../Goal.h"
+#include "../Observers/Subscriber.h"
+#include "../Observers/Goal.h"
 #include "../GameObjects/Door.h"
 
 enum SceneObjectType

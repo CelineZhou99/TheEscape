@@ -12,10 +12,10 @@ bool Goal::IsGoalComplete()
 
 void Goal::IncrementContextCount()
 {
-	_goal_context_count++;
+	++_goal_context_count;
 }
 
 void Goal::DecrementContextCount()
 {
-	_goal_context_count--;
+	--_goal_context_count;
 }

@@ -3,7 +3,7 @@
 #include "GameObjects/Actor.h"
 #include "States/PlayerStateIdle.h"
 #include "States/PlayerStateWalk.h"
-#include "PressurePlate.h"
+#include "GameObjects/PressurePlate.h"
 
 void World::Init()
 {
@@ -16,7 +16,7 @@ void World::Init()
 	// TODO: read the type of goal from file instead
 	current_goal = std::make_shared<Goal>(GoalType::GOAL_PRESSURE_PLATE);
 	current_scene = std::make_unique<Scene>(current_goal.get());
-	current_scene->LoadMap(".\\Scenes\\Files\\TestMap.txt");
+	current_scene->LoadMap(".\\Data\\Maps\\TestMap.txt");
 
 	// scene is not observing the goal
 	current_goal->Subscribe(current_scene.get());
@@ -35,8 +35,6 @@ void World::Update(float deltaTime)
 	float player_move_by_y = 0;
 
 	bool player_will_move = CalculatePlayerNextMovement(collider, direction, player_move_by_x, player_move_by_y);
-	
-	std::wstringstream wss;
 
 	if (player_will_move)
 	{

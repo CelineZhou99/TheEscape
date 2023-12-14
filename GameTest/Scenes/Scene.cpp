@@ -3,7 +3,7 @@
 #include "../GameObjects/Renderer.h"
 #include "../GameObjects/InvisibleDoor.h"
 #include "../GameObjects/DungeonDoor.h"
-#include "../PressurePlate.h"
+#include "../GameObjects/PressurePlate.h"
 
 void Scene::LoadMap(const char* file_name_text)
 {

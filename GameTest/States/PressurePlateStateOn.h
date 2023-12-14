@@ -1,6 +1,6 @@
 #pragma once
 #include "PressurePlateState.h"
-#include "Goal.h"
+#include "../Observers/Goal.h"
 
 class PressurePlateStateOn :
     public PressurePlateState
@@ -8,7 +8,7 @@ class PressurePlateStateOn :
 public:
 	PressurePlateStateOn(PressurePlate* pressure_plate) : PressurePlateState(pressure_plate) {}
 
-	void PlayVFX() override;
+	void PlaySFX() override;
 	void UpdateGoalProgress(Goal* goal) override;
 };
 

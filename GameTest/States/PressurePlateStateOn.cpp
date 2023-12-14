@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PressurePlateStateOn.h"
 
-void PressurePlateStateOn::PlayVFX()
+void PressurePlateStateOn::PlaySFX()
 {
 	// TODO: play sound
 }

@@ -175,7 +175,7 @@
   <ItemGroup>
     <Text Include="glut\Readme.txt" />
     <Text Include="ReadMe.txt" />
-    <Text Include="Scenes\Files\TestMap.txt" />
+    <Text Include="Data\Maps\TestMap.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Colliders\BoxCollider.h" />
@@ -194,15 +194,15 @@
     <ClInclude Include="GameObjects\GameObject.h" />
     <ClInclude Include="GameObjects\InvisibleDoor.h" />
     <ClInclude Include="GameObjects\Player.h" />
+    <ClInclude Include="GameObjects\PressurePlate.h" />
     <ClInclude Include="GameObjects\Renderer.h" />
     <ClInclude Include="GameObjects\Vector2D.h" />
-    <ClInclude Include="Goal.h" />
-    <ClInclude Include="PressurePlate.h" />
-    <ClInclude Include="PressurePlateState.h" />
-    <ClInclude Include="PressurePlateStateOff.h" />
-    <ClInclude Include="PressurePlateStateOn.h" />
-    <ClInclude Include="Publisher.h" />
-    <ClInclude Include="Subscriber.h" />
+    <ClInclude Include="Observers\Goal.h" />
+    <ClInclude Include="States\PressurePlateState.h" />
+    <ClInclude Include="States\PressurePlateStateOff.h" />
+    <ClInclude Include="States\PressurePlateStateOn.h" />
+    <ClInclude Include="Observers\Publisher.h" />
+    <ClInclude Include="Observers\Subscriber.h" />
     <ClInclude Include="Scenes\Scene.h" />
     <ClInclude Include="Scenes\SceneManager.h" />
     <ClInclude Include="States\DoorState.h" />
@@ -218,7 +218,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Colliders\BoxCollider.cpp" />
-    <ClCompile Include="Colliders\Collider.cpp" />
     <ClCompile Include="Controllers\Controller.cpp" />
     <ClCompile Include="Controllers\PlayerController.cpp" />
     <ClCompile Include="App\app.cpp" />
@@ -230,24 +229,18 @@
     <ClCompile Include="GameObjects\Door.cpp" />
     <ClCompile Include="GameObjects\DungeonDoor.cpp" />
     <ClCompile Include="GameObjects\GameObject.cpp" />
-    <ClCompile Include="GameObjects\InvisibleDoor.cpp" />
     <ClCompile Include="GameObjects\Player.cpp" />
+    <ClCompile Include="GameObjects\PressurePlate.cpp" />
     <ClCompile Include="GameObjects\Renderer.cpp" />
-    <ClCompile Include="GameObjects\Vector2D.cpp" />
     <ClCompile Include="GameTest.cpp" />
-    <ClCompile Include="Goal.cpp" />
-    <ClCompile Include="PressurePlate.cpp" />
-    <ClCompile Include="PressurePlateState.cpp" />
-    <ClCompile Include="PressurePlateStateOff.cpp" />
-    <ClCompile Include="PressurePlateStateOn.cpp" />
-    <ClCompile Include="Publisher.cpp" />
-    <ClCompile Include="Subscriber.cpp" />
+    <ClCompile Include="Observers\Goal.cpp" />
+    <ClCompile Include="States\PressurePlateStateOff.cpp" />
+    <ClCompile Include="States\PressurePlateStateOn.cpp" />
+    <ClCompile Include="Observers\Publisher.cpp" />
     <ClCompile Include="Scenes\Scene.cpp" />
     <ClCompile Include="Scenes\SceneManager.cpp" />
-    <ClCompile Include="States\DoorState.cpp" />
     <ClCompile Include="States\DoorStateLocked.cpp" />
     <ClCompile Include="States\DoorStateUnlocked.cpp" />
-    <ClCompile Include="States\PlayerState.cpp" />
     <ClCompile Include="States\PlayerStateIdle.cpp" />
     <ClCompile Include="States\PlayerStateWalk.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />
@@ -264,6 +257,7 @@
     <Image Include="Images\BoxL.bmp" />
     <Image Include="Images\DungeonDoorLocked.bmp" />
     <Image Include="Images\DungeonDoorUnlocked.bmp" />
+    <Image Include="Images\EndScreen.bmp" />
     <Image Include="Images\Floor.bmp" />
     <Image Include="Images\FloorL.bmp" />
     <Image Include="Images\IdleAnimation.bmp" />

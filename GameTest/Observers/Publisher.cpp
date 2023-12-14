@@ -13,10 +13,8 @@ void Publisher::Unsubscribe(Subscriber* subscriber)
 
 void Publisher::NotifySubscribers()
 {
-	std::list<Subscriber*>::iterator iterator = _subscriber_list.begin();
-	while (iterator != _subscriber_list.end())
+	for (Subscriber* subscriber : _subscriber_list)
 	{
-		(*iterator)->Update();
-		++iterator;
+		subscriber->Update();
 	}
 }

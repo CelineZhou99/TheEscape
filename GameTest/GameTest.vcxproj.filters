@@ -26,29 +26,22 @@
     <ClCompile Include="GameObjects\Door.cpp" />
     <ClCompile Include="GameObjects\DungeonDoor.cpp" />
     <ClCompile Include="GameObjects\GameObject.cpp" />
-    <ClCompile Include="GameObjects\InvisibleDoor.cpp" />
     <ClCompile Include="GameObjects\Player.cpp" />
     <ClCompile Include="GameObjects\Renderer.cpp" />
-    <ClCompile Include="GameObjects\Vector2D.cpp" />
     <ClCompile Include="Controllers\Controller.cpp" />
     <ClCompile Include="Controllers\PlayerController.cpp" />
     <ClCompile Include="Colliders\BoxCollider.cpp" />
-    <ClCompile Include="Colliders\Collider.cpp" />
     <ClCompile Include="Scenes\Scene.cpp" />
     <ClCompile Include="Scenes\SceneManager.cpp" />
-    <ClCompile Include="States\DoorState.cpp" />
     <ClCompile Include="States\DoorStateLocked.cpp" />
     <ClCompile Include="States\DoorStateUnlocked.cpp" />
-    <ClCompile Include="States\PlayerState.cpp" />
     <ClCompile Include="States\PlayerStateIdle.cpp" />
     <ClCompile Include="States\PlayerStateWalk.cpp" />
-    <ClCompile Include="Publisher.cpp" />
-    <ClCompile Include="Subscriber.cpp" />
-    <ClCompile Include="Goal.cpp" />
-    <ClCompile Include="PressurePlateState.cpp" />
-    <ClCompile Include="PressurePlate.cpp" />
-    <ClCompile Include="PressurePlateStateOn.cpp" />
-    <ClCompile Include="PressurePlateStateOff.cpp" />
+    <ClCompile Include="Observers\Publisher.cpp" />
+    <ClCompile Include="Observers\Goal.cpp" />
+    <ClCompile Include="States\PressurePlateStateOn.cpp" />
+    <ClCompile Include="States\PressurePlateStateOff.cpp" />
+    <ClCompile Include="GameObjects\PressurePlate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -97,13 +90,13 @@
     <ClInclude Include="States\PlayerState.h" />
     <ClInclude Include="States\PlayerStateIdle.h" />
     <ClInclude Include="States\PlayerStateWalk.h" />
-    <ClInclude Include="Publisher.h" />
-    <ClInclude Include="Subscriber.h" />
-    <ClInclude Include="Goal.h" />
-    <ClInclude Include="PressurePlateState.h" />
-    <ClInclude Include="PressurePlate.h" />
-    <ClInclude Include="PressurePlateStateOn.h" />
-    <ClInclude Include="PressurePlateStateOff.h" />
+    <ClInclude Include="Observers\Publisher.h" />
+    <ClInclude Include="Observers\Subscriber.h" />
+    <ClInclude Include="Observers\Goal.h" />
+    <ClInclude Include="States\PressurePlateState.h" />
+    <ClInclude Include="States\PressurePlateStateOn.h" />
+    <ClInclude Include="States\PressurePlateStateOff.h" />
+    <ClInclude Include="GameObjects\PressurePlate.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="NextAPI">
@@ -118,7 +111,7 @@
       <Filter>NextAPI</Filter>
     </Text>
     <Text Include="glut\Readme.txt" />
-    <Text Include="Scenes\Files\TestMap.txt" />
+    <Text Include="Data\Maps\TestMap.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\Box.bmp" />
@@ -136,6 +129,7 @@
     <Image Include="Images\WalkAnimationAlt.bmp" />
     <Image Include="Images\Wall.bmp" />
     <Image Include="Images\WallL.bmp" />
+    <Image Include="Images\EndScreen.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="Sounds\Test.wav" />

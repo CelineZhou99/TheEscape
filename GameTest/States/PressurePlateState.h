@@ -15,7 +15,7 @@ class PressurePlateState
 public:
 	PressurePlateState(PressurePlate* pressure_plate) : _pressure_plate(pressure_plate) {}
 
-	virtual void PlayVFX() = 0;
+	virtual void PlaySFX() = 0;
 	virtual void UpdateGoalProgress(Goal* goal) = 0;
 
 protected:
