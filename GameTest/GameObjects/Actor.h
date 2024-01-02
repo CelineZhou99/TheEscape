@@ -5,6 +5,7 @@
 #define PLAYER_MOVE_BY 2
 #define MOVABLE_OBJECT_MOVE_BY 64
 #define IMAGE_SIZE_HALF 32
+#define IMAGE_SIZE_FULL 64
 #define ANIMATION_SPEED 0.2f
 
 class Actor :
@@ -24,7 +25,7 @@ public:
 
     void UpdateActorPosition(float& move_by_x, float& move_by_y);
    
-private:
+protected:
     std::shared_ptr<BoxCollider> _collider;
 };
 

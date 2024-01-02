@@ -11,6 +11,7 @@ public:
 
 	// move the vector position by the provided x, y amount
 	void MoveVectorPosition(float x, float y) { _vector_x += x; _vector_y += y; }
+	void SetVectorPosition(float x, float y) { _vector_x = x; _vector_y = y; }
 
 private:
 	float _vector_x = 0;

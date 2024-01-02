@@ -40,6 +40,7 @@ void Render()
 	if (!world->HasGameEnded)
 	{
 		world->DrawAllSprites();
+		world->DrawUI();
 	}
 	else 
 	{

@@ -4,22 +4,24 @@
 #include "States/PlayerStateIdle.h"
 #include "States/PlayerStateWalk.h"
 #include "GameObjects/PressurePlate.h"
+#include "GameObjects/Key.h"
 
 void World::Init()
 {
-	std::shared_ptr<Renderer> renderer(new Renderer(".\\Images\\IdleAnimationAlt.bmp", 4, 4, 450.0f, 300.0f));
-	player = std::make_shared<Player>(renderer, 450.0f, 300.0f, TagType::PLAYER);
+	std::shared_ptr<Renderer> renderer(new Renderer(".\\Data\\Images\\IdleAnimationAlt.bmp", 4, 4, PLAYER_START_X, PLAYER_START_Y));
+	player = std::make_shared<Player>(renderer, PLAYER_START_X, PLAYER_START_Y, TagType::PLAYER);
 	player->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
 
 	player_controller = std::make_shared<PlayerController>(player.get());
 
-	// TODO: read the type of goal from file instead
-	current_goal = std::make_shared<Goal>(GoalType::GOAL_PRESSURE_PLATE);
+	current_goal = std::make_shared<Goal>();
 	current_scene = std::make_unique<Scene>(current_goal.get());
-	current_scene->LoadMap(".\\Data\\Maps\\TestMap.txt");
-
-	// scene is not observing the goal
+	current_scene->LoadMap(".\\Data\\Maps\\MapA.txt");
+	current_goal->SetGoalType(current_scene->GetGoalType());
 	current_goal->Subscribe(current_scene.get());
+
+	current_scene->AddToSceneLayers(player, LayerType::CHARACTERS);
+	
 }
 
 void World::Update(float deltaTime)
@@ -90,30 +92,45 @@ bool World::CalculatePlayerNextMovement(Collider& collider, FacingDirection& dir
 bool World::ShouldActorMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction)
 {
 	bool should_move = true;
-	for (std::shared_ptr<Actor> actor : current_scene->GetForegroundObjects())
+	std::vector<std::vector<std::shared_ptr<GameObject>>> scene_layers = current_scene->GetSceneLayers();
+
+	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::FOREGROUND])
 	{
-		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor->GetCollider()))
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor.GetCollider()))
 		{
-			if (actor->GetTag() == TagType::MOVABLE_OBJECT)
+			if (actor.GetTag() == TagType::MOVABLE_OBJECT)
 			{
 				// TODO: FIX BUG WHERE IF PLAYER TOUCHES 2 MOVABLE OBJECTS THEY WILL MOVE BOTH
-				UpdateMovableObjects(*actor, direction);
+				UpdateMovableObjects(actor, direction);
 				return false;
+			}
+			else if (actor.GetTag() == TagType::ITEM)
+			{
+				// TODO: ASK HOW TO USE DYNAMIC CAST
+				Item& item = static_cast<Item&>(actor);
+				if (item.GetItemType() == ItemType::KEY)
+				{
+					Key& key = static_cast<Key&>(item);
+					key.OnInteractWithPlayer(*this);
+				}
 			}
 			should_move = false;
 			break;
 		}
 	}
-	for (std::shared_ptr<Actor> actor : current_scene->GetMiddlegroundObjects())
+
+	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::MIDDLEGROUND])
 	{
-		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor->GetCollider()))
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor.GetCollider()))
 		{
-			if (actor->GetTag() != TagType::PLATE)
+			if (actor.GetTag() != TagType::PLATE)
 			{
-				if (actor->GetTag() == TagType::DOOR)
+				if (actor.GetTag() == TagType::DOOR)
 				{
-					Door& door = static_cast<Door&>(*actor.get());
-					door.OnPlayerCollision(*this);
+					Door& door = static_cast<Door&>(actor);
+					door.OnInteractWithPlayer(*this);
 				}
 				should_move = false;
 				break;
@@ -127,27 +144,31 @@ bool World::ShouldActorMove(Actor& actor_to_move, Collider& collider, FacingDire
 bool World::ShouldMovableObjectsMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction)
 {
 	bool should_move = true;
-	for (std::shared_ptr<Actor> actor : current_scene->GetForegroundObjects())
+	std::vector<std::vector<std::shared_ptr<GameObject>>> scene_layers = current_scene->GetSceneLayers();
+
+	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::FOREGROUND])
 	{
-		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor->GetCollider()))
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor.GetCollider()))
 		{
 			should_move = false;
 			break;
 		}
 	}
-	for (std::shared_ptr<Actor> actor : current_scene->GetMiddlegroundObjects())
+	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::MIDDLEGROUND])
 	{
-		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor->GetCollider()))
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor.GetCollider()))
 		{
-			if (actor->GetTag() != TagType::PLATE)
+			if (actor.GetTag() != TagType::PLATE)
 			{
 				should_move = false;
 				break;
 			}
-			else if (actor->GetTag() == TagType::PLATE)
+			else if (actor.GetTag() == TagType::PLATE)
 			{
 				// use static cast to get the derived class
-				PressurePlate& pressure_plate = static_cast<PressurePlate&>(*actor.get());
+				PressurePlate& pressure_plate = static_cast<PressurePlate&>(actor);
 				pressure_plate.SetState(PressurePlateStateType::ON, current_goal.get());
 				break;
 			}
@@ -180,19 +201,22 @@ void World::UpdateMovableObjects(Actor& actor, FacingDirection direction)
 	}
 	collider.MoveColliderPosition(move_by_x, move_by_y);
 	bool should_actor_move = ShouldMovableObjectsMove(actor, collider, direction);
+
 	if (should_actor_move)
 	{
+		std::vector<std::vector<std::shared_ptr<GameObject>>> scene_layers = current_scene->GetSceneLayers();
 		// check if it is already colliding with any pressure plates
 		// if it is, change the state of that pressure plate
-		for (std::shared_ptr<Actor> object : current_scene->GetMiddlegroundObjects())
+		for (std::shared_ptr<GameObject> objects : scene_layers[LayerType::MIDDLEGROUND])
 		{
-			if (object->GetTag() == TagType::PLATE)
+			Actor& object = static_cast<Actor&>(*objects.get());
+			if (object.GetTag() == TagType::PLATE)
 			{
- 				if (actor.GetCollider()->CheckCollision(*actor.GetCollider(), *object.get()->GetCollider()))
+ 				if (actor.GetCollider()->CheckCollision(*actor.GetCollider(), *object.GetCollider()))
 				{
-					if (object->GetTransform()->X() == actor.GetTransform()->X() && object->GetTransform()->Y() == actor.GetTransform()->Y())
+					if (object.GetTransform()->X() == actor.GetTransform()->X() && object.GetTransform()->Y() == actor.GetTransform()->Y())
 					{
-						PressurePlate& pressure_plate = static_cast<PressurePlate&>(*object.get());
+						PressurePlate& pressure_plate = static_cast<PressurePlate&>(object);
 						pressure_plate.SetState(PressurePlateStateType::OFF, current_goal.get());
 						break;
 					}
@@ -206,25 +230,39 @@ void World::UpdateMovableObjects(Actor& actor, FacingDirection direction)
 
 void World::DrawAllSprites()
 {
-	for (std::shared_ptr<GameObject> actor : current_scene->GetBackgroundObjects())
+	for (size_t i = 0; i < LayerType::COUNT; ++i)
 	{
-		actor->GetRenderer()->DrawSprite();
+		std::vector<std::shared_ptr<GameObject>> objects = current_scene->GetSceneLayers().at(i);
+		for (std::shared_ptr<GameObject> actor : objects)
+		{
+			actor->GetRenderer()->DrawSprite();
+		}
 	}
-	for (std::shared_ptr<Actor> actor : current_scene->GetMiddlegroundObjects())
-	{
-		actor->GetRenderer()->DrawSprite();
-	}
-	for (std::shared_ptr<Actor> actor : current_scene->GetForegroundObjects())
-	{
-		actor->GetRenderer()->DrawSprite();
-	}
+}
 
-	player->GetRenderer()->DrawSprite();
+void World::DrawUI()
+{
+	float x = UI_START_X;
+	float y = UI_START_Y;
+	for (size_t i = 0; i < player->GetHealth(); ++i)
+	{
+		player->GetHealthIcon()->SetSpriteLocation(x, y);
+		player->GetHealthIcon()->DrawSprite();
+		x += UI_SPACING_X;
+	}
+	x = UI_START_X;
+	y -= UI_SPACING_Y;
+	for (std::shared_ptr<Item> item : player->GetInventory()->GetItemList())
+	{
+		item->GetUIIcon()->SetSpriteLocation(x, y);
+		item->GetUIIcon()->DrawSprite();
+		x += UI_SPACING_X;
+	}
 }
 
 void World::GameEnd()
 {
 	HasGameEnded = true;
-	end_screen_sprite = std::make_unique<CSimpleSprite>(".\\Images\\EndScreen.bmp");
+	end_screen_sprite = std::make_unique<CSimpleSprite>(".\\Data\\Images\\EndScreen.bmp");
 	end_screen_sprite->SetPosition(512, 384);
 }

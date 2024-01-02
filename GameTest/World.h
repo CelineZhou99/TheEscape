@@ -5,6 +5,13 @@
 #include "Scenes/Scene.h"
 #include <vector>
 
+#define PLAYER_START_X 480.0f
+#define PLAYER_START_Y 160.0f
+#define UI_START_X 32
+#define UI_START_Y APP_VIRTUAL_HEIGHT - 32
+#define UI_SPACING_X 32
+#define UI_SPACING_Y 32
+
 class World
 {
 	// global container 
@@ -26,6 +33,7 @@ public:
 	// Functions for the render loop
 	//------------------------------------------------------------------------
 	void DrawAllSprites();
+	void DrawUI();
 
 	void GameEnd();
 

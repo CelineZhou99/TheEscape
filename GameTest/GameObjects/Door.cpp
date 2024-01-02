@@ -17,7 +17,7 @@ void Door::SetState(DoorStateType state)
 	
 }
 
-void Door::OnPlayerCollision(World& world)
+void Door::OnInteractWithPlayer(World& world)
 {
 	DoorStateMap::iterator it = _door_state_map.find(_state_type);
 	if (it != _door_state_map.end())

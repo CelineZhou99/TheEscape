@@ -61,3 +61,9 @@ void Renderer::SetSprite(const char* file_name, unsigned int columns, unsigned i
 {
 	_sprite = std::make_shared<CSimpleSprite>(*(App::CreateSprite(file_name, columns, rows)));
 }
+
+void Renderer::SetSpritePosition(float x, float y, FacingDirection direction)
+{
+	_sprite->SetPosition(x, y);
+	_sprite->SetAnimation(direction);
+}

@@ -10,6 +10,8 @@ public:
 	void SetSpeed(float speed) { _speed = speed; }
 	bool IsMoving();
 
+	Actor* GetControlledActor() { return _controlled_actor; }
+
 protected:
 	Actor* _controlled_actor;
 

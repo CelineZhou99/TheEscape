@@ -7,7 +7,7 @@ void DoorStateLocked::SetSpriteImage()
 {
 	float x, y = 0;
 	_door->GetRenderer()->GetSprite()->GetPosition(x, y);
-	_door->GetRenderer()->SetSprite(".\\Images\\DungeonDoorLocked.bmp", 1, 1);
+	_door->GetRenderer()->SetSprite(".\\Data\\Images\\DungeonDoorLocked.bmp", 1, 1);
 	_door->GetRenderer()->GetSprite()->SetPosition(x, y);
 }
 

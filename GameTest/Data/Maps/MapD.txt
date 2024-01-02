@@ -1,0 +1,17 @@
+GC:P GD:3 GR:K
+V V V V V W W W W V V V
+V V V V V W P P W V V V
+V V V V V W P P W V V V
+V V V V W F F F W W V V
+V V V W F F F F F W V V
+V V V W F F F F F W V V
+V V V W F F B B F W V V
+V V V V W F F W F W V V
+V V V V W F F F F W V V
+V V V V W B F F F W V V
+V V V V W F F F F W V V
+V V V V W F F B F W V V
+V V V V W F F F F W V V
+V V V V W F F F F W V V
+V V V V W F F F F W V V
+V V V V W W DL3B W W V V V

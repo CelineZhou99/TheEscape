@@ -1,0 +1,17 @@
+GC:N GD:
+W W W W W W W W W W W W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+AU2B F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W W W W W W W W W W W W

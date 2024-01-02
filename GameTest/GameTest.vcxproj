@@ -119,6 +119,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -192,11 +193,15 @@
     <ClInclude Include="GameObjects\Door.h" />
     <ClInclude Include="GameObjects\DungeonDoor.h" />
     <ClInclude Include="GameObjects\GameObject.h" />
-    <ClInclude Include="GameObjects\InvisibleDoor.h" />
+    <ClInclude Include="GameObjects\Item.h" />
+    <ClInclude Include="GameObjects\Key.h" />
+    <ClInclude Include="GameObjects\Path.h" />
     <ClInclude Include="GameObjects\Player.h" />
     <ClInclude Include="GameObjects\PressurePlate.h" />
     <ClInclude Include="GameObjects\Renderer.h" />
     <ClInclude Include="GameObjects\Vector2D.h" />
+    <ClInclude Include="Interactable.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="Observers\Goal.h" />
     <ClInclude Include="States\PressurePlateState.h" />
     <ClInclude Include="States\PressurePlateStateOff.h" />
@@ -214,6 +219,7 @@
     <ClInclude Include="stb_image\stb_image.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="UI.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
@@ -227,12 +233,15 @@
     <ClCompile Include="App\SimpleSprite.cpp" />
     <ClCompile Include="GameObjects\Actor.cpp" />
     <ClCompile Include="GameObjects\Door.cpp" />
-    <ClCompile Include="GameObjects\DungeonDoor.cpp" />
     <ClCompile Include="GameObjects\GameObject.cpp" />
+    <ClCompile Include="GameObjects\Item.cpp" />
+    <ClCompile Include="GameObjects\Key.cpp" />
     <ClCompile Include="GameObjects\Player.cpp" />
     <ClCompile Include="GameObjects\PressurePlate.cpp" />
     <ClCompile Include="GameObjects\Renderer.cpp" />
     <ClCompile Include="GameTest.cpp" />
+    <ClCompile Include="Interactable.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Observers\Goal.cpp" />
     <ClCompile Include="States\PressurePlateStateOff.cpp" />
     <ClCompile Include="States\PressurePlateStateOn.cpp" />
@@ -250,9 +259,26 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Data\Images\Box.bmp" />
+    <Image Include="Data\Images\BoxL.bmp" />
+    <Image Include="Data\Images\DungeonDoorLocked.bmp" />
+    <Image Include="Data\Images\DungeonDoorUnlocked.bmp" />
+    <Image Include="Data\Images\EndScreen.bmp" />
+    <Image Include="Data\Images\Floor.bmp" />
+    <Image Include="Data\Images\FloorL.bmp" />
+    <Image Include="Data\Images\IdleAnimation.bmp" />
+    <Image Include="Data\Images\IdleAnimationAlt.bmp" />
+    <Image Include="Data\Images\InvisibleDoor.bmp" />
+    <Image Include="Data\Images\PressurePlateL.bmp" />
+    <Image Include="Data\Images\Test.bmp" />
+    <Image Include="Data\Images\WalkAnimation.bmp" />
+    <Image Include="Data\Images\WalkAnimationAlt.bmp" />
+    <Image Include="Data\Images\Wall.bmp" />
+    <Image Include="Data\Images\WallL.bmp" />
     <Image Include="Images\Box.bmp" />
     <Image Include="Images\BoxL.bmp" />
     <Image Include="Images\DungeonDoorLocked.bmp" />
@@ -271,6 +297,9 @@
     <Image Include="Images\WallL.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Media Include="Data\Sounds\SwitchOff.wav" />
+    <Media Include="Data\Sounds\SwitchOn.wav" />
+    <Media Include="Data\Sounds\Test.wav" />
     <Media Include="Sounds\Test.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
