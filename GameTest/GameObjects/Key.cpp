@@ -4,6 +4,6 @@
 
 void Key::OnInteractWithPlayer(World& world)
 {
-	world.player->GetInventory()->AddToInventory(*this);
+	world.player->GetInventory()->AddToInventory(this);
 	world.current_scene->RemoveFromSceneLayers(this, LayerType::FOREGROUND);
 }

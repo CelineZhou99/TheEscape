@@ -77,5 +77,9 @@ void DoorStateUnlocked::OnCollideWithPlayer(World& world)
 			}
 		}
 	}
+	else
+	{
+		world.GameEnd();
+	}
 
 }

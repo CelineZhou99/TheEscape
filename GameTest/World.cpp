@@ -254,9 +254,12 @@ void World::DrawUI()
 	y -= UI_SPACING_Y;
 	for (std::shared_ptr<Item> item : player->GetInventory()->GetItemList())
 	{
-		item->GetUIIcon()->SetSpriteLocation(x, y);
-		item->GetUIIcon()->DrawSprite();
-		x += UI_SPACING_X;
+		for (size_t i = 0; i < item->GetQuantity(); ++i)
+		{
+			item->GetUIIcon()->SetSpriteLocation(x, y);
+			item->GetUIIcon()->DrawSprite();
+			x += UI_SPACING_X;
+		}
 	}
 }
 

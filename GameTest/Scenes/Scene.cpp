@@ -27,9 +27,8 @@ void Scene::AddToSceneLayers(std::shared_ptr<GameObject> object, LayerType layer
 
 void Scene::RemoveFromSceneLayers(GameObject* object, LayerType layer)
 {
-	// TODO: FIX THIS ERROR WITH COMPARISON BETWEEN GAMEOBJECTS
-	/*std::vector<std::shared_ptr<GameObject>>::iterator it =
-		std::find_if(_scene_layers[layer].begin(), _scene_layers[layer].end(), [object](GameObject* o) 
+	std::vector<std::shared_ptr<GameObject>>::iterator it =
+		std::find_if(_scene_layers[layer].begin(), _scene_layers[layer].end(), [object](const std::shared_ptr<GameObject>& o)
 			{
 				return (o->GetRenderer()->GetFileName() == object->GetRenderer()->GetFileName()) &&
 					(o->GetTransform()->X() == object->GetTransform()->X()) &&
@@ -38,7 +37,7 @@ void Scene::RemoveFromSceneLayers(GameObject* object, LayerType layer)
 	if (it != _scene_layers[layer].end())
 	{
 		_scene_layers[layer].erase(it);
-	}*/
+	}
 }
 
 std::set<int> Scene::ReadContextFromFile(std::istringstream& iss, std::string& word)
