@@ -13,8 +13,6 @@ void DoorStateUnlocked::SetSpriteImage()
 
 void DoorStateUnlocked::OnCollideWithPlayer(World& world)
 {
-	// TODO: SET UP CHECKING IF GAME HAS ENDED\
-	// 
 	// let player through
 	int door_id = _door->GetId();
 

@@ -4,9 +4,11 @@
 class Inventory
 {
 public:
+	std::vector<std::shared_ptr<Item>> GetItemList() { return _item_list; }
+
 	void AddToInventory(Item* item);
 	void RemoveFromInventory(Item* item);
-	std::vector<std::shared_ptr<Item>> GetItemList() { return _item_list; }
+	Item* FindInInventory(ItemType item_type);
 
 private:
 	std::vector<std::shared_ptr<Item>> _item_list = {};

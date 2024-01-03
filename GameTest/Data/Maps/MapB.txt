@@ -1,12 +1,12 @@
 GC:N GD:
-V V W W W W DU3D W W W V V
+V V W W W W D:U:3:D W W W V V
 V V W F F F F F F W V V
 V V W F F F F F F W V V
 W W W F F F F F F W W W
 W F F F F F F F F F F W
 W F F F F F F F F F F W
 W F F F F F F F F F F W
-AU1A F F F F F F F F F F AU2C
+A:U:1:A F F F F F F F F F F A:U:2:C
 W F F F F F F F F F F W
 W F F F F F F F F F F W
 W F F F F F F F F F F W
@@ -14,4 +14,4 @@ W F F F F F F F F F F W
 W W W F F F F F F W W W
 V V W F F F F F F W V V
 V V W F F F F F F W V V
-V V W W W W AU4E W W W V V
+V V W W W W A:U:4:E W W W V V

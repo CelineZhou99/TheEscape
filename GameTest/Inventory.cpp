@@ -7,22 +7,7 @@ void Inventory::AddToInventory(Item* item)
 	std::vector<std::shared_ptr<Item>>::iterator it = 
 		std::find_if(_item_list.begin(), _item_list.end(), [item](const std::shared_ptr<Item>& i)
 		{
-			if (i->GetItemType() == item->GetItemType())
-			{
-				if (item->GetItemType() == ItemType::KEY)
-				{
-					Key& item_key = static_cast<Key&>(*item);
-					Key& i_key = static_cast<Key&>(*i.get());
-					if (item_key.GetKeyType() == i_key.GetKeyType())
-					{
-						return true;
-					}
-				}
-				else
-				{
-					return true;
-				}
-			}
+			return (item->GetItemType() == i->GetItemType());
 		});
 
 	if (it != _item_list.end())
@@ -40,22 +25,7 @@ void Inventory::RemoveFromInventory(Item* item)
 	std::vector<std::shared_ptr<Item>>::iterator it = 
 		std::find_if(_item_list.begin(), _item_list.end(), [item](const std::shared_ptr<Item>& i)
 		{
-			if (i->GetItemType() == item->GetItemType())
-			{
-				if (item->GetItemType() == ItemType::KEY)
-				{
-					Key& item_key = static_cast<Key&>(*item);
-					Key& i_key = static_cast<Key&>(*i.get());
-					if (item_key.GetKeyType() == i_key.GetKeyType())
-					{
-						return true;
-					}
-				}
-				else
-				{
-					return true;
-				}
-			}
+			return (item->GetItemType() == i->GetItemType());
 		});
 
 	if (it != _item_list.end())
@@ -69,4 +39,19 @@ void Inventory::RemoveFromInventory(Item* item)
 			_item_list.erase(it);
 		}
 	}
+}
+
+Item* Inventory::FindInInventory(ItemType item_type)
+{
+	std::vector<std::shared_ptr<Item>>::iterator it =
+		std::find_if(_item_list.begin(), _item_list.end(), [item_type](const std::shared_ptr<Item>& i)
+			{
+				return (item_type == i->GetItemType());
+			});
+
+	if (it != _item_list.end())
+	{
+		return it->get();
+	}
+	return nullptr;
 }

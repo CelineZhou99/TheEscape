@@ -1,5 +1,5 @@
 GC:N GD:
-V V W W W W AU4B W W W V V
+V V W W W W A:U:4:B W W W V V
 V V W F F F F F F W V V
 V V W F F F F F F W V V
 V V W F F F F F F W W W

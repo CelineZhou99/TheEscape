@@ -6,7 +6,7 @@ V V V V V V V V V V V V
 V V V V V V V V V V V V
 W W W W W W W W W W W W
 W F F F F F F F F F F W
-DL0! F F F F K K F F F F AU1B
+D:L:0:! F F F E K F F F F F A:U:1:B
 W F F F F F F F F F F W
 W W W W W W W W W W W W
 V V V V V V V V V V V V

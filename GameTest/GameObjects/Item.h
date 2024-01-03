@@ -5,8 +5,7 @@
 enum ItemType
 {
 	KEY,
-    SWORD,
-    POTION,
+    KEY_ESCAPE,
 };
 
 class Item :

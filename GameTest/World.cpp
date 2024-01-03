@@ -109,7 +109,7 @@ bool World::ShouldActorMove(Actor& actor_to_move, Collider& collider, FacingDire
 			{
 				// TODO: ASK HOW TO USE DYNAMIC CAST
 				Item& item = static_cast<Item&>(actor);
-				if (item.GetItemType() == ItemType::KEY)
+				if (item.GetItemType() == ItemType::KEY || item.GetItemType() == ItemType::KEY_ESCAPE)
 				{
 					Key& key = static_cast<Key&>(item);
 					key.OnInteractWithPlayer(*this);

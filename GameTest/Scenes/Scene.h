@@ -16,6 +16,7 @@
 #define SCENE_OBJECT_DUNGEON_DOOR 'D'
 #define SCENE_OBJECT_PATH 'A'
 #define SCENE_OBJECT_KEY 'K'
+#define SCENE_OBJECT_KEY_ESCAPE 'E'
 
 #define GOAL_CONTEXT_PRESSURE_PLATE "P"
 
@@ -27,6 +28,11 @@
 #define IMAGE_DUNGEON_DOOR_UNLOCKED ".\\Data\\Images\\DungeonDoorUnlocked.bmp"
 #define IMAGE_PATH ".\\Data\\Images\\Path.bmp"
 #define IMAGE_KEY ".\\Data\\Images\\Key.bmp"
+#define IMAGE_KEY_ESCAPE ".\\Data\\Images\\KeyEscape.bmp"
+
+#define OBJECT_STATE_INDEX 0
+#define OBJECT_ID_INDEX 1 
+#define LINKED_MAP_ID_INDEX 2
 
 enum LayerType
 {
@@ -77,8 +83,8 @@ public:
 	void MakeWall(float i, float j);
 	void MakeBox(float i, float j);
 	void MakePressurePlate(float i, float j);
-	void MakeDungeonDoor(float i, float j, std::string& word, std::set<int> goal_door_ids);
-	void MakePath(float i, float j, std::string& word);
+	void MakeDungeonDoor(float i, float j, std::string& word, std::set<int> goal_door_ids, char* token);
+	void MakePath(float i, float j, std::string& word, char* token);
 
 	std::shared_ptr<Actor> GetDoorWithId(int id);
 	GoalType GetGoalType();
@@ -100,5 +106,10 @@ private:
 
 	std::string _goal_context = {};
 	std::unordered_map<std::string, GoalType> _goal_type_mapping;
+
+	char object_state = ' ';
+	char object_id = ' ';
+	char linked_map_id = ' ';
+	std::vector<char> _context_reading_order = { object_state, object_id, linked_map_id };
 };
 

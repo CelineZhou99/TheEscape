@@ -45,6 +45,7 @@ std::set<int> Scene::ReadContextFromFile(std::istringstream& iss, std::string& w
 	std::set<int> goal_door_ids = {};
 	while (iss >> word)
 	{
+		// TODO: SWITCH TO SEPARATE BY ':'
 		std::string context = word.substr(0, 2);
 		// check the goal context of the current map
 		// there can only be 1 goal context for now e.g. pressure plate, monsters
@@ -89,7 +90,11 @@ void Scene::LoadMap(const char* file_name_text)
 		float j = 0;
 		while (iss >> word)
 		{
-			char& object_type = word.at(0);
+			char* w = &word[0];
+			char* token = std::strtok(w, ":");
+
+			char object_type = token[0];
+			token = std::strtok(NULL, ":");
 			
 			if (object_type == SCENE_OBJECT_FLOOR)
 			{
@@ -109,18 +114,26 @@ void Scene::LoadMap(const char* file_name_text)
 			}
 			else if (object_type == SCENE_OBJECT_DUNGEON_DOOR)
 			{
-				MakeDungeonDoor(i, j, word, goal_door_ids);
+				MakeDungeonDoor(i, j, word, goal_door_ids, token);
 			}
 			else if (object_type == SCENE_OBJECT_PATH)
 			{
-				MakePath(i, j, word);
+				MakePath(i, j, word, token);
 			}
 			else if (object_type == SCENE_OBJECT_KEY)
 			{
 				MakeFloor(i, j);
 
 				std::shared_ptr<Renderer> key_renderer = std::make_shared<Renderer>(IMAGE_KEY, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
-				std::shared_ptr<Key> key = std::make_shared<Key>(key_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::ITEM, ItemType::KEY, KeyType::ORDINARY);
+				std::shared_ptr<Key> key = std::make_shared<Key>(key_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::ITEM, ItemType::KEY);
+				_scene_layers[LayerType::FOREGROUND].push_back(key);
+			}
+			else if (object_type == SCENE_OBJECT_KEY_ESCAPE)
+			{
+				MakeFloor(i, j);
+
+				std::shared_ptr<Renderer> key_renderer = std::make_shared<Renderer>(IMAGE_KEY_ESCAPE, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
+				std::shared_ptr<Key> key = std::make_shared<Key>(key_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::ITEM, ItemType::KEY_ESCAPE);
 				_scene_layers[LayerType::FOREGROUND].push_back(key);
 			}
 			j += IMAGE_SIZE_FULL;
@@ -171,18 +184,21 @@ void Scene::MakePressurePlate(float i, float j)
 	}
 }
 
-void Scene::MakeDungeonDoor(float i, float j, std::string& word, std::set<int> goal_door_ids)
+void Scene::MakeDungeonDoor(float i, float j, std::string& word, std::set<int> goal_door_ids, char* token)
 {
 	MakeFloor(i, j);
 
-	// TODO: get rid of hardcoded numbers
-	// currently doesn't support door id > 9
-	char& object_state = word.at(1);
-	char& object_id = word.at(2);
-	int id = object_id;
-	char& linked_map_id = word.at(3);
+	int index = 0;
+	while (token != NULL)
+	{
+		_context_reading_order[index] = token[0];
+		token = std::strtok(NULL, ":");
+		++index;
+	}
 
-	std::unordered_map<char, DoorStateType>::iterator d_it = _door_state_mapping.find(object_state);
+	int id = atoi(&_context_reading_order[OBJECT_ID_INDEX]);
+
+	std::unordered_map<char, DoorStateType>::iterator d_it = _door_state_mapping.find(_context_reading_order[OBJECT_STATE_INDEX]);
 	DoorStateType type = DoorStateType::LOCKED;
 	if (d_it != _door_state_mapping.end())
 	{
@@ -199,14 +215,17 @@ void Scene::MakeDungeonDoor(float i, float j, std::string& word, std::set<int> g
 		door_renderer = std::make_shared<Renderer>(IMAGE_DUNGEON_DOOR_UNLOCKED, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
 	}
 
-	std::unordered_map<char, char*>::iterator it = _map_id_mapping.find(linked_map_id);
+	std::unordered_map<char, char*>::iterator it = _map_id_mapping.find(_context_reading_order[LINKED_MAP_ID_INDEX]);
 	char* linked_map = {};
 	if (it != _map_id_mapping.end())
 	{
 		linked_map = it->second;
 	}
 
-	std::shared_ptr<DungeonDoor> door = std::make_shared<DungeonDoor>(door_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::DOOR, type, id, linked_map);
+	ItemType required_key_type = id == 0 ? ItemType::KEY_ESCAPE : ItemType::KEY;
+
+	std::shared_ptr<DungeonDoor> door = 
+		std::make_shared<DungeonDoor>(door_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::DOOR, type, id, linked_map, required_key_type);
 	_scene_layers[LayerType::MIDDLEGROUND].push_back(door);
 
 	if (goal_door_ids.find(id) != goal_door_ids.end())
@@ -215,16 +234,20 @@ void Scene::MakeDungeonDoor(float i, float j, std::string& word, std::set<int> g
 	}
 }
 
-void Scene::MakePath(float i, float j, std::string& word)
+void Scene::MakePath(float i, float j, std::string& word, char* token)
 {
 	MakeFloor(i, j);
 
-	// TODO: get rid of hardcoded numbers
-	char& object_id = word.at(2);
-	int id = object_id;
-	char& linked_map_id = word.at(3);
+	int index = 0;
+	while (token != NULL)
+	{
+		_context_reading_order[index] = token[0];
+		token = std::strtok(NULL, ":");
+		++index;
+	}
+	int id = atoi(&_context_reading_order[OBJECT_ID_INDEX]);
 
-	std::unordered_map<char, char*>::iterator it = _map_id_mapping.find(linked_map_id);
+	std::unordered_map<char, char*>::iterator it = _map_id_mapping.find(_context_reading_order[LINKED_MAP_ID_INDEX]);
 	char* linked_map = {};
 	if (it != _map_id_mapping.end())
 	{
