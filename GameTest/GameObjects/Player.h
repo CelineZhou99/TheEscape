@@ -7,6 +7,8 @@
 #include <unordered_map>
 
 #define IMAGE_HEART ".\\Data\\Images\\Heart.bmp"
+#define IMAGE_PLAYER_IDLE ".\\Data\\Images\\IdleAnimationS.bmp"
+#define IMAGE_PLAYER_WALK ".\\Data\\Images\\WalkAnimationS.bmp"
 
 using PlayerStateMap = std::unordered_map<PlayerStateType, std::shared_ptr<PlayerState>>;
 
@@ -29,6 +31,9 @@ public:
     PlayerStateType GetStateType() { return _state_type; }
     void SetState(PlayerStateType state);
 
+    FacingDirection GetLastFacingDirection() { return _last_facing_direction; }
+    void SetLastFacingDirection(FacingDirection direction) { _last_facing_direction = direction; }
+
     std::shared_ptr<Inventory> GetInventory() { return _inventory; }
 
     int GetHealth() { return _health; }
@@ -38,6 +43,7 @@ public:
 protected:
     PlayerStateMap _player_state_map;
     PlayerStateType _state_type;
+    FacingDirection _last_facing_direction = FacingDirection::DOWN;
     std::shared_ptr<Inventory> _inventory;
     int _health = 3;
     std::shared_ptr<UI> _health_icon;

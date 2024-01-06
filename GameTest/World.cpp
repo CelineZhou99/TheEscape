@@ -8,7 +8,7 @@
 
 void World::Init()
 {
-	std::shared_ptr<Renderer> renderer(new Renderer(".\\Data\\Images\\IdleAnimationAlt.bmp", 4, 4, PLAYER_START_X, PLAYER_START_Y));
+	std::shared_ptr<Renderer> renderer(new Renderer(IMAGE_PLAYER_IDLE, 4, 4, PLAYER_START_X, PLAYER_START_Y));
 	player = std::make_shared<Player>(renderer, PLAYER_START_X, PLAYER_START_Y, TagType::PLAYER);
 	player->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
 
@@ -16,7 +16,7 @@ void World::Init()
 
 	current_goal = std::make_shared<Goal>();
 	current_scene = std::make_unique<Scene>(current_goal.get());
-	current_scene->LoadMap(".\\Data\\Maps\\MapA.txt");
+	current_scene->LoadMap(STARTING_MAP);
 	current_goal->SetGoalType(current_scene->GetGoalType());
 	current_goal->Subscribe(current_scene.get());
 
@@ -27,12 +27,17 @@ void World::Init()
 void World::Update(float deltaTime)
 {
 	if (!player) { return; }
+
+	if (!App::IsSoundPlaying(NORMAL_MUSIC))
+	{
+		PlayMusic();
+	}
 	//------------------------------------------------------------------------
 	// Handle player movement
 	//------------------------------------------------------------------------
 	BoxCollider collider(*player->GetCollider());
 	// set direction to down by default for now
-	FacingDirection direction = FacingDirection::DOWN;
+	FacingDirection direction = player->GetLastFacingDirection();
 	float player_move_by_x = 0;
 	float player_move_by_y = 0;
 
@@ -263,9 +268,20 @@ void World::DrawUI()
 	}
 }
 
+void World::PlayMusic()
+{
+	App::PlaySound(NORMAL_MUSIC);
+}
+
 void World::GameEnd()
 {
 	HasGameEnded = true;
-	end_screen_sprite = std::make_unique<CSimpleSprite>(".\\Data\\Images\\EndScreen.bmp");
+	end_screen_sprite = std::make_unique<CSimpleSprite>(END_SCREEN);
 	end_screen_sprite->SetPosition(512, 384);
+
+	if (App::IsSoundPlaying(NORMAL_MUSIC))
+	{
+		App::StopSound(NORMAL_MUSIC);
+		App::PlaySound(END_MUSIC);
+	}
 }

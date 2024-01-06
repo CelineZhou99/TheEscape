@@ -4,8 +4,7 @@
 
 void PressurePlateStateOff::PlaySFX()
 {
-	// TODO: play sound doesn't work as long as its not the test.wav - ask about this
-	App::PlaySound(".\\Data\\Sounds\\SoundOff.wav");
+	App::PlaySound(".\\Data\\Sounds\\SwitchOff.wav");
 }
 
 void PressurePlateStateOff::UpdateGoalProgress(Goal* goal)

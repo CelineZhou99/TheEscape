@@ -8,6 +8,11 @@
 
 #define GOAL_CONTEXT "GC"
 #define GOAL_DOOR_ID "GD"
+#define GOAL_REWARD "GR"
+
+#define GOAL_CONTEXT_PRESSURE_PLATE "P"
+#define GOAL_REWARD_KEY "K"
+#define GOAL_REWARD_KEY_ESCAPE "KE"
 
 #define SCENE_OBJECT_FLOOR 'F'
 #define SCENE_OBJECT_WALL 'W'
@@ -17,11 +22,12 @@
 #define SCENE_OBJECT_PATH 'A'
 #define SCENE_OBJECT_KEY 'K'
 #define SCENE_OBJECT_KEY_ESCAPE 'E'
-
-#define GOAL_CONTEXT_PRESSURE_PLATE "P"
+#define SCENE_OBJECT_GOAL_REWARD_TILE 'R'
 
 #define IMAGE_FLOOR ".\\Data\\Images\\Floor.bmp"
+#define IMAGE_FLOOR_V2 ".\\Data\\Images\\FloorV2.bmp"
 #define IMAGE_WALL ".\\Data\\Images\\Wall.bmp"
+#define IMAGE_WALL_V2 ".\\Data\\Images\\WallV2.bmp"
 #define IMAGE_BOX ".\\Data\\Images\\Box.bmp"
 #define IMAGE_PRESSURE_PLATE ".\\Data\\Images\\PressurePlate.bmp"
 #define IMAGE_DUNGEON_DOOR_LOCKED ".\\Data\\Images\\DungeonDoorLocked.bmp"
@@ -29,6 +35,7 @@
 #define IMAGE_PATH ".\\Data\\Images\\Path.bmp"
 #define IMAGE_KEY ".\\Data\\Images\\Key.bmp"
 #define IMAGE_KEY_ESCAPE ".\\Data\\Images\\KeyEscape.bmp"
+#define IMAGE_GOAL_REWARD_TILE ".\\Data\\Images\\GoalRewardsTile.bmp"
 
 #define OBJECT_STATE_INDEX 0
 #define OBJECT_ID_INDEX 1 
@@ -85,6 +92,9 @@ public:
 	void MakePressurePlate(float i, float j);
 	void MakeDungeonDoor(float i, float j, std::string& word, std::set<int> goal_door_ids, char* token);
 	void MakePath(float i, float j, std::string& word, char* token);
+	void MakeGoalRewardsTile(float i, float j);
+	void MakeKey(float i, float j);
+	void MakeKeyEscape(float i, float j);
 
 	std::shared_ptr<Actor> GetDoorWithId(int id);
 	GoalType GetGoalType();
@@ -93,9 +103,10 @@ public:
 
 	void Update() override;
 
-
-
 private:
+
+	int GenerateRandomBetween(int min, int max);
+
 	std::vector<std::vector<std::shared_ptr<GameObject>>> _scene_layers;
 
 	std::vector<std::shared_ptr<Door>> _goal_doors;

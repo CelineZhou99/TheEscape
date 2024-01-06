@@ -5,6 +5,7 @@
 #include "../GameObjects/DungeonDoor.h"
 #include "../GameObjects/PressurePlate.h"
 #include "../GameObjects/Key.h"
+#include <random>
 
 void Scene::Init()
 {
@@ -62,10 +63,15 @@ std::set<int> Scene::ReadContextFromFile(std::istringstream& iss, std::string& w
 
 			while (token != NULL)
 			{
-				int id = token[0];
+				int id = atoi(&token[0]);
 				goal_door_ids.insert(id);
 				token = std::strtok(NULL, ",");
 			}
+		}
+		else if (context == GOAL_REWARD)
+		{
+			std::string goal_reward = word.substr(3, word.size() - 3);
+			_goal->SetGoalReward(goal_reward);
 		}
 	}
 	return goal_door_ids;
@@ -120,21 +126,9 @@ void Scene::LoadMap(const char* file_name_text)
 			{
 				MakePath(i, j, word, token);
 			}
-			else if (object_type == SCENE_OBJECT_KEY)
+			else if (object_type == SCENE_OBJECT_GOAL_REWARD_TILE)
 			{
-				MakeFloor(i, j);
-
-				std::shared_ptr<Renderer> key_renderer = std::make_shared<Renderer>(IMAGE_KEY, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
-				std::shared_ptr<Key> key = std::make_shared<Key>(key_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::ITEM, ItemType::KEY);
-				_scene_layers[LayerType::FOREGROUND].push_back(key);
-			}
-			else if (object_type == SCENE_OBJECT_KEY_ESCAPE)
-			{
-				MakeFloor(i, j);
-
-				std::shared_ptr<Renderer> key_renderer = std::make_shared<Renderer>(IMAGE_KEY_ESCAPE, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
-				std::shared_ptr<Key> key = std::make_shared<Key>(key_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::ITEM, ItemType::KEY_ESCAPE);
-				_scene_layers[LayerType::FOREGROUND].push_back(key);
+				MakeGoalRewardsTile(i, j);
 			}
 			j += IMAGE_SIZE_FULL;
 		}
@@ -144,7 +138,9 @@ void Scene::LoadMap(const char* file_name_text)
 
 void Scene::MakeFloor(float i, float j)
 {
-	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(IMAGE_FLOOR, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
+	const char* image_file = GenerateRandomBetween(0, 1) == 0 ? IMAGE_FLOOR : IMAGE_FLOOR_V2;
+
+	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(image_file, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
 	std::shared_ptr<GameObject> floor =
 		std::make_shared<GameObject>(renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::STATIC_OBJECT);
 	_scene_layers[LayerType::BACKGROUND].push_back(floor);
@@ -152,7 +148,9 @@ void Scene::MakeFloor(float i, float j)
 
 void Scene::MakeWall(float i, float j)
 {
-	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(IMAGE_WALL, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
+	const char* image_file = GenerateRandomBetween(0, 1) == 0 ? IMAGE_WALL : IMAGE_WALL_V2;
+
+	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(image_file, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
 	std::shared_ptr<Actor> wall = std::make_shared<Actor>(renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::STATIC_OBJECT);
 	_scene_layers[LayerType::MIDDLEGROUND].push_back(wall);
 }
@@ -261,6 +259,32 @@ void Scene::MakePath(float i, float j, std::string& word, char* token)
 	_scene_layers[LayerType::MIDDLEGROUND].push_back(path);
 }
 
+void Scene::MakeGoalRewardsTile(float i, float j)
+{
+	MakeFloor(i, j);
+
+	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(IMAGE_GOAL_REWARD_TILE, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
+	std::shared_ptr<GameObject> tile =
+		std::make_shared<GameObject>(renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::STATIC_OBJECT);
+	_scene_layers[LayerType::BACKGROUND].push_back(tile);
+
+	_goal->SetGoalRewardTile(tile.get());
+}
+
+void Scene::MakeKey(float i, float j)
+{
+	std::shared_ptr<Renderer> key_renderer = std::make_shared<Renderer>(IMAGE_KEY, 1, 1, i, j);
+	std::shared_ptr<Key> key = std::make_shared<Key>(key_renderer, i, j, TagType::ITEM, ItemType::KEY);
+	_scene_layers[LayerType::FOREGROUND].push_back(key);
+}
+
+void Scene::MakeKeyEscape(float i, float j)
+{
+	std::shared_ptr<Renderer> key_renderer = std::make_shared<Renderer>(IMAGE_KEY_ESCAPE, 1, 1, i, j);
+	std::shared_ptr<Key> key = std::make_shared<Key>(key_renderer, i, j, TagType::ITEM, ItemType::KEY_ESCAPE);
+	_scene_layers[LayerType::FOREGROUND].push_back(key);
+}
+
 std::shared_ptr<Actor> Scene::GetDoorWithId(int id)
 {
 	for (std::shared_ptr<GameObject> object : _scene_layers.at(LayerType::MIDDLEGROUND))
@@ -317,6 +341,7 @@ void Scene::Update()
 		{
 			// unlock all goal doors
 			door->SetState(DoorStateType::UNLOCKED);
+			_goal->SpawnReward(this);
 		}
 	}
 	else
@@ -327,6 +352,15 @@ void Scene::Update()
 			door->SetState(DoorStateType::LOCKED);
 		}
 	}
+}
+
+int Scene::GenerateRandomBetween(int min, int max)
+{
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> distribution(min, max);
+
+	return distribution(gen);
 }
 
 

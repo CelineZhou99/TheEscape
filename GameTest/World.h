@@ -5,6 +5,10 @@
 #include "Scenes/Scene.h"
 #include <vector>
 
+#define STARTING_MAP ".\\Data\\Maps\\MapA.txt"
+#define NORMAL_MUSIC ".\\Data\\Sounds\\Groovy.wav"
+#define END_MUSIC ".\\Data\\Sounds\\Fanfare.wav"
+#define END_SCREEN ".\\Data\\Images\\EndScreen.bmp"
 #define PLAYER_START_X 480.0f
 #define PLAYER_START_Y 160.0f
 #define UI_START_X 32
@@ -29,13 +33,15 @@ public:
 	bool ShouldActorMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction);
 	bool ShouldMovableObjectsMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction);
 	void UpdateMovableObjects(Actor& actor, FacingDirection direction);
+
+	void PlayMusic();
+	void GameEnd();
 	//------------------------------------------------------------------------
 	// Functions for the render loop
 	//------------------------------------------------------------------------
 	void DrawAllSprites();
 	void DrawUI();
 
-	void GameEnd();
 
 	std::shared_ptr<PlayerController> player_controller = nullptr;
 	std::shared_ptr<Player> player = nullptr;
