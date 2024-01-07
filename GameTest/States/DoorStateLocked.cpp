@@ -18,9 +18,24 @@ void DoorStateLocked::OnCollideWithPlayer(World& world)
 	// if player doesn't have key, stay locked
 	DungeonDoor& dungeon_door = static_cast<DungeonDoor&>(*_door);
 	ItemType required_key_type = dungeon_door.GetRequiredKeyType();
-	if (Item* item = world.player->GetInventory()->FindInInventory(required_key_type))
+	Item* item = nullptr;
+	if (item = world.player->GetInventory()->FindInInventory(required_key_type))
 	{
+		world.text_box.SetDialogue(_dialogue_locked_right_key.get());
 		world.player->GetInventory()->RemoveFromInventory(item);
 		_door->SetState(DoorStateType::UNLOCKED);
+	}
+	else if (item == nullptr)
+	{
+		// TODO: surely there's a better way to do this xD
+		ItemType alt_key_type = required_key_type == ItemType::KEY ? ItemType::KEY_ESCAPE : ItemType::KEY;
+		if (item = world.player->GetInventory()->FindInInventory(alt_key_type))
+		{
+			world.text_box.SetDialogue(_dialogue_locked_wrong_key.get());
+		}
+		else
+		{
+			world.text_box.SetDialogue(_dialogue_locked_no_key.get());
+		}
 	}
 }

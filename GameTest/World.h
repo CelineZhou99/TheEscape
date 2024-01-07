@@ -4,6 +4,7 @@
 #include "GameObjects/Player.h"
 #include "Scenes/Scene.h"
 #include <vector>
+#include "TextBox.h"
 
 #define STARTING_MAP ".\\Data\\Maps\\MapA.txt"
 #define NORMAL_MUSIC ".\\Data\\Sounds\\Groovy.wav"
@@ -15,6 +16,12 @@
 #define UI_START_Y APP_VIRTUAL_HEIGHT - 32
 #define UI_SPACING_X 32
 #define UI_SPACING_Y 32
+
+#define TEXT_BOX ".\\Data\\Images\\TextBox.bmp"
+#define TEXT_BOX_X 512
+#define TEXT_BOX_Y 64
+
+using Dialogue = std::vector<const char*>;
 
 class World
 {
@@ -41,7 +48,7 @@ public:
 	//------------------------------------------------------------------------
 	void DrawAllSprites();
 	void DrawUI();
-
+	void DrawTextBox();
 
 	std::shared_ptr<PlayerController> player_controller = nullptr;
 	std::shared_ptr<Player> player = nullptr;
@@ -49,7 +56,15 @@ public:
 	std::unique_ptr<Scene> current_scene = nullptr;
 	std::shared_ptr<Goal> current_goal = nullptr;
 
-	bool HasGameEnded = false;
+	bool has_game_ended = false;
 	std::unique_ptr<CSimpleSprite> end_screen_sprite = nullptr;
+
+	TextBox text_box = TextBox(TEXT_BOX);
+	// TODO: ask - since it is only used at the very start, it should be on the stack right?
+	Dialogue game_start_dialogue = {
+		"Where am I...?", 
+		"I can't remember much...", 
+		"Guess I have to find a way out of here."
+	};
 };
 

@@ -9,7 +9,11 @@
 //------------------------------------------------------------------------
 #include "World.h"
 //------------------------------------------------------------------------
+#include <chrono>
+#include <thread>
+//------------------------------------------------------------------------
 std::unique_ptr<World> world;
+bool is_space_pressed = false;
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
 //------------------------------------------------------------------------
@@ -25,7 +29,7 @@ void Init()
 //------------------------------------------------------------------------
 void Update(float deltaTime)
 {
-	if (!world->HasGameEnded)
+	if (!world->has_game_ended)
 	{
 		world->Update(deltaTime);
 	}
@@ -37,10 +41,24 @@ void Update(float deltaTime)
 //------------------------------------------------------------------------
 void Render()
 {	
-	if (!world->HasGameEnded)
+	if (!world->has_game_ended)
 	{
 		world->DrawAllSprites();
 		world->DrawUI();
+		
+		if (!world->text_box.GetIsDialogueFinished())
+		{
+			world->DrawTextBox();
+			if (GetAsyncKeyState(VK_SPACE) < 0 && is_space_pressed == false)
+			{
+				is_space_pressed = true;
+			}
+			if (GetAsyncKeyState(VK_SPACE) == 0 && is_space_pressed == true)
+			{
+				is_space_pressed = false;
+				world->text_box.NextDialogue();
+			}
+		}
 	}
 	else 
 	{

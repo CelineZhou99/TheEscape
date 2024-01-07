@@ -21,7 +21,9 @@ void World::Init()
 	current_goal->Subscribe(current_scene.get());
 
 	current_scene->AddToSceneLayers(player, LayerType::CHARACTERS);
-	
+
+	text_box.SetSpriteLocation(TEXT_BOX_X, TEXT_BOX_Y);
+	text_box.SetDialogue(&game_start_dialogue);
 }
 
 void World::Update(float deltaTime)
@@ -32,6 +34,9 @@ void World::Update(float deltaTime)
 	{
 		PlayMusic();
 	}
+
+	if (!text_box.GetIsDialogueFinished()) { return; }
+
 	//------------------------------------------------------------------------
 	// Handle player movement
 	//------------------------------------------------------------------------
@@ -268,6 +273,12 @@ void World::DrawUI()
 	}
 }
 
+void World::DrawTextBox()
+{
+	text_box.DrawSprite();
+	text_box.DisplayDialogue();
+}
+
 void World::PlayMusic()
 {
 	App::PlaySound(NORMAL_MUSIC);
@@ -275,7 +286,7 @@ void World::PlayMusic()
 
 void World::GameEnd()
 {
-	HasGameEnded = true;
+	has_game_ended = true;
 	end_screen_sprite = std::make_unique<CSimpleSprite>(END_SCREEN);
 	end_screen_sprite->SetPosition(512, 384);
 

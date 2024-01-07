@@ -46,6 +46,7 @@
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="Interactable.cpp" />
+    <ClCompile Include="TextBox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\app.h">
@@ -106,6 +107,7 @@
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Interactable.h" />
+    <ClInclude Include="TextBox.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="NextAPI">
