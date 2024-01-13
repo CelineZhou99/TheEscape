@@ -43,10 +43,13 @@
     <ClCompile Include="GameObjects\PressurePlate.cpp" />
     <ClCompile Include="GameObjects\Item.cpp" />
     <ClCompile Include="GameObjects\Key.cpp" />
-    <ClCompile Include="Inventory.cpp" />
-    <ClCompile Include="UI.cpp" />
-    <ClCompile Include="Interactable.cpp" />
-    <ClCompile Include="TextBox.cpp" />
+    <ClCompile Include="GameObjects\Inventory.cpp" />
+    <ClCompile Include="UI\TextBox.cpp" />
+    <ClCompile Include="BehaviourTree\ActionNode.cpp" />
+    <ClCompile Include="BehaviourTree\BehaviourTree.cpp" />
+    <ClCompile Include="BehaviourTree\IBehaviourNode.cpp" />
+    <ClCompile Include="BehaviourTree\SelectorNode.cpp" />
+    <ClCompile Include="BehaviourTree\SequenceNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\app.h">
@@ -104,10 +107,15 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="GameObjects\Item.h" />
     <ClInclude Include="GameObjects\Key.h" />
-    <ClInclude Include="Inventory.h" />
-    <ClInclude Include="UI.h" />
-    <ClInclude Include="Interactable.h" />
-    <ClInclude Include="TextBox.h" />
+    <ClInclude Include="GameObjects\Inventory.h" />
+    <ClInclude Include="UI\UI.h" />
+    <ClInclude Include="GameObjects\Interactable.h" />
+    <ClInclude Include="UI\TextBox.h" />
+    <ClInclude Include="BehaviourTree\ActionNode.h" />
+    <ClInclude Include="BehaviourTree\BehaviourTree.h" />
+    <ClInclude Include="BehaviourTree\IBehaviourNode.h" />
+    <ClInclude Include="BehaviourTree\SelectorNode.h" />
+    <ClInclude Include="BehaviourTree\SequenceNode.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="NextAPI">

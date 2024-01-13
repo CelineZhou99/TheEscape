@@ -179,6 +179,11 @@
     <Text Include="Data\Maps\TestMap.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BehaviourTree\ActionNode.h" />
+    <ClInclude Include="BehaviourTree\BehaviourTree.h" />
+    <ClInclude Include="BehaviourTree\IBehaviourNode.h" />
+    <ClInclude Include="BehaviourTree\SelectorNode.h" />
+    <ClInclude Include="BehaviourTree\SequenceNode.h" />
     <ClInclude Include="Colliders\BoxCollider.h" />
     <ClInclude Include="Colliders\Collider.h" />
     <ClInclude Include="Controllers\Controller.h" />
@@ -200,8 +205,8 @@
     <ClInclude Include="GameObjects\PressurePlate.h" />
     <ClInclude Include="GameObjects\Renderer.h" />
     <ClInclude Include="GameObjects\Vector2D.h" />
-    <ClInclude Include="Interactable.h" />
-    <ClInclude Include="Inventory.h" />
+    <ClInclude Include="GameObjects\Interactable.h" />
+    <ClInclude Include="GameObjects\Inventory.h" />
     <ClInclude Include="Observers\Goal.h" />
     <ClInclude Include="States\PressurePlateState.h" />
     <ClInclude Include="States\PressurePlateStateOff.h" />
@@ -219,11 +224,16 @@
     <ClInclude Include="stb_image\stb_image.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TextBox.h" />
-    <ClInclude Include="UI.h" />
+    <ClInclude Include="UI\TextBox.h" />
+    <ClInclude Include="UI\UI.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BehaviourTree\ActionNode.cpp" />
+    <ClCompile Include="BehaviourTree\BehaviourTree.cpp" />
+    <ClCompile Include="BehaviourTree\IBehaviourNode.cpp" />
+    <ClCompile Include="BehaviourTree\SelectorNode.cpp" />
+    <ClCompile Include="BehaviourTree\SequenceNode.cpp" />
     <ClCompile Include="Colliders\BoxCollider.cpp" />
     <ClCompile Include="Controllers\Controller.cpp" />
     <ClCompile Include="Controllers\PlayerController.cpp" />
@@ -241,8 +251,7 @@
     <ClCompile Include="GameObjects\PressurePlate.cpp" />
     <ClCompile Include="GameObjects\Renderer.cpp" />
     <ClCompile Include="GameTest.cpp" />
-    <ClCompile Include="Interactable.cpp" />
-    <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="GameObjects\Inventory.cpp" />
     <ClCompile Include="Observers\Goal.cpp" />
     <ClCompile Include="States\PressurePlateStateOff.cpp" />
     <ClCompile Include="States\PressurePlateStateOn.cpp" />
@@ -260,8 +269,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TextBox.cpp" />
-    <ClCompile Include="UI.cpp" />
+    <ClCompile Include="UI\TextBox.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>

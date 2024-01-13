@@ -3,7 +3,7 @@
 #include "../States/PlayerState.h"
 #include "../States/PlayerStateIdle.h"
 #include "../States/PlayerStateWalk.h"
-#include "../Inventory.h"
+#include "Inventory.h"
 #include <unordered_map>
 
 #define IMAGE_HEART ".\\Data\\Images\\Heart.bmp"

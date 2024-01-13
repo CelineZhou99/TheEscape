@@ -2,7 +2,7 @@
 #include "Item.h"
 #include "Player.h"
 #include "../World.h"
-#include "../Interactable.h"
+#include "Interactable.h"
 
 class Key :
     public Item, public Interactable

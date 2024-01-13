@@ -22,6 +22,7 @@ void DoorStateLocked::OnCollideWithPlayer(World& world)
 	if (item = world.player->GetInventory()->FindInInventory(required_key_type))
 	{
 		world.text_box.SetDialogue(_dialogue_locked_right_key.get());
+		App::PlaySound(DOOR_OPEN_SOUND);
 		world.player->GetInventory()->RemoveFromInventory(item);
 		_door->SetState(DoorStateType::UNLOCKED);
 	}

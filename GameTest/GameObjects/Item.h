@@ -1,6 +1,8 @@
 #pragma once
 #include "Actor.h"
-#include "../UI.h"
+#include "../UI/UI.h"
+
+#define ITEM_COLLECT_SOUND ".\\Data\\Sounds\\ItemCollect.wav"
 
 enum ItemType
 {

@@ -4,7 +4,7 @@
 #include "GameObjects/Player.h"
 #include "Scenes/Scene.h"
 #include <vector>
-#include "TextBox.h"
+#include "UI/TextBox.h"
 
 #define STARTING_MAP ".\\Data\\Maps\\MapA.txt"
 #define NORMAL_MUSIC ".\\Data\\Sounds\\Groovy.wav"
@@ -41,7 +41,6 @@ public:
 	bool ShouldMovableObjectsMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction);
 	void UpdateMovableObjects(Actor& actor, FacingDirection direction);
 
-	void PlayMusic();
 	void GameEnd();
 	//------------------------------------------------------------------------
 	// Functions for the render loop

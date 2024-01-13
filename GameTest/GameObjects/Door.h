@@ -1,6 +1,6 @@
 #pragma once
 #include "Actor.h"
-#include "../Interactable.h"
+#include "../GameObjects/Interactable.h"
 #include "../States/DoorState.h"
 #include "../States/DoorStateLocked.h"
 #include "../States/DoorStateUnlocked.h"

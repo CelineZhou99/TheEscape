@@ -32,7 +32,7 @@ void World::Update(float deltaTime)
 
 	if (!App::IsSoundPlaying(NORMAL_MUSIC))
 	{
-		PlayMusic();
+		App::PlaySound(NORMAL_MUSIC, true);
 	}
 
 	if (!text_box.GetIsDialogueFinished()) { return; }
@@ -279,20 +279,12 @@ void World::DrawTextBox()
 	text_box.DisplayDialogue();
 }
 
-void World::PlayMusic()
-{
-	App::PlaySound(NORMAL_MUSIC);
-}
-
 void World::GameEnd()
 {
 	has_game_ended = true;
 	end_screen_sprite = std::make_unique<CSimpleSprite>(END_SCREEN);
 	end_screen_sprite->SetPosition(512, 384);
 
-	if (App::IsSoundPlaying(NORMAL_MUSIC))
-	{
-		App::StopSound(NORMAL_MUSIC);
-		App::PlaySound(END_MUSIC);
-	}
+	App::StopSound(NORMAL_MUSIC);
+	App::PlaySound(END_MUSIC);
 }

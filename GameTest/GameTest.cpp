@@ -31,6 +31,18 @@ void Update(float deltaTime)
 {
 	if (!world->has_game_ended)
 	{
+		if (!world->text_box.GetIsDialogueFinished())
+		{
+			if (App::IsKeyPressed(VK_SPACE) && !is_space_pressed)
+			{
+				is_space_pressed = true;
+			}
+			if (!App::IsKeyPressed(VK_SPACE) && is_space_pressed)
+			{
+				is_space_pressed = false;
+				world->text_box.NextDialogue();
+			}
+		}
 		world->Update(deltaTime);
 	}
 }
@@ -49,15 +61,6 @@ void Render()
 		if (!world->text_box.GetIsDialogueFinished())
 		{
 			world->DrawTextBox();
-			if (GetAsyncKeyState(VK_SPACE) < 0 && is_space_pressed == false)
-			{
-				is_space_pressed = true;
-			}
-			if (GetAsyncKeyState(VK_SPACE) == 0 && is_space_pressed == true)
-			{
-				is_space_pressed = false;
-				world->text_box.NextDialogue();
-			}
 		}
 	}
 	else 

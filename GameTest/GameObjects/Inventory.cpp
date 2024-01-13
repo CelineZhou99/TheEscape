@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Inventory.h"
-#include "GameObjects/Key.h"
+#include "Key.h"
 
 void Inventory::AddToInventory(Item* item)
 {
