@@ -27,11 +27,9 @@ public:
 			_root = std::make_shared<SequenceNode>(_id, nullptr);
 		}
 		++_id;
-		_curr_active_node = _root;
 	}
 
 	ptr GetRoot() { return _root; }
-	ptr GetCurrActiveNode() { return _curr_active_node; }
 
 	void AddActionNode(ptr parent, std::function<BehaviourNodeState()> action);
 	void AddSelectorNode(ptr parent);
@@ -41,7 +39,6 @@ public:
 
 private:
 	ptr _root;
-	ptr _curr_active_node;
 	int _id;
 };
 

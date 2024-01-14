@@ -10,8 +10,6 @@ BehaviourNodeState SequenceNode::AssessCurrState()
 		return BehaviourNodeState::UNDEFINED;
 	}
 
-	size_t children_has_succeeded = 0;
-
 	for (ptr child : _children)
 	{
 		if (child->AssessCurrState() == BehaviourNodeState::FAILED)
@@ -22,11 +20,7 @@ BehaviourNodeState SequenceNode::AssessCurrState()
 		{
 			return BehaviourNodeState::RUNNING;
 		}
-		else if (child->AssessCurrState() == BehaviourNodeState::SUCCESS)
-		{
-			++children_has_succeeded;
-		}
 	}
 
-	return children_has_succeeded == GetNumOfChildren() ? BehaviourNodeState::SUCCESS : BehaviourNodeState::UNDEFINED;
+	return BehaviourNodeState::SUCCESS;
 }

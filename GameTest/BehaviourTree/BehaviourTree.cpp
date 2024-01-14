@@ -21,6 +21,8 @@ void BehaviourTree::AddSequenceNode(ptr parent)
 
 void BehaviourTree::Update()
 {
-	// Evaluate tree and move active nodes
+	// Run and evaluate tree and move active nodes
+	// Run per tick
+	_root->AssessCurrState();
 }
 
