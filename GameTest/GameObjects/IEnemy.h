@@ -13,8 +13,9 @@ public:
 	bt_ptr GetBehaviourTree() { return _behaviour_tree; }
 	virtual void BehaviourTreeInit() = 0;
 
-	virtual void MoveTo(Vector2D location) = 0;
-	virtual void MoveTo(Player* player) = 0;
+	virtual BehaviourNodeState MoveTo(Vector2D location) = 0;
+	virtual BehaviourNodeState MoveTo(Player* player) = 0;
+
 	void SetRandomLocationWithinDistance(Scene* scene, float distance);
 
 protected:

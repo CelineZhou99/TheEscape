@@ -3,7 +3,7 @@
 #include "Vector2D.h"
 #include "Renderer.h"
 //------------------------------------------------------------------------
-enum TagType
+enum TagType : uint8_t
 {
 	PLAYER,
 	ENEMY,

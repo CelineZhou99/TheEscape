@@ -3,7 +3,7 @@
 class PressurePlate;
 class Goal;
 
-enum PressurePlateStateType
+enum PressurePlateStateType : uint8_t
 {
 	ON,
 	OFF

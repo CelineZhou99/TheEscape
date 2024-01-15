@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Blackboard.h"
+#include <cassert>
 
 bool Blackboard::GetBoolVariable(std::string name)
 {
@@ -8,7 +9,8 @@ bool Blackboard::GetBoolVariable(std::string name)
     {
         return it->second;
     }
-    return NULL;
+    assert(true && it == _bool_variables.end());
+    return false;
 }
 
 void Blackboard::SetBoolVariable(std::string name, bool value)

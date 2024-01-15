@@ -60,7 +60,11 @@ void World::Update(float deltaTime)
 		player->GetRenderer()->SetAnimation(direction);
 	}
 
-	player->GetRenderer()->UpdateSpriteAnimation(deltaTime);
+	single_scene_layer character_layer = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
+	for (std::shared_ptr<GameObject> character : character_layer)
+	{
+		character->GetRenderer()->UpdateSpriteAnimation(deltaTime);
+	}
 
 }
 

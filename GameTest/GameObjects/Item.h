@@ -4,7 +4,7 @@
 
 #define ITEM_COLLECT_SOUND ".\\Data\\Sounds\\ItemCollect.wav"
 
-enum ItemType
+enum ItemType : uint8_t
 {
 	KEY,
     KEY_ESCAPE,

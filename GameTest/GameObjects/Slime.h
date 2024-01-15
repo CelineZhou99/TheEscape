@@ -11,8 +11,9 @@ public:
         BehaviourTreeInit();
     }
     void BehaviourTreeInit() override;
-    void MoveTo(Vector2D location) override;
-    void MoveTo(Player* player) override;
+
+    BehaviourNodeState MoveTo(Vector2D location) override;
+    BehaviourNodeState MoveTo(Player* player) override;
 
     BehaviourNodeState SayHello();
     BehaviourNodeState SayBye();

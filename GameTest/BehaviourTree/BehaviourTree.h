@@ -21,17 +21,19 @@ public:
 		_id = 0;
 		if (root_node_type == RootNodeType::SELECTOR)
 		{
-			_root = std::make_shared<SelectorNode>(_id, nullptr);
+			_root = std::make_shared<SelectorNode>(_id);
 		}
 		else
 		{
-			_root = std::make_shared<SequenceNode>(_id, nullptr);
+			_root = std::make_shared<SequenceNode>(_id);
 		}
 		++_id;
 		_blackboard = std::make_shared<Blackboard>();
 	}
 
 	ptr GetRoot() { return _root; }
+
+	int AllocateId();
 
 	void AddActionNode(ptr parent, std::function<BehaviourNodeState()> action);
 	void AddSelectorNode(ptr parent);

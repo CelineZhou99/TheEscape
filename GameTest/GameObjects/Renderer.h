@@ -2,7 +2,7 @@
 
 #include "../App/app.h"
 //------------------------------------------------------------------------
-enum FacingDirection
+enum FacingDirection : uint8_t
 {
 	UP,
 	DOWN,

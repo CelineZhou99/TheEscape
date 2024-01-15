@@ -3,7 +3,7 @@
 class Door;
 class World;
 
-enum DoorStateType
+enum DoorStateType : uint8_t
 {
 	LOCKED,
 	UNLOCKED

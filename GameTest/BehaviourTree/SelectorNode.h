@@ -4,7 +4,7 @@ class SelectorNode :
     public IBehaviourNode
 {
 public:
-    SelectorNode(int id, ptr parent) : IBehaviourNode(id, parent) {}
+    SelectorNode(int id) : IBehaviourNode(id) {}
 
     bool CanHaveChildren() override { return true; }
 

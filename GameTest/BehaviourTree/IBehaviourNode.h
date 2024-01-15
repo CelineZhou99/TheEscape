@@ -17,12 +17,10 @@ using ptr = std::shared_ptr<IBehaviourNode>;
 class IBehaviourNode
 {
 public:
-	IBehaviourNode(int id, ptr parent) : 
-		_id(id), _parent(parent), _children({}), _state(BehaviourNodeState::UNDEFINED), _last_run_child_index(0) {}
+	IBehaviourNode(int id) : 
+		_id(id), _children({}), _state(BehaviourNodeState::UNDEFINED) {}
 
 	int GetId() { return _id; }
-
-	ptr GetParent() { return _parent; }
 
 	ptr GetChild(int index);
 	void AddChild(ptr child);
@@ -35,7 +33,8 @@ public:
 	
 	virtual BehaviourNodeState AssessCurrState() = 0;
 
-	bool operator == (const IBehaviourNode& node) {
+	bool operator == (const IBehaviourNode& node) 
+	{
 		if (_id == node._id)
 		{
 			return true;
@@ -45,9 +44,7 @@ public:
 
 protected:
 	int _id;
-	ptr _parent;
 	std::vector<ptr> _children;
 	BehaviourNodeState _state;
-	int _last_run_child_index;
 };
 

@@ -6,7 +6,7 @@ class ActionNode :
     public IBehaviourNode
 {
 public:
-    ActionNode(int id, ptr parent, std::function<BehaviourNodeState()> action) : IBehaviourNode(id, parent), _action(action) {}
+    ActionNode(int id, std::function<BehaviourNodeState()> action) : IBehaviourNode(id), _action(action) {}
 
     bool CanHaveChildren() override { return false; }
 

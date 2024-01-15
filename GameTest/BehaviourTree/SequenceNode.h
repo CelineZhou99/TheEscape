@@ -5,7 +5,7 @@ class SequenceNode :
     public IBehaviourNode
 {
 public:
-    SequenceNode(int id, ptr parent) : IBehaviourNode(id, parent) {}
+    SequenceNode(int id) : IBehaviourNode(id) {}
 
     bool CanHaveChildren() override { return true; }
 

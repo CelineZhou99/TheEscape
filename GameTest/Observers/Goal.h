@@ -4,7 +4,7 @@
 
 class Scene;
 
-enum GoalType
+enum GoalType : uint8_t
 {
     GOAL_NONE,
     GOAL_PRESSURE_PLATE,

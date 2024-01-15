@@ -1,23 +1,26 @@
 #include "stdafx.h"
 #include "BehaviourTree.h"
 
+int BehaviourTree::AllocateId()
+{
+	return _id++;
+}
+
 void BehaviourTree::AddActionNode(ptr parent, std::function<BehaviourNodeState()> action)
 {
-	parent->AddChild(std::make_shared<ActionNode>(_id, parent, action));
-	++_id;
+	parent->AddChild(std::make_shared<ActionNode>(AllocateId(), action));
 }
 
 void BehaviourTree::AddSelectorNode(ptr parent)
 {
-	parent->AddChild(std::make_shared<SelectorNode>(_id, parent));
-	++_id;
+	parent->AddChild(std::make_shared<SelectorNode>(AllocateId()));
 }
 
 void BehaviourTree::AddSequenceNode(ptr parent)
 {
-	parent->AddChild(std::make_shared<SequenceNode>(_id, parent));
-	++_id;
+	parent->AddChild(std::make_shared<SequenceNode>(AllocateId()));
 }
+
 
 void BehaviourTree::Update()
 {

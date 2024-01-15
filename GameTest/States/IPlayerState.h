@@ -2,7 +2,7 @@
 
 class Player;
 
-enum PlayerStateType
+enum PlayerStateType : uint8_t
 {
 	IDLE,
 	WALK

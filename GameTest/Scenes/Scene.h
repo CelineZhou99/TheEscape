@@ -43,7 +43,7 @@
 #define OBJECT_ID_INDEX 1 
 #define LINKED_MAP_ID_INDEX 2
 
-enum LayerType
+enum LayerType : uint8_t
 {
 	BACKGROUND,
 	MIDDLEGROUND,
@@ -51,6 +51,9 @@ enum LayerType
 	CHARACTERS,
 	COUNT,
 };
+
+using scene_layers = std::vector<std::vector<std::shared_ptr<GameObject>>>;
+using single_scene_layer = std::vector<std::shared_ptr<GameObject>>;
 
 class Scene : public ISubscriber
 {
@@ -110,7 +113,7 @@ private:
 
 	int GenerateRandomBetween(int min, int max);
 
-	std::vector<std::vector<std::shared_ptr<GameObject>>> _scene_layers;
+	scene_layers _scene_layers;
 
 	std::vector<std::shared_ptr<Door>> _goal_doors;
 	Goal* _goal;

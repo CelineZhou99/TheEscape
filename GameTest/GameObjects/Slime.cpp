@@ -8,12 +8,14 @@ void Slime::BehaviourTreeInit()
 	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::SayBye, this));
 }
 
-void Slime::MoveTo(Vector2D location)
+BehaviourNodeState Slime::MoveTo(Vector2D location)
 {
+	return BehaviourNodeState::SUCCESS;
 }
 
-void Slime::MoveTo(Player* player)
+BehaviourNodeState Slime::MoveTo(Player* player)
 {
+	return BehaviourNodeState::SUCCESS;
 }
 
 BehaviourNodeState Slime::SayHello()

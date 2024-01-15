@@ -12,11 +12,12 @@ BehaviourNodeState SelectorNode::AssessCurrState()
 
 	for (ptr child : _children)
 	{
-		if (child->AssessCurrState() == BehaviourNodeState::SUCCESS)
+		BehaviourNodeState child_state = child->AssessCurrState();
+		if (child_state == BehaviourNodeState::SUCCESS)
 		{
 			return BehaviourNodeState::SUCCESS;
 		}
-		else if (child->AssessCurrState() == BehaviourNodeState::RUNNING)
+		else if (child_state == BehaviourNodeState::RUNNING)
 		{
 			return BehaviourNodeState::RUNNING;
 		}

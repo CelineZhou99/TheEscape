@@ -292,11 +292,13 @@ void Scene::MakeKeyEscape(float i, float j)
 
 void Scene::MakeSlime(float i, float j)
 {
-	MakeFloor(i, j);
-	std::shared_ptr<Renderer> slime_renderer = std::make_shared<Renderer>(IMAGE_SLIME, 4, 1, i, j);
+	// TODO: ASK WHY THIS DOESNT GET RENDERED IN THE RIGHT POSITION
+	//MakeFloor(i, j);
+	std::shared_ptr<Renderer> slime_renderer = std::make_shared<Renderer>(IMAGE_SLIME, 4, 4, i, j);
 	std::shared_ptr<Slime> slime = std::make_shared<Slime>(slime_renderer, i, j, TagType::ENEMY);
-	slime->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, {}, {}, {});
-	_scene_layers[LayerType::FOREGROUND].push_back(slime);
+	slime->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
+	slime->GetRenderer()->SetAnimation(FacingDirection::DOWN);
+	_scene_layers[LayerType::CHARACTERS].push_back(slime);
 }
 
 std::shared_ptr<Actor> Scene::GetDoorWithId(int id)
