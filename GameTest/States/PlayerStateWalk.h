@@ -1,10 +1,10 @@
 #pragma once
-#include "PlayerState.h"
+#include "IPlayerState.h"
 class PlayerStateWalk :
-    public PlayerState
+    public IPlayerState
 {
 public:
-    PlayerStateWalk(Player* player) : PlayerState(player) {}
+    PlayerStateWalk(Player* player) : IPlayerState(player) {}
 
     void SetSpriteImage() override;
 

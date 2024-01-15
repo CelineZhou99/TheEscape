@@ -1,6 +1,5 @@
 #pragma once
 #include "Actor.h"
-#include "../States/PlayerState.h"
 #include "../States/PlayerStateIdle.h"
 #include "../States/PlayerStateWalk.h"
 #include "Inventory.h"
@@ -10,7 +9,7 @@
 #define IMAGE_PLAYER_IDLE ".\\Data\\Images\\IdleAnimationS.bmp"
 #define IMAGE_PLAYER_WALK ".\\Data\\Images\\WalkAnimationS.bmp"
 
-using PlayerStateMap = std::unordered_map<PlayerStateType, std::shared_ptr<PlayerState>>;
+using PlayerStateMap = std::unordered_map<PlayerStateType, std::shared_ptr<IPlayerState>>;
 
 class Player :
     public Actor

@@ -1,19 +1,19 @@
 #include "stdafx.h"
 #include "Publisher.h"
 
-void Publisher::Subscribe(Subscriber* subscriber)
+void Publisher::Subscribe(ISubscriber* subscriber)
 {
 	_subscriber_list.push_back(subscriber);
 }
 
-void Publisher::Unsubscribe(Subscriber* subscriber)
+void Publisher::Unsubscribe(ISubscriber* subscriber)
 {
 	_subscriber_list.remove(subscriber);
 }
 
 void Publisher::NotifySubscribers()
 {
-	for (Subscriber* subscriber : _subscriber_list)
+	for (ISubscriber* subscriber : _subscriber_list)
 	{
 		subscriber->Update();
 	}

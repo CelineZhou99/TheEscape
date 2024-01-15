@@ -36,9 +36,9 @@ public:
 	//------------------------------------------------------------------------
 	void Update(float deltaTime);
 	// returns whether the player will move
-	bool CalculatePlayerNextMovement(Collider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y);
-	bool ShouldActorMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction);
-	bool ShouldMovableObjectsMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction);
+	bool CalculatePlayerNextMovement(ICollider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y);
+	bool ShouldActorMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction);
+	bool ShouldMovableObjectsMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction);
 	void UpdateMovableObjects(Actor& actor, FacingDirection direction);
 
 	void GameEnd();

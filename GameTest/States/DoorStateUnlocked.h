@@ -1,10 +1,10 @@
 #pragma once
-#include "DoorState.h"
+#include "IDoorState.h"
 class DoorStateUnlocked :
-    public DoorState
+    public IDoorState
 {
 public:
-    DoorStateUnlocked(Door* door) : DoorState(door) {}
+    DoorStateUnlocked(Door* door) : IDoorState(door) {}
 
     void SetSpriteImage() override;
     void OnCollideWithPlayer(World& world) override;

@@ -9,10 +9,10 @@ enum DoorStateType
 	UNLOCKED
 };
 
-class DoorState
+class IDoorState
 {
 public:
-	DoorState(Door* door) : _door(door) {}
+	IDoorState(Door* door) : _door(door) {}
 
 	virtual void SetSpriteImage() = 0;
 	virtual void OnCollideWithPlayer(World& world) = 0;

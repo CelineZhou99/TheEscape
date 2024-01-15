@@ -5,6 +5,7 @@
 #include "../GameObjects/DungeonDoor.h"
 #include "../GameObjects/PressurePlate.h"
 #include "../GameObjects/Key.h"
+#include "../GameObjects/Slime.h"
 #include <random>
 
 void Scene::Init()
@@ -129,6 +130,10 @@ void Scene::LoadMap(const char* file_name_text)
 			else if (object_type == SCENE_OBJECT_GOAL_REWARD_TILE)
 			{
 				MakeGoalRewardsTile(i, j);
+			}
+			else if (object_type == SCENE_OBJECT_SLIME)
+			{
+				MakeSlime(i, j);
 			}
 			j += IMAGE_SIZE_FULL;
 		}
@@ -283,6 +288,15 @@ void Scene::MakeKeyEscape(float i, float j)
 	std::shared_ptr<Renderer> key_renderer = std::make_shared<Renderer>(IMAGE_KEY_ESCAPE, 1, 1, i, j);
 	std::shared_ptr<Key> key = std::make_shared<Key>(key_renderer, i, j, TagType::ITEM, ItemType::KEY_ESCAPE);
 	_scene_layers[LayerType::FOREGROUND].push_back(key);
+}
+
+void Scene::MakeSlime(float i, float j)
+{
+	MakeFloor(i, j);
+	std::shared_ptr<Renderer> slime_renderer = std::make_shared<Renderer>(IMAGE_SLIME, 4, 1, i, j);
+	std::shared_ptr<Slime> slime = std::make_shared<Slime>(slime_renderer, i, j, TagType::ENEMY);
+	slime->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, {}, {}, {});
+	_scene_layers[LayerType::FOREGROUND].push_back(slime);
 }
 
 std::shared_ptr<Actor> Scene::GetDoorWithId(int id)

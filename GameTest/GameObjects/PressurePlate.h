@@ -1,11 +1,10 @@
 #pragma once
 #include "Actor.h"
-#include "../States/PressurePlateState.h"
 #include "../States/PressurePlateStateOn.h"
 #include "../States/PressurePlateStateOff.h"
 #include <unordered_map>
 
-using PressurePlateStateMap = std::unordered_map<PressurePlateStateType, std::shared_ptr<PressurePlateState>>;
+using PressurePlateStateMap = std::unordered_map<PressurePlateStateType, std::shared_ptr<IPressurePlateState>>;
 
 class PressurePlate :
     public Actor

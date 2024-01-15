@@ -9,11 +9,11 @@ enum PressurePlateStateType
 	OFF
 };
 
-class PressurePlateState
+class IPressurePlateState
 {
 	// interface for pressure plate states
 public:
-	PressurePlateState(PressurePlate* pressure_plate) : _pressure_plate(pressure_plate) {}
+	IPressurePlateState(PressurePlate* pressure_plate) : _pressure_plate(pressure_plate) {}
 
 	virtual void PlaySFX() = 0;
 	virtual void UpdateGoalProgress(Goal* goal) = 0;

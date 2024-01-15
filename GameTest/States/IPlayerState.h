@@ -8,11 +8,11 @@ enum PlayerStateType
 	WALK
 };
 
-class PlayerState
+class IPlayerState
 {
 	// interface for player states
 public:
-	PlayerState(Player* player) : _player(player) {}
+	IPlayerState(Player* player) : _player(player) {}
 
 	virtual void SetSpriteImage() = 0;
 

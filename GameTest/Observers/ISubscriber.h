@@ -1,5 +1,5 @@
 #pragma once
-class Subscriber
+class ISubscriber
 {
 public:
 	virtual void Update() = 0;

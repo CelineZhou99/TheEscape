@@ -2,7 +2,7 @@
 #include <math.h>  
 #include <set>
 #include "../GameObjects/Actor.h"
-#include "../Observers/Subscriber.h"
+#include "../Observers/ISubscriber.h"
 #include "../Observers/Goal.h"
 #include "../GameObjects/Door.h"
 
@@ -23,6 +23,7 @@
 #define SCENE_OBJECT_KEY 'K'
 #define SCENE_OBJECT_KEY_ESCAPE 'E'
 #define SCENE_OBJECT_GOAL_REWARD_TILE 'R'
+#define SCENE_OBJECT_SLIME 'S'
 
 #define IMAGE_FLOOR ".\\Data\\Images\\Floor.bmp"
 #define IMAGE_FLOOR_V2 ".\\Data\\Images\\FloorV2.bmp"
@@ -36,6 +37,7 @@
 #define IMAGE_KEY ".\\Data\\Images\\Key.bmp"
 #define IMAGE_KEY_ESCAPE ".\\Data\\Images\\KeyEscape.bmp"
 #define IMAGE_GOAL_REWARD_TILE ".\\Data\\Images\\GoalRewardsTile.bmp"
+#define IMAGE_SLIME ".\\Data\\Images\\Slime.bmp"
 
 #define OBJECT_STATE_INDEX 0
 #define OBJECT_ID_INDEX 1 
@@ -50,7 +52,7 @@ enum LayerType
 	COUNT,
 };
 
-class Scene : public Subscriber
+class Scene : public ISubscriber
 {
 public:
 	Scene(Goal* goal) : _scene_layers({}), _goal_doors({}), _goal(goal),
@@ -95,6 +97,7 @@ public:
 	void MakeGoalRewardsTile(float i, float j);
 	void MakeKey(float i, float j);
 	void MakeKeyEscape(float i, float j);
+	void MakeSlime(float i, float j);
 
 	std::shared_ptr<Actor> GetDoorWithId(int id);
 	GoalType GetGoalType();

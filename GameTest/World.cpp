@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "World.h"
 #include "GameObjects/Actor.h"
-#include "States/PlayerStateIdle.h"
-#include "States/PlayerStateWalk.h"
 #include "GameObjects/PressurePlate.h"
 #include "GameObjects/Key.h"
 
@@ -66,7 +64,7 @@ void World::Update(float deltaTime)
 
 }
 
-bool World::CalculatePlayerNextMovement(Collider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
+bool World::CalculatePlayerNextMovement(ICollider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
 {
 	bool player_will_move = true;
 	if (App::IsKeyPressed('W'))
@@ -99,7 +97,7 @@ bool World::CalculatePlayerNextMovement(Collider& collider, FacingDirection& dir
 	return player_will_move;
 }
 
-bool World::ShouldActorMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction)
+bool World::ShouldActorMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction)
 {
 	bool should_move = true;
 	std::vector<std::vector<std::shared_ptr<GameObject>>> scene_layers = current_scene->GetSceneLayers();
@@ -151,7 +149,7 @@ bool World::ShouldActorMove(Actor& actor_to_move, Collider& collider, FacingDire
 	return should_move;
 }
 
-bool World::ShouldMovableObjectsMove(Actor& actor_to_move, Collider& collider, FacingDirection& direction)
+bool World::ShouldMovableObjectsMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction)
 {
 	bool should_move = true;
 	std::vector<std::vector<std::shared_ptr<GameObject>>> scene_layers = current_scene->GetSceneLayers();

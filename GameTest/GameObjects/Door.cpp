@@ -10,7 +10,7 @@ void Door::SetState(DoorStateType state)
 		DoorStateMap::iterator it = _door_state_map.find(_state_type);
 		if (it != _door_state_map.end())
 		{
-			std::shared_ptr<DoorState> d_state = it->second;
+			std::shared_ptr<IDoorState> d_state = it->second;
 			d_state->SetSpriteImage();
 		}
 	}
@@ -22,7 +22,7 @@ void Door::OnInteractWithPlayer(World& world)
 	DoorStateMap::iterator it = _door_state_map.find(_state_type);
 	if (it != _door_state_map.end())
 	{
-		std::shared_ptr<DoorState> d_state = it->second;
+		std::shared_ptr<IDoorState> d_state = it->second;
 		d_state->OnCollideWithPlayer(world);
 	}
 }

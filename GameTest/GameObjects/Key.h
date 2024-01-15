@@ -2,10 +2,10 @@
 #include "Item.h"
 #include "Player.h"
 #include "../World.h"
-#include "Interactable.h"
+#include "IInteractable.h"
 
 class Key :
-    public Item, public Interactable
+    public Item, public IInteractable
 {
 public:
     Key(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag, ItemType item_type)

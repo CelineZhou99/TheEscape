@@ -1,15 +1,14 @@
 #pragma once
 #include "Actor.h"
-#include "../GameObjects/Interactable.h"
-#include "../States/DoorState.h"
+#include "../GameObjects/IInteractable.h"
 #include "../States/DoorStateLocked.h"
 #include "../States/DoorStateUnlocked.h"
 #include <unordered_map>
 
-using DoorStateMap = std::unordered_map<DoorStateType, std::shared_ptr<DoorState>>;
+using DoorStateMap = std::unordered_map<DoorStateType, std::shared_ptr<IDoorState>>;
 
 class Door :
-	public Actor, public Interactable
+	public Actor, public IInteractable
 {
 	// context class for door states
 public:

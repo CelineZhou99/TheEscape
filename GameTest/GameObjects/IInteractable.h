@@ -1,7 +1,7 @@
 #pragma once
 class World;
 
-class Interactable
+class IInteractable
 {
 public:
 	virtual void OnInteractWithPlayer(World& world) = 0;

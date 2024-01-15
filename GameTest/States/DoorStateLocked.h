@@ -1,15 +1,15 @@
 #pragma once
-#include "DoorState.h"
+#include "IDoorState.h"
 
 #define DOOR_OPEN_SOUND ".\\Data\\Sounds\\DoorOpen.wav"
 
 using Dialogue = std::vector<const char*>;
 
 class DoorStateLocked :
-    public DoorState
+    public IDoorState
 {
 public:
-    DoorStateLocked(Door* door) : DoorState(door)
+    DoorStateLocked(Door* door) : IDoorState(door)
     {
         Dialogue no_key = { "This door seems locked.", "There must be a way to open it."};
         Dialogue wrong_key = { "*Inserts key*", "This key doesn't seem to fit the lock..." };
