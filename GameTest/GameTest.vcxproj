@@ -181,6 +181,7 @@
   <ItemGroup>
     <ClInclude Include="BehaviourTree\ActionNode.h" />
     <ClInclude Include="BehaviourTree\BehaviourTree.h" />
+    <ClInclude Include="BehaviourTree\Blackboard.h" />
     <ClInclude Include="BehaviourTree\IBehaviourNode.h" />
     <ClInclude Include="BehaviourTree\SelectorNode.h" />
     <ClInclude Include="BehaviourTree\SequenceNode.h" />
@@ -233,6 +234,7 @@
   <ItemGroup>
     <ClCompile Include="BehaviourTree\ActionNode.cpp" />
     <ClCompile Include="BehaviourTree\BehaviourTree.cpp" />
+    <ClCompile Include="BehaviourTree\Blackboard.cpp" />
     <ClCompile Include="BehaviourTree\IBehaviourNode.cpp" />
     <ClCompile Include="BehaviourTree\SelectorNode.cpp" />
     <ClCompile Include="BehaviourTree\SequenceNode.cpp" />

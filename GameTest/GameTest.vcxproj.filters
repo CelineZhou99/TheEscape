@@ -52,6 +52,7 @@
     <ClCompile Include="BehaviourTree\SequenceNode.cpp" />
     <ClCompile Include="GameObjects\Slime.cpp" />
     <ClCompile Include="GameObjects\IEnemy.cpp" />
+    <ClCompile Include="BehaviourTree\Blackboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\app.h">
@@ -120,6 +121,7 @@
     <ClInclude Include="BehaviourTree\SequenceNode.h" />
     <ClInclude Include="GameObjects\Slime.h" />
     <ClInclude Include="GameObjects\IEnemy.h" />
+    <ClInclude Include="BehaviourTree\Blackboard.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="NextAPI">
