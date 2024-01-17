@@ -7,15 +7,15 @@ void Slime::BehaviourTreeInit(Player* player, Scene* scene)
 	_behaviour_tree = std::make_shared<BehaviourTree>(RootNodeType::SELECTOR);
 	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::MoveTo, this));
 	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::SetMoveToLocation, this, scene));
-	//_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::SayHello, this));
-	//_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::SayBye, this));
 }
 
 BehaviourNodeState Slime::MoveTo()
 {
 	// TODO : ASK ABOUT TEMPLATE TYPE AND CASTING
-	/*any_type location = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_LOCATION);
-	Vector2D value = dynamic_cast<Any<Vector2D>&>(*(location.get())).GetData();*/
+	any_type location = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_LOCATION);
+	Vector2D value = dynamic_cast<Any<Vector2D>&>((location.get())).GetData();
+
+	// TODO: remove after template class is fixed
 	std::shared_ptr<Vector2D> location = _behaviour_tree->GetBlackboard()->GetVectorVariable(MOVE_TO_LOCATION);
 	FacingDirection direction = _behaviour_tree->GetBlackboard()->GetDirectionVariable(MOVE_TO_DIRECTION);
 
@@ -39,10 +39,10 @@ BehaviourNodeState Slime::MoveTo()
 			UpdatePosition(1, 0, direction);
 			break;
 		}
-		wss << L" transform x " << _transform->X() << "location x " << location->X() << "\n";
+		/*wss << L" transform x " << _transform->X() << "location x " << location->X() << "\n";
 		OutputDebugString(wss.str().c_str());
 		wss << L" transform y " << _transform->Y() << "location y " << location->Y() << "\n";
-		OutputDebugString(wss.str().c_str());
+		OutputDebugString(wss.str().c_str());*/
 		if (_transform->X() == location->X() && _transform->Y() == location->Y())
 		{
 			_behaviour_tree->GetBlackboard()->RemoveVectorVariable(MOVE_TO_LOCATION);
@@ -102,15 +102,15 @@ BehaviourNodeState Slime::SetMoveToLocation(Scene* scene)
 	int random_index = scene->GenerateRandomBetween(0, free_directions.size() - 1);
 	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_LOCATION, Any<Vector2D>(free_directions[random_index]));
 
-	// temp
+	// TODO: remove after template class is fixed
 	_behaviour_tree->GetBlackboard()->SetVectorVariable(MOVE_TO_LOCATION, free_directions[random_index]);
 	_behaviour_tree->GetBlackboard()->SetDirectionVariable(MOVE_TO_DIRECTION, directions[random_index]);
 
-	float x = free_directions[random_index].X();
+	/*float x = free_directions[random_index].X();
 	float y = free_directions[random_index].Y();
 	std::wstringstream wss;
 	wss << L" SET LOCATION SUCCESS " << x << " " << y << "\n";
-	OutputDebugString(wss.str().c_str());
+	OutputDebugString(wss.str().c_str());*/
 	return BehaviourNodeState::SUCCESS;
 }
 

@@ -23,7 +23,7 @@ private:
 using blackboard_map = std::unordered_map<std::string, std::shared_ptr<AnyType>>;
 using any_type = std::shared_ptr<AnyType>;
 
-//temp
+// TODO: remove after template class is fixed
 using temp_map = std::unordered_map<std::string, std::shared_ptr<Vector2D>>;
 using temp_map_direction = std::unordered_map<std::string, FacingDirection>;
 
@@ -37,18 +37,18 @@ public:
 	any_type GetVariable(std::string name);
 	void SetVariable(std::string name, AnyType& value);
 
-	// TODO: temp
+	// TODO: remove after template class is fixed 
 	std::shared_ptr<Vector2D> GetVectorVariable(std::string name);
 	void SetVectorVariable(std::string name, Vector2D& vector);
 	void RemoveVectorVariable(std::string name);
-
 	FacingDirection GetDirectionVariable(std::string name);
 	void SetDirectionVariable(std::string name, FacingDirection direction);
 	void RemoveDirectionVariable(std::string name);
 
 private:
 	blackboard_map _blackboard_variables;
-	//temp
+
+	// TODO: remove after template class is fixed
 	temp_map _temp_variables;
 	temp_map_direction _temp_direction_variables;
 };
