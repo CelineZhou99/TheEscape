@@ -8,7 +8,7 @@ enum FacingDirection : uint8_t
 	DOWN,
 	LEFT,
 	RIGHT,
-	NONE
+	NONE,
 };
 //------------------------------------------------------------------------
 class Renderer

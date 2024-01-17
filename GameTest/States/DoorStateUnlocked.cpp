@@ -33,45 +33,32 @@ void DoorStateUnlocked::OnCollideWithPlayer(World& world)
 
 		if (new_door)
 		{
-			std::shared_ptr<Vector2D> player_transform = world.player->GetTransform();
 			// check all 4 directions of new door to find a space to spawn player
-			std::shared_ptr<Vector2D> transform = new_door->GetTransform();
-			std::shared_ptr<Vector2D> top = std::make_shared<Vector2D>(transform->X(), transform->Y() + IMAGE_SIZE_FULL);
-			std::shared_ptr<Vector2D> down = std::make_shared<Vector2D>(transform->X(), transform->Y() - IMAGE_SIZE_FULL);
-			std::shared_ptr<Vector2D> left = std::make_shared<Vector2D>(transform->X() - IMAGE_SIZE_FULL, transform->Y());
-			std::shared_ptr<Vector2D> right = std::make_shared<Vector2D>(transform->X() + IMAGE_SIZE_FULL, transform->Y());
+			Vector2D* transform = new_door->GetTransform().get();
+			Vector2D top = Vector2D(transform->X(), transform->Y() + TILE_SIZE_FULL);
+			Vector2D down = Vector2D(transform->X(), transform->Y() - TILE_SIZE_FULL);
+			Vector2D left = Vector2D(transform->X() - TILE_SIZE_FULL, transform->Y());
+			Vector2D right = Vector2D(transform->X() + TILE_SIZE_FULL, transform->Y());
 
-			if (top->X() >= 0 && top->Y() >= 0 && top->X() <= APP_VIRTUAL_WIDTH && top->Y() <= APP_VIRTUAL_HEIGHT)
+			if (world.current_scene->IsSpaceFree(top))
 			{
-				if (world.current_scene->IsSpaceFree(*top))
-				{
-					world.player_controller->SetPlayerPosition(top->X(), top->Y() + 32, FacingDirection::UP);
-					return;
-				}
+				world.player_controller->SetControlledActorPosition(top.X(), top.Y() + 32, FacingDirection::UP);
+				return;
 			}
-			if (down->X() >= 0 && down->Y() >= 0 && down->X() <= APP_VIRTUAL_WIDTH && down->Y() <= APP_VIRTUAL_HEIGHT)
+			if (world.current_scene->IsSpaceFree(down))
 			{
-				if (world.current_scene->IsSpaceFree(*down))
-				{
-					world.player_controller->SetPlayerPosition(down->X(), down->Y() - 32, FacingDirection::DOWN);
-					return;
-				}
+				world.player_controller->SetControlledActorPosition(down.X(), down.Y() - 32, FacingDirection::DOWN);
+				return;
 			}
-			if (left->X() >= 0 && left->Y() >= 0 && left->X() <= APP_VIRTUAL_WIDTH && left->Y() <= APP_VIRTUAL_HEIGHT)
+			if (world.current_scene->IsSpaceFree(left))
 			{
-				if (world.current_scene->IsSpaceFree(*left))
-				{
-					world.player_controller->SetPlayerPosition(left->X() - 32, left->Y(), FacingDirection::LEFT);
-					return;
-				}
+				world.player_controller->SetControlledActorPosition(left.X() - 32, left.Y(), FacingDirection::LEFT);
+				return;
 			}
-			if (right->X() >= 0 && right->Y() >= 0 && right->X() <= APP_VIRTUAL_WIDTH && right->Y() <= APP_VIRTUAL_HEIGHT)
+			if (world.current_scene->IsSpaceFree(right))
 			{
-				if (world.current_scene->IsSpaceFree(*right))
-				{
-					world.player_controller->SetPlayerPosition(right->X() + 32, right->Y(), FacingDirection::RIGHT);
-					return;
-				}
+				world.player_controller->SetControlledActorPosition(right.X() + 32, right.Y(), FacingDirection::RIGHT);
+				return;
 			}
 		}
 	}

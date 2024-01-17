@@ -3,6 +3,7 @@
 #include "GameObjects/Actor.h"
 #include "GameObjects/PressurePlate.h"
 #include "GameObjects/Key.h"
+#include "GameObjects/Slime.h"
 
 void World::Init()
 {
@@ -35,6 +36,10 @@ void World::Update(float deltaTime)
 
 	if (!text_box.GetIsDialogueFinished()) { return; }
 
+	if (current_scene->temp_slime)
+	{
+		current_scene->temp_slime->GetBehaviourTree()->Update();
+	}
 	//------------------------------------------------------------------------
 	// Handle player movement
 	//------------------------------------------------------------------------
@@ -51,7 +56,7 @@ void World::Update(float deltaTime)
 		player->SetState(PlayerStateType::WALK);
 		if (ShouldActorMove(*player, collider, direction))
 		{
-			player_controller->UpdatePlayerPosition(player_move_by_x, player_move_by_y, direction);
+			player_controller->UpdateControlledActorPosition(player_move_by_x, player_move_by_y, direction);
 		}
 	} 
 	else
@@ -60,7 +65,7 @@ void World::Update(float deltaTime)
 		player->GetRenderer()->SetAnimation(direction);
 	}
 
-	single_scene_layer character_layer = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
+	object_list character_layer = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
 	for (std::shared_ptr<GameObject> character : character_layer)
 	{
 		character->GetRenderer()->UpdateSpriteAnimation(deltaTime);

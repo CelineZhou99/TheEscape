@@ -89,12 +89,13 @@ void Scene::LoadMap(const char* file_name_text)
 
 	std::set<int> goal_door_ids = ReadContextFromFile(iss, word);
 
-	float i = 0;
-
+	float i = TILE_SIZE_HALF;
+	int map_w = 0;
 	while (std::getline(infile, line))
 	{
 		std::istringstream iss(line);
-		float j = 0;
+		float j = TILE_SIZE_HALF;
+		int map_h = 0;
 		while (iss >> word)
 		{
 			char* w = &word[0];
@@ -109,11 +110,11 @@ void Scene::LoadMap(const char* file_name_text)
 			}
 			else if (object_type == SCENE_OBJECT_WALL)
 			{
-				MakeWall(i, j);
+				MakeWall(i, j, map_w, map_h);
 			}
 			else if (object_type == SCENE_OBJECT_BOX)
 			{
-				MakeBox(i, j);
+				MakeBox(i, j, map_w, map_h);
 			}
 			else if (object_type == SCENE_OBJECT_PRESSURE_PLATE)
 			{
@@ -121,11 +122,11 @@ void Scene::LoadMap(const char* file_name_text)
 			}
 			else if (object_type == SCENE_OBJECT_DUNGEON_DOOR)
 			{
-				MakeDungeonDoor(i, j, word, goal_door_ids, token);
+				MakeDungeonDoor(i, j, word, goal_door_ids, token, map_w, map_h);
 			}
 			else if (object_type == SCENE_OBJECT_PATH)
 			{
-				MakePath(i, j, word, token);
+				MakePath(i, j, word, token, map_w, map_h);
 			}
 			else if (object_type == SCENE_OBJECT_GOAL_REWARD_TILE)
 			{
@@ -135,9 +136,11 @@ void Scene::LoadMap(const char* file_name_text)
 			{
 				MakeSlime(i, j);
 			}
-			j += IMAGE_SIZE_FULL;
+			j += TILE_SIZE_FULL;
+			++map_h;
 		}
-		i += IMAGE_SIZE_FULL;
+		i += TILE_SIZE_FULL;
+		++map_w;
 	}
 }
 
@@ -145,29 +148,31 @@ void Scene::MakeFloor(float i, float j)
 {
 	const char* image_file = GenerateRandomBetween(0, 1) == 0 ? IMAGE_FLOOR : IMAGE_FLOOR_V2;
 
-	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(image_file, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
+	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(image_file, 1, 1, i, j);
 	std::shared_ptr<GameObject> floor =
-		std::make_shared<GameObject>(renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::STATIC_OBJECT);
+		std::make_shared<GameObject>(renderer, i, j, TagType::STATIC_OBJECT);
 	_scene_layers[LayerType::BACKGROUND].push_back(floor);
 }
 
-void Scene::MakeWall(float i, float j)
+void Scene::MakeWall(float i, float j, int map_w, int map_h)
 {
 	const char* image_file = GenerateRandomBetween(0, 1) == 0 ? IMAGE_WALL : IMAGE_WALL_V2;
 
-	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(image_file, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
-	std::shared_ptr<Actor> wall = std::make_shared<Actor>(renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::STATIC_OBJECT);
+	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(image_file, 1, 1, i, j);
+	std::shared_ptr<Actor> wall = std::make_shared<Actor>(renderer, i, j, TagType::STATIC_OBJECT);
 	_scene_layers[LayerType::MIDDLEGROUND].push_back(wall);
+	_map[map_w][map_h].push_back(wall);
 }
 
-void Scene::MakeBox(float i, float j)
+void Scene::MakeBox(float i, float j, int map_w, int map_h)
 {
 	MakeFloor(i, j);
 
-	std::shared_ptr<Renderer> box_renderer = std::make_shared<Renderer>(IMAGE_BOX, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
-	std::shared_ptr<Actor> box = std::make_shared<Actor>(box_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::MOVABLE_OBJECT);
+	std::shared_ptr<Renderer> box_renderer = std::make_shared<Renderer>(IMAGE_BOX, 1, 1, i, j);
+	std::shared_ptr<Actor> box = std::make_shared<Actor>(box_renderer, i, j, TagType::MOVABLE_OBJECT);
 	box->GetRenderer()->GetSprite()->SetScale(0.9f);
 	_scene_layers[LayerType::FOREGROUND].push_back(box);
+	_map[map_w][map_h].push_back(box);
 }
 
 void Scene::MakePressurePlate(float i, float j)
@@ -175,9 +180,9 @@ void Scene::MakePressurePlate(float i, float j)
 	MakeFloor(i, j);
 
 	std::shared_ptr<Renderer> plate_renderer =
-		std::make_shared<Renderer>(IMAGE_PRESSURE_PLATE, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
+		std::make_shared<Renderer>(IMAGE_PRESSURE_PLATE, 1, 1, i, j);
 	std::shared_ptr<PressurePlate> plate =
-		std::make_shared<PressurePlate>(plate_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::PLATE);
+		std::make_shared<PressurePlate>(plate_renderer, i, j, TagType::PLATE);
 	_scene_layers[LayerType::MIDDLEGROUND].push_back(plate);
 
 	// TODO: CHANGE THIS TO GOAL TYPE MAPPING
@@ -187,7 +192,7 @@ void Scene::MakePressurePlate(float i, float j)
 	}
 }
 
-void Scene::MakeDungeonDoor(float i, float j, std::string& word, std::set<int> goal_door_ids, char* token)
+void Scene::MakeDungeonDoor(float i, float j, std::string& word, std::set<int> goal_door_ids, char* token, int map_w, int map_h)
 {
 	MakeFloor(i, j);
 
@@ -211,11 +216,11 @@ void Scene::MakeDungeonDoor(float i, float j, std::string& word, std::set<int> g
 	std::shared_ptr<Renderer> door_renderer = nullptr;
 	if (type == DoorStateType::LOCKED)
 	{
-		door_renderer = std::make_shared<Renderer>(IMAGE_DUNGEON_DOOR_LOCKED, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
+		door_renderer = std::make_shared<Renderer>(IMAGE_DUNGEON_DOOR_LOCKED, 1, 1, i, j);
 	}
 	else if (type == DoorStateType::UNLOCKED)
 	{
-		door_renderer = std::make_shared<Renderer>(IMAGE_DUNGEON_DOOR_UNLOCKED, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
+		door_renderer = std::make_shared<Renderer>(IMAGE_DUNGEON_DOOR_UNLOCKED, 1, 1, i, j);
 	}
 
 	std::unordered_map<char, char*>::iterator it = _map_id_mapping.find(_context_reading_order[LINKED_MAP_ID_INDEX]);
@@ -228,8 +233,9 @@ void Scene::MakeDungeonDoor(float i, float j, std::string& word, std::set<int> g
 	ItemType required_key_type = id == 0 ? ItemType::KEY_ESCAPE : ItemType::KEY;
 
 	std::shared_ptr<DungeonDoor> door = 
-		std::make_shared<DungeonDoor>(door_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::DOOR, type, id, linked_map, required_key_type);
+		std::make_shared<DungeonDoor>(door_renderer, i, j, TagType::DOOR, type, id, linked_map, required_key_type);
 	_scene_layers[LayerType::MIDDLEGROUND].push_back(door);
+	_map[map_w][map_h].push_back(door);
 
 	if (goal_door_ids.find(id) != goal_door_ids.end())
 	{
@@ -237,7 +243,7 @@ void Scene::MakeDungeonDoor(float i, float j, std::string& word, std::set<int> g
 	}
 }
 
-void Scene::MakePath(float i, float j, std::string& word, char* token)
+void Scene::MakePath(float i, float j, std::string& word, char* token, int map_w, int map_h)
 {
 	MakeFloor(i, j);
 
@@ -258,19 +264,20 @@ void Scene::MakePath(float i, float j, std::string& word, char* token)
 	}
 
 	std::shared_ptr<Renderer> path_renderer =
-		std::make_shared<Renderer>(IMAGE_PATH, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
+		std::make_shared<Renderer>(IMAGE_PATH, 1, 1, i, j);
 	std::shared_ptr<Path> path =
-		std::make_shared<Path>(path_renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::DOOR, id, linked_map);
+		std::make_shared<Path>(path_renderer, i, j, TagType::DOOR, id, linked_map);
 	_scene_layers[LayerType::MIDDLEGROUND].push_back(path);
+	_map[map_w][map_h].push_back(path);
 }
 
 void Scene::MakeGoalRewardsTile(float i, float j)
 {
 	MakeFloor(i, j);
 
-	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(IMAGE_GOAL_REWARD_TILE, 1, 1, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF);
+	std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(IMAGE_GOAL_REWARD_TILE, 1, 1, i, j);
 	std::shared_ptr<GameObject> tile =
-		std::make_shared<GameObject>(renderer, i + IMAGE_SIZE_HALF, j + IMAGE_SIZE_HALF, TagType::STATIC_OBJECT);
+		std::make_shared<GameObject>(renderer, i, j, TagType::STATIC_OBJECT);
 	_scene_layers[LayerType::BACKGROUND].push_back(tile);
 
 	_goal->SetGoalRewardTile(tile.get());
@@ -292,13 +299,14 @@ void Scene::MakeKeyEscape(float i, float j)
 
 void Scene::MakeSlime(float i, float j)
 {
-	// TODO: ASK WHY THIS DOESNT GET RENDERED IN THE RIGHT POSITION
-	//MakeFloor(i, j);
+	MakeFloor(i, j);
+
 	std::shared_ptr<Renderer> slime_renderer = std::make_shared<Renderer>(IMAGE_SLIME, 4, 4, i, j);
-	std::shared_ptr<Slime> slime = std::make_shared<Slime>(slime_renderer, i, j, TagType::ENEMY);
+	std::shared_ptr<Slime> slime = std::make_shared<Slime>(slime_renderer, i, j, TagType::ENEMY, _player, this);
 	slime->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
 	slime->GetRenderer()->SetAnimation(FacingDirection::DOWN);
 	_scene_layers[LayerType::CHARACTERS].push_back(slime);
+	temp_slime = slime;
 }
 
 std::shared_ptr<Actor> Scene::GetDoorWithId(int id)
@@ -330,23 +338,51 @@ GoalType Scene::GetGoalType()
 
 bool Scene::IsSpaceFree(Vector2D& position)
 {
-	for (std::shared_ptr<GameObject> object : _scene_layers.at(LayerType::MIDDLEGROUND))
+	int index_w = std::floor(position.X() / TILE_SIZE_FULL);
+	int index_h = std::floor(position.Y() / TILE_SIZE_FULL);
+
+	if (index_w < 0 || index_w >= MAP_WIDTH || index_h < 0 || index_h >= MAP_HEIGHT)
 	{
-		if (object->GetTransform()->X() == position.X() && object->GetTransform()->Y() == position.Y())
-		{
-			return false;
-		}
+		return false;
 	}
 
-	for (std::shared_ptr<GameObject> object : _scene_layers.at(LayerType::FOREGROUND))
+	if (_map[index_w][index_h].size() > 0)
 	{
-		if (object->GetTransform()->X() == position.X() && object->GetTransform()->Y() == position.Y())
-		{
-			return false;
-		}
+		return false;
 	}
 
 	return true;
+}
+
+void Scene::MoveObjectPositionInMap(Vector2D& old_position, Vector2D& new_position, GameObject* object)
+{
+	// TODO : TEST
+
+	int old_index_w = std::floor(old_position.X() / TILE_SIZE_FULL);
+	int old_index_h = std::floor(old_position.Y() / TILE_SIZE_FULL);
+
+	int new_index_w = std::floor(new_position.X() / TILE_SIZE_FULL);
+	int new_index_h = std::floor(new_position.Y() / TILE_SIZE_FULL);
+
+	if (old_index_w < 0 || old_index_w >= MAP_WIDTH || old_index_h < 0 || old_index_h >= MAP_HEIGHT ||
+		new_index_w < 0 || new_index_w >= MAP_WIDTH || new_index_h < 0 || new_index_h >= MAP_HEIGHT)
+	{
+		return;
+	}
+
+	std::vector<std::shared_ptr<GameObject>> list = _map[old_index_w][old_index_h];
+	std::vector<std::shared_ptr<GameObject>>::iterator it =
+		std::find_if(list.begin(), list.end(), [object](const std::shared_ptr<GameObject>& o)
+			{
+				return (object->GetTag() == o->GetTag()) && (object->GetTransform()->X() == o->GetTransform()->X()) &&
+					(object->GetTransform()->Y() == o->GetTransform()->Y());
+			});
+	if (it != list.end())
+	{
+		_map[old_index_w][old_index_h].erase(it);
+	}
+
+	_map[new_index_w][new_index_h].push_back(std::make_shared<GameObject>(*object));
 }
 
 void Scene::Update()

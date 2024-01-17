@@ -1,20 +1,55 @@
 #pragma once
 #include <unordered_map>
 #include <string>
+#include "../GameObjects/Vector2D.h"
+#include "../GameObjects/Renderer.h"
+#include <memory>
 
-using bool_map = std::unordered_map<std::string, bool>;
+class AnyType {};
+
+template<class T>
+class Any : public AnyType
+{
+public:
+	Any() {}
+	Any(const T& data) : _data(data) {}
+
+	T GetData() { return _data; }
+
+private:
+	T _data;
+};
+
+using blackboard_map = std::unordered_map<std::string, std::shared_ptr<AnyType>>;
+using any_type = std::shared_ptr<AnyType>;
+
+//temp
+using temp_map = std::unordered_map<std::string, std::shared_ptr<Vector2D>>;
+using temp_map_direction = std::unordered_map<std::string, FacingDirection>;
 
 class Blackboard
 {
 public:
-	Blackboard() : _bool_variables({}) {}
+	Blackboard() : _blackboard_variables({}) {}
 
 	// this class can hold different types of variables for the behaviour tree
 	// e.g. bool, int, float
-	bool GetBoolVariable(std::string name);
-	void SetBoolVariable(std::string name, bool value);
+	any_type GetVariable(std::string name);
+	void SetVariable(std::string name, AnyType& value);
+
+	// TODO: temp
+	std::shared_ptr<Vector2D> GetVectorVariable(std::string name);
+	void SetVectorVariable(std::string name, Vector2D& vector);
+	void RemoveVectorVariable(std::string name);
+
+	FacingDirection GetDirectionVariable(std::string name);
+	void SetDirectionVariable(std::string name, FacingDirection direction);
+	void RemoveDirectionVariable(std::string name);
 
 private:
-	std::unordered_map<std::string, bool> _bool_variables;
+	blackboard_map _blackboard_variables;
+	//temp
+	temp_map _temp_variables;
+	temp_map_direction _temp_direction_variables;
 };
 

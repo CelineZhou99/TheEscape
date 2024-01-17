@@ -35,6 +35,8 @@ public:
 
 	int AllocateId();
 
+	std::shared_ptr<Blackboard> GetBlackboard() { return _blackboard; }
+
 	void AddActionNode(ptr parent, std::function<BehaviourNodeState()> action);
 	void AddSelectorNode(ptr parent);
 	void AddSequenceNode(ptr parent);

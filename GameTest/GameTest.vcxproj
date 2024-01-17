@@ -196,6 +196,7 @@
     <ClInclude Include="App\SimpleController.h" />
     <ClInclude Include="App\SimpleSound.h" />
     <ClInclude Include="App\SimpleSprite.h" />
+    <ClInclude Include="Controllers\SlimeController.h" />
     <ClInclude Include="GameObjects\Actor.h" />
     <ClInclude Include="GameObjects\Door.h" />
     <ClInclude Include="GameObjects\DungeonDoor.h" />
@@ -248,6 +249,7 @@
     <ClCompile Include="App\SimpleController.cpp" />
     <ClCompile Include="App\SimpleSound.cpp" />
     <ClCompile Include="App\SimpleSprite.cpp" />
+    <ClCompile Include="Controllers\SlimeController.cpp" />
     <ClCompile Include="GameObjects\Actor.cpp" />
     <ClCompile Include="GameObjects\Door.cpp" />
     <ClCompile Include="GameObjects\IEnemy.cpp" />

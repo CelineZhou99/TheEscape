@@ -4,8 +4,8 @@
 
 #define PLAYER_MOVE_BY 2
 #define MOVABLE_OBJECT_MOVE_BY 64
-#define IMAGE_SIZE_HALF 32
-#define IMAGE_SIZE_FULL 64
+#define TILE_SIZE_HALF 32
+#define TILE_SIZE_FULL 64
 #define ANIMATION_SPEED 0.2f
 
 class Actor :
