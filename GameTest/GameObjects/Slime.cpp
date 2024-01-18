@@ -12,16 +12,21 @@ void Slime::BehaviourTreeInit(Player* player, Scene* scene)
 BehaviourNodeState Slime::MoveTo()
 {
 	// TODO : ASK ABOUT TEMPLATE TYPE AND CASTING
-	any_type location = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_LOCATION);
-	Vector2D value = dynamic_cast<Any<Vector2D>&>((location.get())).GetData();
+	any_type_ptr location_any = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_LOCATION);
+	Vector2D value;
+	if (location_any)
+	{
+		value = static_cast<Any<Vector2D>*>(location_any.get())->GetData();
+	}
+
+	std::wstringstream wss;
+	wss << L" VALUE IS " << value.X() << " " << value.Y() << "\n";
+	OutputDebugString(wss.str().c_str());
 
 	// TODO: remove after template class is fixed
 	std::shared_ptr<Vector2D> location = _behaviour_tree->GetBlackboard()->GetVectorVariable(MOVE_TO_LOCATION);
 	FacingDirection direction = _behaviour_tree->GetBlackboard()->GetDirectionVariable(MOVE_TO_DIRECTION);
-
-	std::wstringstream wss;
-	wss << L" MOVING \n";
-	OutputDebugString(wss.str().c_str());
+	
 	if (location && direction != FacingDirection::NONE)
 	{
 		switch (direction)
@@ -100,7 +105,7 @@ BehaviourNodeState Slime::SetMoveToLocation(Scene* scene)
 	}
 
 	int random_index = scene->GenerateRandomBetween(0, free_directions.size() - 1);
-	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_LOCATION, Any<Vector2D>(free_directions[random_index]));
+	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_LOCATION, new Any<Vector2D>(free_directions[random_index]));
 
 	// TODO: remove after template class is fixed
 	_behaviour_tree->GetBlackboard()->SetVectorVariable(MOVE_TO_LOCATION, free_directions[random_index]);

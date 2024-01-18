@@ -14,14 +14,14 @@ public:
 	Any() {}
 	Any(const T& data) : _data(data) {}
 
-	T GetData() { return _data; }
+	T& GetData() { return _data; }
 
 private:
 	T _data;
 };
 
 using blackboard_map = std::unordered_map<std::string, std::shared_ptr<AnyType>>;
-using any_type = std::shared_ptr<AnyType>;
+using any_type_ptr = std::shared_ptr<AnyType>;
 
 // TODO: remove after template class is fixed
 using temp_map = std::unordered_map<std::string, std::shared_ptr<Vector2D>>;
@@ -34,8 +34,8 @@ public:
 
 	// this class can hold different types of variables for the behaviour tree
 	// e.g. bool, int, float
-	any_type GetVariable(std::string name);
-	void SetVariable(std::string name, AnyType& value);
+	any_type_ptr GetVariable(std::string name);
+	void SetVariable(std::string name, AnyType* value);
 
 	// TODO: remove after template class is fixed 
 	std::shared_ptr<Vector2D> GetVectorVariable(std::string name);

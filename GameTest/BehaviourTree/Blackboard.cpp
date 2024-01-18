@@ -2,7 +2,7 @@
 #include "Blackboard.h"
 #include <cassert>
 
-any_type Blackboard::GetVariable(std::string name)
+any_type_ptr Blackboard::GetVariable(std::string name)
 {
     blackboard_map::iterator it = _blackboard_variables.find(name);
     if (it != _blackboard_variables.end())
@@ -13,9 +13,9 @@ any_type Blackboard::GetVariable(std::string name)
     return nullptr;
 }
 
-void Blackboard::SetVariable(std::string name, AnyType& value)
+void Blackboard::SetVariable(std::string name, AnyType* value)
 {
-    _blackboard_variables[name] = std::make_shared<AnyType>(value);
+    _blackboard_variables[name] = std::make_shared<AnyType>(*value);
 }
 
 std::shared_ptr<Vector2D> Blackboard::GetVectorVariable(std::string name)
