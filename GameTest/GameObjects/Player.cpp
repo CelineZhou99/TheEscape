@@ -14,3 +14,18 @@ void Player::SetState(PlayerStateType state)
 		}
 	}
 }
+
+bool Player::IsDead()
+{
+	return _health <= 0 ? true : false;
+}
+
+void Player::TakeDamage()
+{
+	--_health;
+	if (!IsDead())
+	{
+		// after being damaged, player will become invulnerable for a short duration
+		_is_invulnerable = true;
+	}
+}

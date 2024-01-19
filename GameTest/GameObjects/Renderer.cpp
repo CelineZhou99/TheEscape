@@ -15,31 +15,11 @@ void Renderer::UpdateSpriteAnimation(float delta_time)
 	_sprite->Update(delta_time);
 }
 
-void Renderer::SetAnimationWithMovement(FacingDirection direction)
+void Renderer::SetAnimationWithMovement(FacingDirection direction, float move_by_x, float move_by_y)
 {
 	float x, y;
 	_sprite->GetPosition(x, y);
-	switch (direction)
-	{
-	case FacingDirection::UP:
-		y += PLAYER_MOVE_BY;
-		_sprite->SetPosition(x, y);
-		break;
-	case FacingDirection::DOWN:
-		y -= PLAYER_MOVE_BY;
-		_sprite->SetPosition(x, y);
-		break;
-	case FacingDirection::LEFT:
-		x -= PLAYER_MOVE_BY;
-		_sprite->SetPosition(x, y);
-		break;
-	case FacingDirection::RIGHT:
-		x += PLAYER_MOVE_BY;
-		_sprite->SetPosition(x, y);
-		break;
-	case FacingDirection::NONE:
-		break;
-	}
+	_sprite->SetPosition(x + move_by_x, y + move_by_y);
 	_sprite->SetAnimation(direction);
 }
 

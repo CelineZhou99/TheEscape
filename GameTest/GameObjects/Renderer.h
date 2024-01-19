@@ -22,7 +22,7 @@ public:
 	}
 	void CreateSpriteAnimation(float speed, std::vector<int> frames_down, std::vector<int> frames_left, std::vector<int> frames_right, std::vector<int> frames_up);
 	void UpdateSpriteAnimation(float delta_time);
-	void SetAnimationWithMovement(FacingDirection direction);
+	void SetAnimationWithMovement(FacingDirection direction, float move_by_x, float move_by_y);
 	void SetAnimation(FacingDirection direction);
 	// move the sprite position by the provided x, y amount
 	void MoveSpritePosition(float x, float y);

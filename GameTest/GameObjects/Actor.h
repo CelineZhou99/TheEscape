@@ -3,6 +3,7 @@
 #include "../Colliders/BoxCollider.h"
 
 #define PLAYER_MOVE_BY 2
+#define ENEMY_MOVE_BY 1
 #define MOVABLE_OBJECT_MOVE_BY 64
 #define TILE_SIZE_HALF 32
 #define TILE_SIZE_FULL 64

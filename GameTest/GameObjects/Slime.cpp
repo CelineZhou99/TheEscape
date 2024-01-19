@@ -5,61 +5,81 @@
 void Slime::BehaviourTreeInit(Player* player, Scene* scene)
 {
 	_behaviour_tree = std::make_shared<BehaviourTree>(RootNodeType::SELECTOR);
-	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::MoveTo, this));
+	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::MoveTo, this, scene));
 	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::SetMoveToLocation, this, scene));
 }
 
-BehaviourNodeState Slime::MoveTo()
+BehaviourNodeState Slime::MoveTo(Scene* scene)
 {
 	// TODO : ASK ABOUT TEMPLATE TYPE AND CASTING
-	any_type_ptr location_any = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_LOCATION);
-	Vector2D value;
-	if (location_any)
-	{
-		value = static_cast<Any<Vector2D>*>(location_any.get())->GetData();
-	}
+	any_type_ptr location_ptr = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_LOCATION);
+	any_type_ptr direction_ptr = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_DIRECTION);
 
-	std::wstringstream wss;
-	wss << L" VALUE IS " << value.X() << " " << value.Y() << "\n";
-	OutputDebugString(wss.str().c_str());
+	Vector2D location = Vector2D();
+	FacingDirection direction = FacingDirection::NONE;
 
-	// TODO: remove after template class is fixed
-	std::shared_ptr<Vector2D> location = _behaviour_tree->GetBlackboard()->GetVectorVariable(MOVE_TO_LOCATION);
-	FacingDirection direction = _behaviour_tree->GetBlackboard()->GetDirectionVariable(MOVE_TO_DIRECTION);
-	
-	if (location && direction != FacingDirection::NONE)
-	{
-		switch (direction)
-		{
-		case FacingDirection::UP:
-			UpdatePosition(0, 1, direction);
-			break;
-		case FacingDirection::DOWN:
-			UpdatePosition(0, -1, direction);
-			break;
-		case FacingDirection::LEFT:
-			UpdatePosition(-1, 0, direction);
-			break;
-		case FacingDirection::RIGHT:
-			UpdatePosition(1, 0, direction);
-			break;
-		}
-		/*wss << L" transform x " << _transform->X() << "location x " << location->X() << "\n";
-		OutputDebugString(wss.str().c_str());
-		wss << L" transform y " << _transform->Y() << "location y " << location->Y() << "\n";
-		OutputDebugString(wss.str().c_str());*/
-		if (_transform->X() == location->X() && _transform->Y() == location->Y())
-		{
-			_behaviour_tree->GetBlackboard()->RemoveVectorVariable(MOVE_TO_LOCATION);
-			_behaviour_tree->GetBlackboard()->RemoveDirectionVariable(MOVE_TO_DIRECTION);
-			return BehaviourNodeState::SUCCESS;
-		}
-		return BehaviourNodeState::RUNNING;
-	}
-	else
+	if (!location_ptr || !direction_ptr)
 	{
 		return BehaviourNodeState::FAILED;
 	}
+	
+	location = static_cast<Any<Vector2D>*>(location_ptr.get())->GetData();
+	direction = static_cast<Any<FacingDirection>*>(direction_ptr.get())->GetData();
+
+	float x, y = 0;
+	switch (direction)
+	{
+	case FacingDirection::UP:
+		x = 0;
+		y = 1;
+		break;
+	case FacingDirection::DOWN:
+		x = 0;
+		y = -1;
+		break;
+	case FacingDirection::LEFT:
+		x = -1;
+		y = 0;
+		break;
+	case FacingDirection::RIGHT:
+		x = 1;
+		y = 0;
+		break;
+	case FacingDirection::NONE:
+		return BehaviourNodeState::FAILED;
+	}
+
+	BoxCollider collider(*this->GetCollider());
+	collider.MoveColliderPosition(x, y);
+	object_list characters = scene->GetSceneLayers().at(LayerType::CHARACTERS);
+	for (std::shared_ptr<GameObject> object : characters)
+	{
+		if (object.get() == this)
+		{
+			continue;
+		}
+		// if the slime will collide with another character, return failed and get a new location
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (GetCollider()->CheckCollision(collider, *actor.GetCollider()))
+		{
+			/*if (actor.GetTag() == TagType::ENEMY)
+			{
+				return BehaviourNodeState::FAILED;
+			}*/
+			return BehaviourNodeState::FAILED;
+		}
+	}
+
+	UpdatePosition(x, y, direction);
+
+	if (_transform->X() == location.X() && _transform->Y() == location.Y())
+	{
+		_behaviour_tree->GetBlackboard()->RemoveVariable(MOVE_TO_LOCATION);
+		_behaviour_tree->GetBlackboard()->RemoveVariable(MOVE_TO_DIRECTION);
+
+		return BehaviourNodeState::SUCCESS;
+	}
+	return BehaviourNodeState::RUNNING;
 	
 }
 
@@ -70,52 +90,61 @@ BehaviourNodeState Slime::MoveToPlayer(Player* player)
 
 BehaviourNodeState Slime::SetMoveToLocation(Scene* scene)
 {
-	Vector2D top = Vector2D(_transform->X(), _transform->Y() + TILE_SIZE_FULL);
-	Vector2D down = Vector2D(_transform->X(), _transform->Y() - TILE_SIZE_FULL);
-	Vector2D left = Vector2D(_transform->X() - TILE_SIZE_FULL, _transform->Y());
-	Vector2D right = Vector2D(_transform->X() + TILE_SIZE_FULL, _transform->Y());
+	int map_w = 0;
+	int map_h = 0;
+	scene->GetCoordinateByPosition(*_transform.get(), map_w, map_h);
+	
+	Vector2D top = scene->GetPositionByCoordinate(map_w, map_h + 1);
+	Vector2D down = scene->GetPositionByCoordinate(map_w, map_h - 1);
+	Vector2D left = scene->GetPositionByCoordinate(map_w - 1, map_h);
+	Vector2D right = scene->GetPositionByCoordinate(map_w + 1, map_h);
 
-	std::vector<Vector2D> free_directions = {};
-	std::vector<FacingDirection> directions = {};
+	std::vector<Vector2D> free_locations = {};
+	std::vector<FacingDirection> free_directions = {};
 
+	// enemy needs to be directly to the top/down/left/right of the space for it to be free
 	if (scene->IsSpaceFree(top))
 	{
-		free_directions.push_back(top);
-		directions.push_back(FacingDirection::UP);
+		if (_transform->X() == top.X())
+		{
+			free_locations.push_back(top);
+			free_directions.push_back(FacingDirection::UP);
+		}
 	}
 	if (scene->IsSpaceFree(down))
 	{
-		free_directions.push_back(down);
-		directions.push_back(FacingDirection::DOWN);
+		if (_transform->X() == down.X())
+		{
+			free_locations.push_back(down);
+			free_directions.push_back(FacingDirection::DOWN);
+		}
 	}
 	if (scene->IsSpaceFree(left))
 	{
-		free_directions.push_back(left);
-		directions.push_back(FacingDirection::LEFT);
+		if (_transform->Y() == left.Y())
+		{
+			free_locations.push_back(left);
+			free_directions.push_back(FacingDirection::LEFT);
+		}
 	}
 	if (scene->IsSpaceFree(right))
 	{
-		free_directions.push_back(right);
-		directions.push_back(FacingDirection::RIGHT);
+		if (_transform->Y() == right.Y())
+		{
+			free_locations.push_back(right);
+			free_directions.push_back(FacingDirection::RIGHT);
+		}
 	}
 	
-	if (free_directions.size() <= 0)
+	if (free_locations.size() <= 0)
 	{
 		return BehaviourNodeState::FAILED;
 	}
 
-	int random_index = scene->GenerateRandomBetween(0, free_directions.size() - 1);
-	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_LOCATION, new Any<Vector2D>(free_directions[random_index]));
+	int random_index = scene->GenerateRandomBetween(0, free_locations.size() - 1);
+	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_LOCATION, new Any<Vector2D>(free_locations[random_index]));
+	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_DIRECTION, new Any<FacingDirection>(free_directions[random_index]));
 
-	// TODO: remove after template class is fixed
-	_behaviour_tree->GetBlackboard()->SetVectorVariable(MOVE_TO_LOCATION, free_directions[random_index]);
-	_behaviour_tree->GetBlackboard()->SetDirectionVariable(MOVE_TO_DIRECTION, directions[random_index]);
-
-	/*float x = free_directions[random_index].X();
-	float y = free_directions[random_index].Y();
-	std::wstringstream wss;
-	wss << L" SET LOCATION SUCCESS " << x << " " << y << "\n";
-	OutputDebugString(wss.str().c_str());*/
 	return BehaviourNodeState::SUCCESS;
 }
 
@@ -124,6 +153,6 @@ BehaviourNodeState Slime::SetMoveToLocation(Scene* scene)
 void Slime::UpdatePosition(float move_by_x, float move_by_y, FacingDirection direction)
 {
 	GetTransform()->MoveVectorPosition(move_by_x, move_by_y);
-	GetRenderer()->SetAnimationWithMovement(direction);
+	GetRenderer()->SetAnimationWithMovement(direction, move_by_x, move_by_y);
 	GetCollider()->MoveColliderPosition(move_by_x, move_by_y);
 }

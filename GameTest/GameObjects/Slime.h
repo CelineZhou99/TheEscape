@@ -18,7 +18,7 @@ public:
 
     void BehaviourTreeInit(Player* player, Scene* scene) override;
 
-    BehaviourNodeState MoveTo() override;
+    BehaviourNodeState MoveTo(Scene* scene) override;
     BehaviourNodeState MoveToPlayer(Player* player) override;
     BehaviourNodeState SetMoveToLocation(Scene* scene) override;
 

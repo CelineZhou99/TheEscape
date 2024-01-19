@@ -24,6 +24,7 @@ public:
 	std::shared_ptr<Renderer> GetRenderer() { return _renderer; }
 	TagType GetTag() { return _tag; }
 
+	// TODO : CHANGE THIS TO BE COMPARING ID INSTEAD
 	bool operator == (const GameObject* object) {
 		if (_renderer->GetFileName() == object->_renderer->GetFileName() &&
 			_transform->X() == object->_transform->X() &&

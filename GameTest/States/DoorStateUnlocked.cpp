@@ -7,6 +7,7 @@ void DoorStateUnlocked::SetSpriteImage()
 {
 	float x, y = 0;
 	_door->GetRenderer()->GetSprite()->GetPosition(x, y);
+	// TODO : PUT STRING INTO A MAP
 	_door->GetRenderer()->SetSprite(".\\Data\\Images\\DungeonDoorUnlocked.bmp", 1, 1);
 	_door->GetRenderer()->GetSprite()->SetPosition(x, y);
 }
@@ -34,37 +35,40 @@ void DoorStateUnlocked::OnCollideWithPlayer(World& world)
 		if (new_door)
 		{
 			// check all 4 directions of new door to find a space to spawn player
-			Vector2D* transform = new_door->GetTransform().get();
-			Vector2D top = Vector2D(transform->X(), transform->Y() + TILE_SIZE_FULL);
-			Vector2D down = Vector2D(transform->X(), transform->Y() - TILE_SIZE_FULL);
-			Vector2D left = Vector2D(transform->X() - TILE_SIZE_FULL, transform->Y());
-			Vector2D right = Vector2D(transform->X() + TILE_SIZE_FULL, transform->Y());
+			int map_w = 0;
+			int map_h = 0;
+			world.current_scene->GetCoordinateByPosition(*new_door->GetTransform(), map_w, map_h);
+
+			Vector2D top = world.current_scene->GetPositionByCoordinate(map_w, map_h + 1);
+			Vector2D down = world.current_scene->GetPositionByCoordinate(map_w, map_h - 1);
+			Vector2D left = world.current_scene->GetPositionByCoordinate(map_w - 1, map_h);
+			Vector2D right = world.current_scene->GetPositionByCoordinate(map_w + 1, map_h);
 
 			if (world.current_scene->IsSpaceFree(top))
 			{
-				world.player_controller->SetControlledActorPosition(top.X(), top.Y() + 32, FacingDirection::UP);
+				world.player_controller->SetControlledActorPosition(top.X(), top.Y() + TILE_SIZE_HALF, FacingDirection::UP);
 				return;
 			}
 			if (world.current_scene->IsSpaceFree(down))
 			{
-				world.player_controller->SetControlledActorPosition(down.X(), down.Y() - 32, FacingDirection::DOWN);
+				world.player_controller->SetControlledActorPosition(down.X(), down.Y() - TILE_SIZE_HALF, FacingDirection::DOWN);
 				return;
 			}
 			if (world.current_scene->IsSpaceFree(left))
 			{
-				world.player_controller->SetControlledActorPosition(left.X() - 32, left.Y(), FacingDirection::LEFT);
+				world.player_controller->SetControlledActorPosition(left.X() - TILE_SIZE_HALF, left.Y(), FacingDirection::LEFT);
 				return;
 			}
 			if (world.current_scene->IsSpaceFree(right))
 			{
-				world.player_controller->SetControlledActorPosition(right.X() + 32, right.Y(), FacingDirection::RIGHT);
+				world.player_controller->SetControlledActorPosition(right.X() + TILE_SIZE_HALF, right.Y(), FacingDirection::RIGHT);
 				return;
 			}
 		}
 	}
 	else
 	{
-		world.GameEnd();
+		world.GameEndEscaped();
 	}
 
 }

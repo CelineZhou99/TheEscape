@@ -10,6 +10,8 @@
 #define NORMAL_MUSIC ".\\Data\\Sounds\\Groovy.wav"
 #define END_MUSIC ".\\Data\\Sounds\\Fanfare.wav"
 #define END_SCREEN ".\\Data\\Images\\EndScreen.bmp"
+#define DEAD_MUSIC ".\\Data\\Sounds\\DeathTheme.wav"
+#define DEAD_SCREEN ".\\Data\\Images\\DeadScreen.bmp"
 #define PLAYER_START_X 480.0f
 #define PLAYER_START_Y 160.0f
 #define UI_START_X 32
@@ -37,11 +39,13 @@ public:
 	void Update(float deltaTime);
 	// returns whether the player will move
 	bool CalculatePlayerNextMovement(ICollider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y);
-	bool ShouldActorMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction);
+	bool ShouldPlayerMove(ICollider& collider, FacingDirection& direction);
 	bool ShouldMovableObjectsMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction);
 	void UpdateMovableObjects(Actor& actor, FacingDirection direction);
+	void InvulnerabilityCountdown(float deltaTime);
 
-	void GameEnd();
+	void GameEndEscaped();
+	void GameEndDead();
 	//------------------------------------------------------------------------
 	// Functions for the render loop
 	//------------------------------------------------------------------------
@@ -63,7 +67,11 @@ public:
 	Dialogue game_start_dialogue = {
 		"Where am I...?", 
 		"I can't remember much...", 
-		"Guess I have to find a way out of here."
+		"I can hear the faint sound of birds from that door...",
+		"That must be the exit."
 	};
+
+	float start_timer = 0.f;
+	float stop_timer = 2.f;
 };
 

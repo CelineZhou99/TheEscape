@@ -36,29 +36,36 @@ void World::Update(float deltaTime)
 
 	if (!text_box.GetIsDialogueFinished()) { return; }
 
-	if (current_scene->temp_slime)
+	//------------------------------------------------------------------------
+	// Handle player
+	//------------------------------------------------------------------------
+
+	if (player->GetIsInvulnerable())
 	{
-		current_scene->temp_slime->GetBehaviourTree()->Update();
+		InvulnerabilityCountdown(deltaTime);
+		player->GetRenderer()->GetSprite()->SetColor(0.66, 0.66, 0.66);
 	}
-	//------------------------------------------------------------------------
-	// Handle player movement
-	//------------------------------------------------------------------------
+	else
+	{
+		player->GetRenderer()->GetSprite()->SetColor(1, 1, 1);
+	}
+
 	BoxCollider collider(*player->GetCollider());
-	// set direction to down by default for now
 	FacingDirection direction = player->GetLastFacingDirection();
 	float player_move_by_x = 0;
 	float player_move_by_y = 0;
 
+	// rename this better 
 	bool player_will_move = CalculatePlayerNextMovement(collider, direction, player_move_by_x, player_move_by_y);
 
 	if (player_will_move)
 	{
 		player->SetState(PlayerStateType::WALK);
-		if (ShouldActorMove(*player, collider, direction))
+		if (ShouldPlayerMove(collider, direction))
 		{
 			player_controller->UpdateControlledActorPosition(player_move_by_x, player_move_by_y, direction);
 		}
-	} 
+	}
 	else
 	{
 		player->SetState(PlayerStateType::IDLE);
@@ -69,8 +76,24 @@ void World::Update(float deltaTime)
 	for (std::shared_ptr<GameObject> character : character_layer)
 	{
 		character->GetRenderer()->UpdateSpriteAnimation(deltaTime);
+		if (character->GetTag() == TagType::ENEMY)
+		{
+			Slime& enemy = static_cast<Slime&>(*character.get());
+			enemy.GetBehaviourTree()->Update();
+
+			if (!player->GetIsInvulnerable() && player->GetCollider()->CheckCollision(*player->GetCollider(), *enemy.GetCollider()))
+			{
+				player->TakeDamage();
+			}
+		}
 	}
 
+	// TODO : could make it a subscribe pattern here 
+	if (player->IsDead())
+	{
+		GameEndDead();
+		return;
+	}
 }
 
 bool World::CalculatePlayerNextMovement(ICollider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
@@ -106,15 +129,29 @@ bool World::CalculatePlayerNextMovement(ICollider& collider, FacingDirection& di
 	return player_will_move;
 }
 
-bool World::ShouldActorMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction)
+bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
 {
-	bool should_move = true;
 	std::vector<std::vector<std::shared_ptr<GameObject>>> scene_layers = current_scene->GetSceneLayers();
 
+	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::CHARACTERS])
+	{
+		if (object->GetTag() == TagType::ENEMY)
+		{
+			Actor& actor = static_cast<Actor&>(*object.get());
+			if (player->GetCollider()->CheckCollision(collider, *actor.GetCollider()))
+			{
+				if (!player->GetIsInvulnerable())
+				{
+					player->TakeDamage();
+				}
+				return false;
+			}
+		}
+	}
 	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::FOREGROUND])
 	{
 		Actor& actor = static_cast<Actor&>(*object.get());
-		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor.GetCollider()))
+		if (player->GetCollider()->CheckCollision(collider, *actor.GetCollider()))
 		{
 			if (actor.GetTag() == TagType::MOVABLE_OBJECT)
 			{
@@ -132,15 +169,13 @@ bool World::ShouldActorMove(Actor& actor_to_move, ICollider& collider, FacingDir
 					key.OnInteractWithPlayer(*this);
 				}
 			}
-			should_move = false;
-			break;
+			return false;
 		}
 	}
-
 	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::MIDDLEGROUND])
 	{
 		Actor& actor = static_cast<Actor&>(*object.get());
-		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor.GetCollider()))
+		if (player->GetCollider()->CheckCollision(collider, *actor.GetCollider()))
 		{
 			if (actor.GetTag() != TagType::PLATE)
 			{
@@ -149,13 +184,12 @@ bool World::ShouldActorMove(Actor& actor_to_move, ICollider& collider, FacingDir
 					Door& door = static_cast<Door&>(actor);
 					door.OnInteractWithPlayer(*this);
 				}
-				should_move = false;
-				break;
+				return false;
 			} 
 		}
 	}
 	
-	return should_move;
+	return true;
 }
 
 bool World::ShouldMovableObjectsMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction)
@@ -245,6 +279,16 @@ void World::UpdateMovableObjects(Actor& actor, FacingDirection direction)
 	}
 }
 
+void World::InvulnerabilityCountdown(float deltaTime)
+{
+	start_timer += deltaTime / 1000;
+	if (start_timer >= stop_timer)
+	{
+		start_timer = 0.f;
+		player->SetIsInvulnerable(false);
+	}
+}
+
 void World::DrawAllSprites()
 {
 	for (size_t i = 0; i < LayerType::COUNT; ++i)
@@ -286,12 +330,23 @@ void World::DrawTextBox()
 	text_box.DisplayDialogue();
 }
 
-void World::GameEnd()
+void World::GameEndEscaped()
 {
+	// TODO: MERGE THE GAME END ESCAPE AND GAME END DEAD
 	has_game_ended = true;
 	end_screen_sprite = std::make_unique<CSimpleSprite>(END_SCREEN);
 	end_screen_sprite->SetPosition(512, 384);
 
 	App::StopSound(NORMAL_MUSIC);
 	App::PlaySound(END_MUSIC);
+}
+
+void World::GameEndDead()
+{
+	has_game_ended = true;
+	end_screen_sprite = std::make_unique<CSimpleSprite>(DEAD_SCREEN);
+	end_screen_sprite->SetPosition(512, 384);
+
+	App::StopSound(NORMAL_MUSIC);
+	App::PlaySound(DEAD_MUSIC);
 }

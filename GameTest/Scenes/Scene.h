@@ -114,6 +114,8 @@ public:
 
 	bool IsSpaceFree(Vector2D& position);
 	void MoveObjectPositionInMap(Vector2D& old_position, Vector2D& new_position, GameObject* object);
+	void GetCoordinateByPosition(Vector2D& position, int& map_w, int& map_h);
+	Vector2D GetPositionByCoordinate(int map_w, int map_h);
 
 	void Update() override;
 
@@ -121,7 +123,6 @@ public:
 
 	int GenerateRandomBetween(int min, int max);
 
-	std::shared_ptr<Slime> temp_slime = nullptr;
 private:
 
 	object_list _map[MAP_WIDTH][MAP_HEIGHT] = { {} };

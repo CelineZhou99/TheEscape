@@ -14,6 +14,7 @@
 //------------------------------------------------------------------------
 std::unique_ptr<World> world;
 bool is_space_pressed = false;
+bool is_restart_pressed = false;
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
 //------------------------------------------------------------------------
@@ -44,6 +45,19 @@ void Update(float deltaTime)
 			}
 		}
 		world->Update(deltaTime);
+	}
+	else
+	{
+		if (App::IsKeyPressed('R') && !is_restart_pressed)
+		{
+			is_restart_pressed = true;
+		}
+		if (!App::IsKeyPressed('R') && is_restart_pressed)
+		{
+			is_restart_pressed = false;
+			world->has_game_ended = false;
+			world->Init();
+		}
 	}
 }
 

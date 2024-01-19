@@ -306,7 +306,6 @@ void Scene::MakeSlime(float i, float j)
 	slime->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
 	slime->GetRenderer()->SetAnimation(FacingDirection::DOWN);
 	_scene_layers[LayerType::CHARACTERS].push_back(slime);
-	temp_slime = slime;
 }
 
 std::shared_ptr<Actor> Scene::GetDoorWithId(int id)
@@ -358,11 +357,11 @@ void Scene::MoveObjectPositionInMap(Vector2D& old_position, Vector2D& new_positi
 {
 	// TODO : TEST
 
-	int old_index_w = std::floor(old_position.X() / TILE_SIZE_FULL);
-	int old_index_h = std::floor(old_position.Y() / TILE_SIZE_FULL);
+	int old_index_w = static_cast<int>(std::floor(old_position.X() / TILE_SIZE_FULL));
+	int old_index_h = static_cast<int>(std::floor(old_position.Y() / TILE_SIZE_FULL));
 
-	int new_index_w = std::floor(new_position.X() / TILE_SIZE_FULL);
-	int new_index_h = std::floor(new_position.Y() / TILE_SIZE_FULL);
+	int new_index_w = static_cast<int>(std::floor(new_position.X() / TILE_SIZE_FULL));
+	int new_index_h = static_cast<int>(std::floor(new_position.Y() / TILE_SIZE_FULL));
 
 	if (old_index_w < 0 || old_index_w >= MAP_WIDTH || old_index_h < 0 || old_index_h >= MAP_HEIGHT ||
 		new_index_w < 0 || new_index_w >= MAP_WIDTH || new_index_h < 0 || new_index_h >= MAP_HEIGHT)
@@ -383,6 +382,20 @@ void Scene::MoveObjectPositionInMap(Vector2D& old_position, Vector2D& new_positi
 	}
 
 	_map[new_index_w][new_index_h].push_back(std::make_shared<GameObject>(*object));
+}
+
+void Scene::GetCoordinateByPosition(Vector2D& position, int& map_w, int& map_h)
+{
+	map_w = std::floor(position.X() / TILE_SIZE_FULL);
+	map_h = std::floor(position.Y() / TILE_SIZE_FULL);
+}
+
+Vector2D Scene::GetPositionByCoordinate(int map_w, int map_h)
+{
+	float x = (static_cast<float>(map_w)) * TILE_SIZE_FULL + TILE_SIZE_HALF;
+	float y = (static_cast<float>(map_h)) * TILE_SIZE_FULL + TILE_SIZE_HALF;
+
+	return Vector2D(x, y);
 }
 
 void Scene::Update()

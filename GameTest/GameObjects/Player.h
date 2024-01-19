@@ -24,7 +24,9 @@ public:
             }),
         _state_type(PlayerStateType::IDLE),
         _inventory(std::make_shared<Inventory>()),
-        _health_icon(std::make_shared<UI>(IMAGE_HEART))
+        _health(5),
+        _health_icon(std::make_shared<UI>(IMAGE_HEART)),
+        _is_invulnerable(false)
     {}
 
     PlayerStateType GetStateType() { return _state_type; }
@@ -36,15 +38,21 @@ public:
     std::shared_ptr<Inventory> GetInventory() { return _inventory; }
 
     int GetHealth() { return _health; }
+    bool IsDead();
+    void TakeDamage();
 
     std::shared_ptr<UI> GetHealthIcon() { return _health_icon; }
+
+    bool GetIsInvulnerable() { return _is_invulnerable; }
+    void SetIsInvulnerable(bool is_invulnerable) { _is_invulnerable = is_invulnerable; }
 
 protected:
     PlayerStateMap _player_state_map;
     PlayerStateType _state_type;
     FacingDirection _last_facing_direction = FacingDirection::DOWN;
     std::shared_ptr<Inventory> _inventory;
-    int _health = 3;
+    int _health;
     std::shared_ptr<UI> _health_icon;
+    bool _is_invulnerable;
 };
 
