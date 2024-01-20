@@ -24,7 +24,10 @@ public:
 
     std::shared_ptr<BoxCollider> GetCollider() { return _collider; }
 
-    void UpdateActorPosition(float& move_by_x, float& move_by_y);
+    void UpdateActorPosition(float move_by_x, float move_by_y);
+    // default facing direction on actor to be down
+    // TODO : REMOVE FROM PLAYER CONTROLLER???? CREATE ACTOR CONTROLLER?
+    void SetActorPosition(float x, float y, FacingDirection direction = FacingDirection::DOWN);
    
 protected:
     std::shared_ptr<BoxCollider> _collider;

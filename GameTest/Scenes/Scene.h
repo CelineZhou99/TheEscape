@@ -12,6 +12,7 @@
 #define GOAL_REWARD "GR"
 
 #define GOAL_CONTEXT_PRESSURE_PLATE "P"
+#define GOAL_CONTEXT_SLIME "S"
 #define GOAL_REWARD_KEY "K"
 #define GOAL_REWARD_KEY_ESCAPE "KE"
 
@@ -23,8 +24,9 @@
 #define SCENE_OBJECT_PATH 'A'
 #define SCENE_OBJECT_KEY 'K'
 #define SCENE_OBJECT_KEY_ESCAPE 'E'
-#define SCENE_OBJECT_GOAL_REWARD_TILE 'R'
+#define SCENE_OBJECT_GOAL_REWARD_TILE 'G'
 #define SCENE_OBJECT_SLIME 'S'
+#define SCENE_OBJECT_RESET_BUTTON 'R'
 
 #define IMAGE_FLOOR ".\\Data\\Images\\Floor.bmp"
 #define IMAGE_FLOOR_V2 ".\\Data\\Images\\FloorV2.bmp"
@@ -39,6 +41,8 @@
 #define IMAGE_KEY_ESCAPE ".\\Data\\Images\\KeyEscape.bmp"
 #define IMAGE_GOAL_REWARD_TILE ".\\Data\\Images\\GoalRewardsTile.bmp"
 #define IMAGE_SLIME ".\\Data\\Images\\Slime.bmp"
+#define IMAGE_RESET_BUTTON ".\\Data\\Images\\ResetButton.bmp"
+#define IMAGE_FIREBALL ".\\Data\\Images\\Fireball.bmp"
 
 #define OBJECT_STATE_INDEX 0
 #define OBJECT_ID_INDEX 1 
@@ -55,6 +59,7 @@ enum LayerType : uint8_t
 	MIDDLEGROUND,
 	FOREGROUND,
 	CHARACTERS,
+	SPELLS,
 	COUNT,
 };
 
@@ -75,11 +80,14 @@ public:
 			{'C', ".\\Data\\Maps\\MapC.txt"},
 			{'D', ".\\Data\\Maps\\MapD.txt"},
 			{'E', ".\\Data\\Maps\\MapE.txt"},
+			{'F', ".\\Data\\Maps\\MapF.txt"},
+			{'G', ".\\Data\\Maps\\MapG.txt"},
 			}),
 		_goal_context({}),
 		_goal_type_mapping({
 			{"N", GoalType::GOAL_NONE},
 			{"P", GoalType::GOAL_PRESSURE_PLATE},
+			{"S", GoalType::GOAL_SLIME},
 			})
 	{
 		Init();
@@ -108,8 +116,11 @@ public:
 	void MakeKey(float i, float j);
 	void MakeKeyEscape(float i, float j);
 	void MakeSlime(float i, float j);
+	void MakeResetButton(float i, float j);
+	void MakeFireball(float i, float j, FacingDirection direction);
 
 	std::shared_ptr<Actor> GetDoorWithId(int id);
+	Goal* GetGoal() { return _goal; }
 	GoalType GetGoalType();
 
 	bool IsSpaceFree(Vector2D& position);
@@ -123,7 +134,11 @@ public:
 
 	int GenerateRandomBetween(int min, int max);
 
+	const char* GetMapFileName() { return _map_file_name; }
+
 private:
+
+	void StoreResetButtonData();
 
 	object_list _map[MAP_WIDTH][MAP_HEIGHT] = { {} };
 	scene_layers _scene_layers;
@@ -143,5 +158,7 @@ private:
 	std::vector<char> _context_reading_order = { object_state, object_id, linked_map_id };
 
 	Player* _player = nullptr;
+
+	const char* _map_file_name = "";
 };
 

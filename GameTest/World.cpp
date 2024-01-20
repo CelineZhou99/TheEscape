@@ -4,6 +4,7 @@
 #include "GameObjects/PressurePlate.h"
 #include "GameObjects/Key.h"
 #include "GameObjects/Slime.h"
+#include "GameObjects/ResetButton.h"
 
 void World::Init()
 {
@@ -80,13 +81,11 @@ void World::Update(float deltaTime)
 		{
 			Slime& enemy = static_cast<Slime&>(*character.get());
 			enemy.GetBehaviourTree()->Update();
-
-			if (!player->GetIsInvulnerable() && player->GetCollider()->CheckCollision(*player->GetCollider(), *enemy.GetCollider()))
-			{
-				player->TakeDamage();
-			}
 		}
 	}
+
+	CheckShootControls();
+	UpdateSpells();
 
 	// TODO : could make it a subscribe pattern here 
 	if (player->IsDead())
@@ -140,10 +139,7 @@ bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
 			Actor& actor = static_cast<Actor&>(*object.get());
 			if (player->GetCollider()->CheckCollision(collider, *actor.GetCollider()))
 			{
-				if (!player->GetIsInvulnerable())
-				{
-					player->TakeDamage();
-				}
+				player->TakeDamage();
 				return false;
 			}
 		}
@@ -168,6 +164,11 @@ bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
 					Key& key = static_cast<Key&>(item);
 					key.OnInteractWithPlayer(*this);
 				}
+			}
+			else if (actor.GetTag() == TagType::BUTTON)
+			{
+				ResetButton& button = static_cast<ResetButton&>(actor);
+				button.OnInteractWithPlayer(*this);
 			}
 			return false;
 		}
@@ -286,6 +287,137 @@ void World::InvulnerabilityCountdown(float deltaTime)
 	{
 		start_timer = 0.f;
 		player->SetIsInvulnerable(false);
+	}
+}
+
+void World::CheckShootControls()
+{
+	if (!player->GetCanShoot())
+	{
+		return;
+	}
+
+	int map_w = 0;
+	int map_h = 0;
+	current_scene->GetCoordinateByPosition(*player->GetTransform(), map_w, map_h);
+
+	// spawn fireball in the direction the player selected via the arrow keys 
+	if (App::IsKeyPressed('I') && !is_up_pressed)
+	{
+		is_up_pressed = true;
+	}
+	if (!App::IsKeyPressed('I') && is_up_pressed)
+	{
+		is_up_pressed = false;
+		// spawn fireball on key release
+		Vector2D position = current_scene->GetPositionByCoordinate(map_w, map_h + 1);
+		if (current_scene->IsSpaceFree(position))
+		{
+			current_scene->MakeFireball(position.X(), position.Y(), FacingDirection::UP);
+		}
+	}
+
+	if (App::IsKeyPressed('K') && !is_down_pressed)
+	{
+		is_down_pressed = true;
+	}
+	if (!App::IsKeyPressed('K') && is_down_pressed)
+	{
+		is_down_pressed = false;
+		Vector2D position = current_scene->GetPositionByCoordinate(map_w, map_h - 1);
+		if (current_scene->IsSpaceFree(position))
+		{
+			current_scene->MakeFireball(position.X(), position.Y(), FacingDirection::DOWN);
+		}
+	}
+
+	if (App::IsKeyPressed('J') && !is_left_pressed)
+	{
+		is_left_pressed = true;
+	}
+	if (!App::IsKeyPressed('J') && is_left_pressed)
+	{
+		is_left_pressed = false;
+		Vector2D position = current_scene->GetPositionByCoordinate(map_w - 1, map_h);
+		if (current_scene->IsSpaceFree(position))
+		{
+			current_scene->MakeFireball(position.X(), position.Y(), FacingDirection::LEFT);
+		}
+	}
+
+	if (App::IsKeyPressed('L') && !is_right_pressed)
+	{
+		is_right_pressed = true;
+	}
+	if (!App::IsKeyPressed('L') && is_right_pressed)
+	{
+		is_right_pressed = false;
+		Vector2D position = current_scene->GetPositionByCoordinate(map_w + 1, map_h);
+		if (current_scene->IsSpaceFree(position))
+		{
+			current_scene->MakeFireball(position.X(), position.Y(), FacingDirection::RIGHT);
+		}
+	}
+}
+
+void World::UpdateSpells()
+{
+	object_list spells = current_scene->GetSceneLayers().at(LayerType::SPELLS);
+	for (std::shared_ptr<GameObject> object : spells)
+	{
+		Fireball& fireball = static_cast<Fireball&>(*object.get());
+		switch (fireball.GetFacingDirection())
+		{
+		case FacingDirection::UP:
+			fireball.UpdateActorPosition(0, 5);
+			break;
+		case FacingDirection::DOWN:
+			fireball.UpdateActorPosition(0, -5);
+			break;
+		case FacingDirection::LEFT:
+			fireball.UpdateActorPosition(-5, 0);
+			break;
+		case FacingDirection::RIGHT:
+			fireball.UpdateActorPosition(5, 0);
+			break;
+		}
+		CheckSpellCollision(fireball);
+	}
+}
+
+void World::CheckSpellCollision(Fireball& fireball)
+{
+	object_list characters = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
+	for (std::shared_ptr<GameObject> object : characters)
+	{
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (fireball.GetCollider()->CheckCollision(*fireball.GetCollider(), *actor.GetCollider()))
+		{
+			fireball.OnCollideWithObject(object.get(), current_scene.get());
+			return;
+		}
+	}
+
+	object_list foreground = current_scene->GetSceneLayers().at(LayerType::FOREGROUND);
+	for (std::shared_ptr<GameObject> object : foreground)
+	{
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (fireball.GetCollider()->CheckCollision(*fireball.GetCollider(), *actor.GetCollider()))
+		{
+			fireball.OnCollideWithObject(object.get(), current_scene.get());
+			return;
+		}
+	}
+
+	object_list middleground = current_scene->GetSceneLayers().at(LayerType::MIDDLEGROUND);
+	for (std::shared_ptr<GameObject> object : middleground)
+	{
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (fireball.GetCollider()->CheckCollision(*fireball.GetCollider(), *actor.GetCollider()))
+		{
+			fireball.OnCollideWithObject(object.get(), current_scene.get());
+			return;
+		}
 	}
 }
 

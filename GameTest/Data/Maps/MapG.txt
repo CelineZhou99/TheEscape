@@ -1,0 +1,17 @@
+GC:S GD:8 GR:KE
+W W W W W W W W W W W W
+W F F F F F F F F F F W
+W F F F F F S F F F F W
+W F F F F F F F F F F W
+W F F F F W W W F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+D:L:8:D F F F F F F S F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F F F F F F F W
+W F F F F W W W F F F W
+W F F F F F F F F F F W
+W F F F F F S F F G F W
+W F F F F F F F F F F W
+W W W W W W W W W W W W

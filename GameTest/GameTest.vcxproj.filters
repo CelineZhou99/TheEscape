@@ -55,6 +55,9 @@
     <ClCompile Include="BehaviourTree\Blackboard.cpp" />
     <ClCompile Include="BehaviourTree\DecoratorNode.cpp" />
     <ClCompile Include="Controllers\SlimeController.cpp" />
+    <ClCompile Include="GameObjects\ResetButton.cpp" />
+    <ClCompile Include="GameObjects\Fireball.cpp" />
+    <ClCompile Include="GameObjects\IHealthSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\app.h">
@@ -126,6 +129,9 @@
     <ClInclude Include="BehaviourTree\Blackboard.h" />
     <ClInclude Include="BehaviourTree\DecoratorNode.h" />
     <ClInclude Include="Controllers\SlimeController.h" />
+    <ClInclude Include="GameObjects\ResetButton.h" />
+    <ClInclude Include="GameObjects\Fireball.h" />
+    <ClInclude Include="GameObjects\IHealthSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="NextAPI">

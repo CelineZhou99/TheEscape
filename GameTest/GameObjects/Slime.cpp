@@ -26,23 +26,24 @@ BehaviourNodeState Slime::MoveTo(Scene* scene)
 	location = static_cast<Any<Vector2D>*>(location_ptr.get())->GetData();
 	direction = static_cast<Any<FacingDirection>*>(direction_ptr.get())->GetData();
 
+	// TODO : do more testing to see if 0.5 will cause any issues - then set as movement speed for slime
 	float x, y = 0;
 	switch (direction)
 	{
 	case FacingDirection::UP:
 		x = 0;
-		y = 1;
+		y = 0.5;
 		break;
 	case FacingDirection::DOWN:
 		x = 0;
-		y = -1;
+		y = -0.5;
 		break;
 	case FacingDirection::LEFT:
-		x = -1;
+		x = -0.5;
 		y = 0;
 		break;
 	case FacingDirection::RIGHT:
-		x = 1;
+		x = 0.5;
 		y = 0;
 		break;
 	case FacingDirection::NONE:
@@ -62,10 +63,11 @@ BehaviourNodeState Slime::MoveTo(Scene* scene)
 		Actor& actor = static_cast<Actor&>(*object.get());
 		if (GetCollider()->CheckCollision(collider, *actor.GetCollider()))
 		{
-			/*if (actor.GetTag() == TagType::ENEMY)
+			if (actor.GetTag() == TagType::PLAYER)
 			{
-				return BehaviourNodeState::FAILED;
-			}*/
+				Player& player = static_cast<Player&>(actor);
+				player.TakeDamage();
+			}
 			return BehaviourNodeState::FAILED;
 		}
 	}

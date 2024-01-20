@@ -6,6 +6,7 @@
 #include "../GameObjects/PressurePlate.h"
 #include "../GameObjects/Key.h"
 #include "../GameObjects/Slime.h"
+#include "../GameObjects/ResetButton.h"
 #include <random>
 
 void Scene::Init()
@@ -29,6 +30,7 @@ void Scene::AddToSceneLayers(std::shared_ptr<GameObject> object, LayerType layer
 
 void Scene::RemoveFromSceneLayers(GameObject* object, LayerType layer)
 {
+	// TODO : CHANGE THIS TO ID 
 	std::vector<std::shared_ptr<GameObject>>::iterator it =
 		std::find_if(_scene_layers[layer].begin(), _scene_layers[layer].end(), [object](const std::shared_ptr<GameObject>& o)
 			{
@@ -80,6 +82,8 @@ std::set<int> Scene::ReadContextFromFile(std::istringstream& iss, std::string& w
 
 void Scene::LoadMap(const char* file_name_text)
 {
+	_map_file_name = file_name_text;
+
 	std::ifstream infile(file_name_text);
 	std::string line = "";
 	std::string word = "";
@@ -136,11 +140,20 @@ void Scene::LoadMap(const char* file_name_text)
 			{
 				MakeSlime(i, j);
 			}
+			else if (object_type == SCENE_OBJECT_RESET_BUTTON)
+			{
+				MakeResetButton(i, j);
+			}
 			j += TILE_SIZE_FULL;
 			++map_h;
 		}
 		i += TILE_SIZE_FULL;
 		++map_w;
+	}
+
+	if (_goal_context == GOAL_CONTEXT_PRESSURE_PLATE)
+	{
+		StoreResetButtonData();
 	}
 }
 
@@ -306,6 +319,27 @@ void Scene::MakeSlime(float i, float j)
 	slime->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
 	slime->GetRenderer()->SetAnimation(FacingDirection::DOWN);
 	_scene_layers[LayerType::CHARACTERS].push_back(slime);
+
+	// TODO : MAKE THIS A COMPOSITE PATTERN?
+	if (_goal_context == GOAL_CONTEXT_SLIME)
+	{
+		_goal->IncrementContextCount();
+	}
+}
+
+void Scene::MakeResetButton(float i, float j)
+{
+	std::shared_ptr<Renderer> button_renderer = std::make_shared<Renderer>(IMAGE_RESET_BUTTON, 1, 1, i, j);
+	std::shared_ptr<ResetButton> button = std::make_shared<ResetButton>(button_renderer, i, j, TagType::BUTTON);
+	_scene_layers[LayerType::FOREGROUND].push_back(button);
+}
+
+void Scene::MakeFireball(float i, float j, FacingDirection direction)
+{
+	std::shared_ptr<Renderer> fireball_renderer = std::make_shared<Renderer>(IMAGE_FIREBALL, 1, 1, i, j);
+	std::shared_ptr<Fireball> fireball = std::make_shared<Fireball>(fireball_renderer, i, j, TagType::SPELL, direction);
+
+	_scene_layers[LayerType::SPELLS].push_back(fireball);
 }
 
 std::shared_ptr<Actor> Scene::GetDoorWithId(int id)
@@ -408,6 +442,18 @@ void Scene::Update()
 			door->SetState(DoorStateType::UNLOCKED);
 			_goal->SpawnReward(this);
 		}
+		if (_goal_context == GOAL_CONTEXT_PRESSURE_PLATE)
+		{
+			for (std::shared_ptr<GameObject> object : _scene_layers[LayerType::FOREGROUND])
+			{
+				if (object->GetTag() == TagType::BUTTON)
+				{
+					ResetButton& button = static_cast<ResetButton&>(*object.get());
+					button.SetIsDisabled(true);
+					break;
+				}
+			}
+		}
 	}
 	else
 	{
@@ -426,6 +472,27 @@ int Scene::GenerateRandomBetween(int min, int max)
 	std::uniform_int_distribution<> distribution(min, max);
 
 	return distribution(gen);
+}
+
+void Scene::StoreResetButtonData()
+{
+	for (std::shared_ptr<GameObject> object : _scene_layers[LayerType::FOREGROUND])
+	{
+		if (object->GetTag() == TagType::BUTTON)
+		{
+			ResetButton& button = static_cast<ResetButton&>(*object.get());
+			button.SetOriginalGoalContextCount(_goal->GetContextCount());
+			for (std::shared_ptr<GameObject> o : _scene_layers[LayerType::FOREGROUND])
+			{
+				// TODO : make tag box specific (only box is using it)
+				if (o->GetTag() == TagType::MOVABLE_OBJECT)
+				{
+					button.AddToOriginalBoxLocation(*o->GetTransform().get());
+				}
+			}
+			break;
+		}
+	}
 }
 
 

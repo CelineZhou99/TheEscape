@@ -12,6 +12,8 @@ enum TagType : uint8_t
 	PLATE,
 	DOOR,
 	ITEM,
+	BUTTON,
+	SPELL,
 };
 
 class GameObject

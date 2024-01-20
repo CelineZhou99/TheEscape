@@ -1,12 +1,12 @@
 GC:N GD:
-V V W W W W D:U:3:D W W W V V
+V V W W W W D:U:2:C W W W V V
 V V W F F F F F F W V V
 V V W F F F F F F W V V
 W W W F F F F F F W W W
 W F F F F F F F F F F W
 W F F F F F F F F F F W
 W F F F F F F F F F F W
-A:U:1:A F F F F F F F F F F A:U:2:C
+A:U:1:A F F F F F F F F F F A:U:3:D
 W F F F F F F F F F F W
 W F F F F F F F F F F W
 W F F F F F F F F F F W

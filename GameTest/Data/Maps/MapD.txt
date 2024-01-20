@@ -1,17 +1,17 @@
-GC:P GD:3 GR:KE
-V V V V V W W W W V V V
-V V V V V W P P W V V V
-V V V V V W F F W V V V
-V V V W W W F F W W V V
-V V V W F F F F F W V V
-V V V W F F F F F W V V
-V V V W F F F B F W W W
-V V V W W F F W F W P W
-V V V V W F F F F W F W
-V V V V W B F F F F F W
-V V V V W F F F B W F W
-V V V V W F F F F F F W
-V V V V W F F F F W W W
-V V V V W F R F F W V V
-V V V V W F F F F W V V
-V V V V W W D:L:3:B W W V V V
+GC:N GD:
+V V V V V V V V V V V V
+V V V V V V V V V V V V
+V V V V V V V V V V V V
+V V V V V V V V V V V V
+V V V V V V V V V V V V
+W W W W W W W W W W W W
+W F F F F F F F F F F W
+A:U:3:B F F F F F F F F F F D:U:8:G
+W F F F F F F F F F F W
+W W W W W W W W W W W W
+V V V V V V V V V V V V
+V V V V V V V V V V V V
+V V V V V V V V V V V V
+V V V V V V V V V V V V
+V V V V V V V V V V V V
+V V V V V V V V V V V V

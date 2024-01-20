@@ -8,6 +8,7 @@ enum GoalType : uint8_t
 {
     GOAL_NONE,
     GOAL_PRESSURE_PLATE,
+    GOAL_SLIME,
 };
 
 class Goal :
@@ -17,6 +18,8 @@ public:
     Goal() : _goal_context_count(0), _goal_type(GoalType::GOAL_NONE), _goal_reward(""), _goal_reward_tile(nullptr) {}
 
     bool IsGoalComplete();
+    int GetContextCount() { return _goal_context_count; }
+    void SetContextCount(int count) { _goal_context_count = count; }
     void IncrementContextCount();
     void DecrementContextCount();
     void SpawnReward(Scene* scene);

@@ -5,6 +5,7 @@
 #include "Scenes/Scene.h"
 #include <vector>
 #include "UI/TextBox.h"
+#include "GameObjects/Fireball.h"
 
 #define STARTING_MAP ".\\Data\\Maps\\MapA.txt"
 #define NORMAL_MUSIC ".\\Data\\Sounds\\Groovy.wav"
@@ -44,6 +45,10 @@ public:
 	void UpdateMovableObjects(Actor& actor, FacingDirection direction);
 	void InvulnerabilityCountdown(float deltaTime);
 
+	void CheckShootControls();
+	void UpdateSpells();
+	void CheckSpellCollision(Fireball& fireball);
+
 	void GameEndEscaped();
 	void GameEndDead();
 	//------------------------------------------------------------------------
@@ -53,6 +58,10 @@ public:
 	void DrawUI();
 	void DrawTextBox();
 
+	//------------------------------------------------------------------------
+	// Variables
+	//------------------------------------------------------------------------
+
 	std::shared_ptr<PlayerController> player_controller = nullptr;
 	std::shared_ptr<Player> player = nullptr;
 
@@ -61,6 +70,11 @@ public:
 
 	bool has_game_ended = false;
 	std::unique_ptr<CSimpleSprite> end_screen_sprite = nullptr;
+
+	bool is_up_pressed = false;
+	bool is_down_pressed = false;
+	bool is_left_pressed = false;
+	bool is_right_pressed = false;
 
 	TextBox text_box = TextBox(TEXT_BOX);
 	// TODO: ask - since it is only used at the very start, it should be on the stack right?

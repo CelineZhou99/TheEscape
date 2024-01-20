@@ -13,6 +13,7 @@ public:
     Slime(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag, Player* player, Scene* scene) : 
         Actor(renderer, pos_x, pos_y, tag)
     {
+        SetMaxHealth(3);
         BehaviourTreeInit(player, scene);
     }
 
