@@ -1,5 +1,6 @@
 #pragma once
 #include "IDoorState.h"
+#include <vector>
 
 #define DOOR_OPEN_SOUND ".\\Data\\Sounds\\DoorOpen.wav"
 

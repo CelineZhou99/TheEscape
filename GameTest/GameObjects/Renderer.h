@@ -1,6 +1,6 @@
 #pragma once
-
 #include "../App/app.h"
+
 //------------------------------------------------------------------------
 enum FacingDirection : uint8_t
 {

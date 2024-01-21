@@ -5,6 +5,8 @@
 #include "../States/DoorStateUnlocked.h"
 #include <unordered_map>
 
+class World;
+
 using DoorStateMap = std::unordered_map<DoorStateType, std::shared_ptr<IDoorState>>;
 
 class Door :
@@ -12,20 +14,20 @@ class Door :
 {
 	// context class for door states
 public:
-	Door(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag, DoorStateType state, int id, char* linked_map) : 
+	Door(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag, DoorStateType state, unsigned short id, char* linked_map) : 
 		Actor(renderer, pos_x, pos_y, tag), 
 		_door_state_map({ 
 			{DoorStateType::LOCKED, std::make_shared<DoorStateLocked>(this)}, 
 			{DoorStateType::UNLOCKED, std::make_shared<DoorStateUnlocked>(this)} 
 			}),
-		_state_type(state),
+		_linked_map(linked_map),
 		_id(id),
-		_linked_map(linked_map) {}
+		_state_type(state) {}
 
 	DoorStateType GetStateType() { return _state_type; }
 	void SetState(DoorStateType state);
 
-	int GetId() { return _id; }
+	unsigned short GetId() { return _id; }
 
 	char* GetLinkedMap() { return _linked_map; }
 
@@ -33,8 +35,8 @@ public:
 
 protected:
 	DoorStateMap _door_state_map;
-	DoorStateType _state_type;
-	int _id;
 	char* _linked_map;
+	unsigned short _id;
+	DoorStateType _state_type;
 };
 

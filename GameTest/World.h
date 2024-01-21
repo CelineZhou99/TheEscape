@@ -3,9 +3,8 @@
 #include "Controllers/PlayerController.h"
 #include "GameObjects/Player.h"
 #include "Scenes/Scene.h"
-#include <vector>
 #include "UI/TextBox.h"
-#include "GameObjects/Fireball.h"
+#include <vector>
 
 #define STARTING_MAP ".\\Data\\Maps\\MapA.txt"
 #define NORMAL_MUSIC ".\\Data\\Sounds\\Groovy.wav"
@@ -20,9 +19,10 @@
 #define UI_SPACING_X 32
 #define UI_SPACING_Y 32
 
-#define TEXT_BOX ".\\Data\\Images\\TextBox.bmp"
 #define TEXT_BOX_X 512
 #define TEXT_BOX_Y 64
+
+class Fireball;
 
 using Dialogue = std::vector<const char*>;
 
@@ -68,24 +68,19 @@ public:
 	std::unique_ptr<Scene> current_scene = nullptr;
 	std::shared_ptr<Goal> current_goal = nullptr;
 
-	bool has_game_ended = false;
 	std::unique_ptr<CSimpleSprite> end_screen_sprite = nullptr;
+	
+	std::shared_ptr<TextBox> text_box = nullptr;
+	std::shared_ptr<Dialogue> game_start_dialogue = nullptr;
+
+	float start_timer = 0.f;
+	float stop_timer = 2.f;
+
+	bool has_game_ended = false;
 
 	bool is_up_pressed = false;
 	bool is_down_pressed = false;
 	bool is_left_pressed = false;
 	bool is_right_pressed = false;
-
-	TextBox text_box = TextBox(TEXT_BOX);
-	// TODO: ask - since it is only used at the very start, it should be on the stack right?
-	Dialogue game_start_dialogue = {
-		"Where am I...?", 
-		"I can't remember much...", 
-		"I can hear the faint sound of birds from that door...",
-		"That must be the exit."
-	};
-
-	float start_timer = 0.f;
-	float stop_timer = 2.f;
 };
 

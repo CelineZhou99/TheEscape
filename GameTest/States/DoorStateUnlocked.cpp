@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "../GameObjects/Door.h"
 #include "DoorStateUnlocked.h"
 #include "../World.h"
 
@@ -8,7 +7,7 @@ void DoorStateUnlocked::SetSpriteImage()
 	float x, y = 0;
 	_door->GetRenderer()->GetSprite()->GetPosition(x, y);
 	// TODO : PUT STRING INTO A MAP
-	_door->GetRenderer()->SetSprite(".\\Data\\Images\\DungeonDoorUnlocked.bmp", 1, 1);
+	_door->GetRenderer()->SetSprite(IMAGE_DUNGEON_DOOR_UNLOCKED, 1, 1);
 	_door->GetRenderer()->GetSprite()->SetPosition(x, y);
 }
 
@@ -25,10 +24,10 @@ void DoorStateUnlocked::OnCollideWithPlayer(World& world)
 
 	if (_door->GetLinkedMap())
 	{
+		world.current_scene->AddToSceneLayers(world.player, LayerType::CHARACTERS);
 		world.current_scene->LoadMap(_door->GetLinkedMap());
 		world.current_goal->SetGoalType(world.current_scene->GetGoalType());
 		world.current_goal->Subscribe(world.current_scene.get());
-		world.current_scene->AddToSceneLayers(world.player, LayerType::CHARACTERS);
 
 		std::shared_ptr<Actor> new_door = world.current_scene->GetDoorWithId(door_id);
 

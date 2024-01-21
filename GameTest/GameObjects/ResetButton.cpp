@@ -21,7 +21,6 @@ void ResetButton::OnInteractWithPlayer(World& world)
 			Actor& actor = static_cast<Actor&>(*object.get());
 			actor.SetActorPosition(_original_box_locations[index].X(), _original_box_locations[index].Y());
 			++index;
-			// TODO : ASK WHY INDEX++ DOESNT WORK HERE
 			if (index >= _original_box_locations.size())
 			{
 				break;

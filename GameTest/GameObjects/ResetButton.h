@@ -13,14 +13,14 @@ public:
 
     void AddToOriginalBoxLocation(Vector2D& location);
 
-    int GetOriginalGoalContextCount() { return _original_goal_context_count; }
-    void SetOriginalGoalContextCount(int count) { _original_goal_context_count = count; }
+    unsigned short GetOriginalGoalContextCount() { return _original_goal_context_count; }
+    void SetOriginalGoalContextCount(unsigned short count) { _original_goal_context_count = count; }
 
     void SetIsDisabled(bool is_disabled) { _is_disabled = is_disabled; }
 
 private:
     std::vector<Vector2D> _original_box_locations;
-    int _original_goal_context_count;
+    unsigned short _original_goal_context_count;
     bool _is_disabled;
 };
 

@@ -1,6 +1,9 @@
 #pragma once
 #include "IPressurePlateState.h"
-#include "../Observers/Goal.h"
+
+#define PRESSURE_PLATE_OFF_SOUND ".\\Data\\Sounds\\SwitchOff.wav"
+
+class Goal;
 
 class PressurePlateStateOff :
     public IPressurePlateState

@@ -4,6 +4,8 @@
 #include "../States/PressurePlateStateOff.h"
 #include <unordered_map>
 
+class Goal;
+
 using PressurePlateStateMap = std::unordered_map<PressurePlateStateType, std::shared_ptr<IPressurePlateState>>;
 
 class PressurePlate :

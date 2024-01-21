@@ -1,8 +1,8 @@
 #pragma once
 #include "Item.h"
-#include "Player.h"
-#include "../World.h"
 #include "IInteractable.h"
+
+class World;
 
 class Key :
     public Item, public IInteractable

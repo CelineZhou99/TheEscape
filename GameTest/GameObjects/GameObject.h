@@ -14,6 +14,7 @@ enum TagType : uint8_t
 	ITEM,
 	BUTTON,
 	SPELL,
+	DESTRUCTABLE,
 };
 
 class GameObject

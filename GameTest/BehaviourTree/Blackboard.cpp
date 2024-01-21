@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Blackboard.h"
-#include <cassert>
 
 any_type_ptr Blackboard::GetVariable(std::string name)
 {
@@ -9,7 +8,6 @@ any_type_ptr Blackboard::GetVariable(std::string name)
     {
         return it->second;
     }
-    assert(true && it == _blackboard_variables.end());
     return nullptr;
 }
 

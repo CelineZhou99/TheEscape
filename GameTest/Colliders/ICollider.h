@@ -5,7 +5,8 @@ class ICollider
 {
 	// abstract class as base for all types of colliders 
 public:
-	ICollider(Vector2D c_position, float width, float height) : _position(c_position), _collider_width(width), _collider_height(height) {}
+	ICollider(Vector2D c_position, float width, float height) : 
+		_position(c_position), _collider_width(width), _collider_height(height) {}
 	
 	// pure virtual function
 	virtual bool CheckCollision(ICollider& obj_1_collider, ICollider& obj_2_collider) = 0;

@@ -12,7 +12,7 @@ class TextBox :
 {
 public:
     TextBox(const char* file_name, unsigned int columns = 1, unsigned int rows = 1) : UI(file_name), 
-        _dialogue(nullptr), _is_dialogue_finished(true), _dialogue_index(0) {}
+        _dialogue(nullptr), _dialogue_index(0), _is_dialogue_finished(true) {}
 
     void SetDialogue(std::vector<const char*>* dialogue);
     void DisplayDialogue();
@@ -22,7 +22,7 @@ public:
 
 private:
     std::vector<const char*>* _dialogue;
+    unsigned short _dialogue_index;
     bool _is_dialogue_finished;
-    int _dialogue_index;
 };
 

@@ -1,10 +1,11 @@
 #pragma once
 #include "Actor.h"
 #include "IEnemy.h"
-#include "../Scenes/Scene.h"
 
 #define MOVE_TO_LOCATION "MoveToLocation"
 #define MOVE_TO_DIRECTION "MoveToDirection"
+
+class Player;
 
 class Slime :
     public Actor, public IEnemy
@@ -14,13 +15,12 @@ public:
         Actor(renderer, pos_x, pos_y, tag)
     {
         SetMaxHealth(3);
-        BehaviourTreeInit(player, scene);
+        BehaviourTreeInit(scene);
     }
 
-    void BehaviourTreeInit(Player* player, Scene* scene) override;
+    void BehaviourTreeInit(Scene* scene) override;
 
     BehaviourNodeState MoveTo(Scene* scene) override;
-    BehaviourNodeState MoveToPlayer(Player* player) override;
     BehaviourNodeState SetMoveToLocation(Scene* scene) override;
 
     // temp

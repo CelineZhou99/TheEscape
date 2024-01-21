@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../GameObjects/Actor.h"
 
 class Controller

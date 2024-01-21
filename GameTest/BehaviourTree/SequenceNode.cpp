@@ -10,7 +10,7 @@ BehaviourNodeState SequenceNode::AssessCurrState()
 		return BehaviourNodeState::UNDEFINED;
 	}
 
-	for (ptr child : _children)
+	for (node_ptr child : _children)
 	{
 		BehaviourNodeState child_state = child->AssessCurrState();
 		if (child_state == BehaviourNodeState::FAILED)
@@ -22,6 +22,5 @@ BehaviourNodeState SequenceNode::AssessCurrState()
 			return BehaviourNodeState::RUNNING;
 		}
 	}
-
 	return BehaviourNodeState::SUCCESS;
 }

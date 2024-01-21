@@ -1,8 +1,8 @@
 #pragma once
 #include "Publisher.h"
-#include "../GameObjects/GameObject.h"
 
 class Scene;
+class GameObject;
 
 enum GoalType : uint8_t
 {
@@ -18,8 +18,8 @@ public:
     Goal() : _goal_context_count(0), _goal_type(GoalType::GOAL_NONE), _goal_reward(""), _goal_reward_tile(nullptr) {}
 
     bool IsGoalComplete();
-    int GetContextCount() { return _goal_context_count; }
-    void SetContextCount(int count) { _goal_context_count = count; }
+    short GetContextCount() { return _goal_context_count; }
+    void SetContextCount(short count) { _goal_context_count = count; }
     void IncrementContextCount();
     void DecrementContextCount();
     void SpawnReward(Scene* scene);
@@ -33,9 +33,9 @@ public:
 
 protected:
     // count of the context that make up the goal e.g. 5 monsters to slay
-    int _goal_context_count;
-    GoalType _goal_type;
     std::string _goal_reward;
     GameObject* _goal_reward_tile;
+    short _goal_context_count;
+    GoalType _goal_type;
 };
 

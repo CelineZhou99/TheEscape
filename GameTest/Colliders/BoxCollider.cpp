@@ -1,10 +1,6 @@
 #include "stdafx.h"
 #include "BoxCollider.h"
 
-#include <windows.h> 
-#include <sstream>
-#include <string>
-
 bool BoxCollider::CheckCollision(ICollider& obj_1_collider, ICollider& obj_2_collider)
 {
     // use AABB collision detection

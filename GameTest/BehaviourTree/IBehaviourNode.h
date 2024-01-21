@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <memory>
 
 enum BehaviourNodeState : uint8_t
 {
@@ -12,18 +11,17 @@ enum BehaviourNodeState : uint8_t
 
 class IBehaviourNode;
 
-using ptr = std::shared_ptr<IBehaviourNode>;
+using node_ptr = std::shared_ptr<IBehaviourNode>;
 
 class IBehaviourNode
 {
 public:
-	IBehaviourNode(int id) : 
-		_id(id), _children({}), _state(BehaviourNodeState::UNDEFINED) {}
+	IBehaviourNode(unsigned short id) : 
+		_children({}), _id(id), _state(BehaviourNodeState::UNDEFINED) {}
 
-	int GetId() { return _id; }
+	unsigned short GetId() { return _id; }
 
-	ptr GetChild(int index);
-	void AddChild(ptr child);
+	void AddChild(node_ptr child);
 	size_t GetNumOfChildren() { return _children.size(); }
 
 	BehaviourNodeState GetState() { return _state; }
@@ -33,18 +31,9 @@ public:
 	
 	virtual BehaviourNodeState AssessCurrState() = 0;
 
-	bool operator == (const IBehaviourNode& node) 
-	{
-		if (_id == node._id)
-		{
-			return true;
-		}
-		return false;
-	}
-
 protected:
-	int _id;
-	std::vector<ptr> _children;
+	std::vector<node_ptr> _children;
+	unsigned short _id;
 	BehaviourNodeState _state;
 };
 

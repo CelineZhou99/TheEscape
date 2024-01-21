@@ -1,17 +1,17 @@
-GC:S GD:8 GR:KE
+GC:S GD:7 GR:KE
 W W W W W W W W W W W W
 W F F F F F F F F F F W
 W F F F F F S F F F F W
-W F F F F F F F F F F W
+W F F F F F S F F F F W
 W F F F F W W W F F F W
 W F F F F F F F F F F W
 W F F F F F F F F F F W
-D:L:8:D F F F F F F S F F F W
+D:L:7:D F F F F F S S F F F W
 W F F F F F F F F F F W
 W F F F F F F F F F F W
 W F F F F F F F F F F W
-W F F F F W W W F F F W
-W F F F F F F F F F F W
-W F F F F F S F F G F W
-W F F F F F F F F F F W
+W F F F W W W W W F F W
+W F F F F F F S W F F W
+W F F F F F F S W T F W
+W F F F F F F F W F F W
 W W W W W W W W W W W W

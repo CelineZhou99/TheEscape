@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Player.h"
+#include "../World.h"
 
 void Player::SetState(PlayerStateType state)
 {
@@ -26,4 +27,10 @@ void Player::TakeDamage()
 			_is_invulnerable = true;
 		}
 	}
+}
+
+void Player::SetCanShoot(World& world)
+{
+	_can_shoot = true;
+	world.text_box->SetDialogue(&_enable_shoot_dialogue);
 }

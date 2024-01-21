@@ -7,6 +7,10 @@
 #include "../GameObjects/Key.h"
 #include "../GameObjects/Slime.h"
 #include "../GameObjects/ResetButton.h"
+#include "../GameObjects/Pot.h"
+#include "../GameObjects/GummyBear.h"
+#include "../GameObjects/Player.h"
+#include "../GameObjects/Fireball.h"
 #include <random>
 
 void Scene::Init()
@@ -144,6 +148,14 @@ void Scene::LoadMap(const char* file_name_text)
 			{
 				MakeResetButton(i, j);
 			}
+			else if (object_type == SCENE_OBJECT_GUMMY_BEAR)
+			{
+				MakeGummyBear(i, j);
+			}
+			else if (object_type == SCENE_OBJECT_POT)
+			{
+				MakePot(i, j);
+			}
 			j += TILE_SIZE_FULL;
 			++map_h;
 		}
@@ -151,7 +163,7 @@ void Scene::LoadMap(const char* file_name_text)
 		++map_w;
 	}
 
-	if (_goal_context == GOAL_CONTEXT_PRESSURE_PLATE)
+	if (GetGoalType() == GoalType::GOAL_PRESSURE_PLATE)
 	{
 		StoreResetButtonData();
 	}
@@ -198,8 +210,7 @@ void Scene::MakePressurePlate(float i, float j)
 		std::make_shared<PressurePlate>(plate_renderer, i, j, TagType::PLATE);
 	_scene_layers[LayerType::MIDDLEGROUND].push_back(plate);
 
-	// TODO: CHANGE THIS TO GOAL TYPE MAPPING
-	if (_goal_context == GOAL_CONTEXT_PRESSURE_PLATE)
+	if (GetGoalType() == GoalType::GOAL_PRESSURE_PLATE)
 	{
 		_goal->IncrementContextCount();
 	}
@@ -314,14 +325,24 @@ void Scene::MakeSlime(float i, float j)
 {
 	MakeFloor(i, j);
 
+	Player* player = nullptr;
+	for (std::shared_ptr<GameObject> object : _scene_layers[LayerType::CHARACTERS])
+	{
+		if (object->GetTag() == TagType::PLAYER)
+		{
+			player = static_cast<Player*>(object.get());
+			break;
+		}
+	}
+
 	std::shared_ptr<Renderer> slime_renderer = std::make_shared<Renderer>(IMAGE_SLIME, 4, 4, i, j);
-	std::shared_ptr<Slime> slime = std::make_shared<Slime>(slime_renderer, i, j, TagType::ENEMY, _player, this);
+	std::shared_ptr<Slime> slime = std::make_shared<Slime>(slime_renderer, i, j, TagType::ENEMY, player, this);
 	slime->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
 	slime->GetRenderer()->SetAnimation(FacingDirection::DOWN);
 	_scene_layers[LayerType::CHARACTERS].push_back(slime);
 
 	// TODO : MAKE THIS A COMPOSITE PATTERN?
-	if (_goal_context == GOAL_CONTEXT_SLIME)
+	if (GetGoalType() == GoalType::GOAL_SLIME)
 	{
 		_goal->IncrementContextCount();
 	}
@@ -340,6 +361,37 @@ void Scene::MakeFireball(float i, float j, FacingDirection direction)
 	std::shared_ptr<Fireball> fireball = std::make_shared<Fireball>(fireball_renderer, i, j, TagType::SPELL, direction);
 
 	_scene_layers[LayerType::SPELLS].push_back(fireball);
+}
+
+void Scene::MakeGummyBear(float i, float j)
+{
+	MakeFloor(i, j);
+
+	for (std::shared_ptr<GameObject> object : _scene_layers[LayerType::CHARACTERS])
+	{
+		if (object->GetTag() == TagType::PLAYER)
+		{
+			Player& player = static_cast<Player&>(*object.get());
+			if (player.GetCanShoot())
+			{
+				return;
+			}
+			break;
+		}
+	}
+
+	std::shared_ptr<Renderer> bear_renderer = std::make_shared<Renderer>(IMAGE_GUMMY_BEAR, 1, 1, i, j);
+	std::shared_ptr<GummyBear> bear = std::make_shared<GummyBear>(bear_renderer, i, j, TagType::ITEM, ItemType::GUMMY_BEAR);
+	_scene_layers[LayerType::FOREGROUND].push_back(bear);
+}
+
+void Scene::MakePot(float i, float j)
+{
+	MakeFloor(i, j);
+
+	std::shared_ptr<Renderer> pot_renderer = std::make_shared<Renderer>(IMAGE_POT, 1, 1, i, j);
+	std::shared_ptr<Pot> pot = std::make_shared<Pot>(pot_renderer, i, j, TagType::DESTRUCTABLE);
+	_scene_layers[LayerType::FOREGROUND].push_back(pot);
 }
 
 std::shared_ptr<Actor> Scene::GetDoorWithId(int id)
@@ -371,8 +423,8 @@ GoalType Scene::GetGoalType()
 
 bool Scene::IsSpaceFree(Vector2D& position)
 {
-	int index_w = std::floor(position.X() / TILE_SIZE_FULL);
-	int index_h = std::floor(position.Y() / TILE_SIZE_FULL);
+	int index_w = static_cast<int>(std::floor(position.X() / TILE_SIZE_FULL));
+	int index_h = static_cast<int>(std::floor(position.Y() / TILE_SIZE_FULL));
 
 	if (index_w < 0 || index_w >= MAP_WIDTH || index_h < 0 || index_h >= MAP_HEIGHT)
 	{
@@ -389,8 +441,6 @@ bool Scene::IsSpaceFree(Vector2D& position)
 
 void Scene::MoveObjectPositionInMap(Vector2D& old_position, Vector2D& new_position, GameObject* object)
 {
-	// TODO : TEST
-
 	int old_index_w = static_cast<int>(std::floor(old_position.X() / TILE_SIZE_FULL));
 	int old_index_h = static_cast<int>(std::floor(old_position.Y() / TILE_SIZE_FULL));
 
@@ -420,8 +470,8 @@ void Scene::MoveObjectPositionInMap(Vector2D& old_position, Vector2D& new_positi
 
 void Scene::GetCoordinateByPosition(Vector2D& position, int& map_w, int& map_h)
 {
-	map_w = std::floor(position.X() / TILE_SIZE_FULL);
-	map_h = std::floor(position.Y() / TILE_SIZE_FULL);
+	map_w = static_cast<int>(std::floor(position.X() / TILE_SIZE_FULL));
+	map_h = static_cast<int>(std::floor(position.Y() / TILE_SIZE_FULL));
 }
 
 Vector2D Scene::GetPositionByCoordinate(int map_w, int map_h)
@@ -442,7 +492,7 @@ void Scene::Update()
 			door->SetState(DoorStateType::UNLOCKED);
 			_goal->SpawnReward(this);
 		}
-		if (_goal_context == GOAL_CONTEXT_PRESSURE_PLATE)
+		if (GetGoalType() == GoalType::GOAL_PRESSURE_PLATE)
 		{
 			for (std::shared_ptr<GameObject> object : _scene_layers[LayerType::FOREGROUND])
 			{

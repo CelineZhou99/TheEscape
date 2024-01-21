@@ -14,6 +14,7 @@ public:
     void OnCollideWithObject(GameObject* object, Scene* scene);
 
     FacingDirection GetFacingDirection() { return _direction; }
+
 private:
     FacingDirection _direction;
 };

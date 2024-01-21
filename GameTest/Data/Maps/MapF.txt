@@ -4,12 +4,12 @@ V V V V V V V V V V V V
 V V V V V V V V V V V V
 V V V V V V V V V V V V
 V V V V V V V V V V V V
+W W W W W W V V V V V V
+A:U:5:E F F F F W V V V V V V
+A:U:6:E F F F F W V V V V V V
+W W W W G W V V V V V V
+V V V W W W V V V V V V
 V V V V V V V V V V V V
-V V V V V V V W W W W W
-V V V V V V V W F F F A:U:5:E
-V V V V V V V W F F F A:U:6:E
-V V V V V V V W F F F A:U:7:E
-V V V V V V V W W W W W
 V V V V V V V V V V V V
 V V V V V V V V V V V V
 V V V V V V V V V V V V

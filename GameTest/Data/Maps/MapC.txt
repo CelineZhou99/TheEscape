@@ -11,7 +11,7 @@ V V V W F F F F W F W V
 V V V W B F F F F F W V 
 V V V W F F F B W F W V 
 V V V W F F F F F F W V 
-V V V W F F F F W W W V 
-V V V W F G F F W V V V 
+V V V W F F F T W W W V 
+V V V W F F F F W V V V 
 V V V W F F F R W V V V 
 V V V W W D:L:2:B W W W V V V 

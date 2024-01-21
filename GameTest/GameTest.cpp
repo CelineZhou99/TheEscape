@@ -32,16 +32,16 @@ void Update(float deltaTime)
 {
 	if (!world->has_game_ended)
 	{
-		if (!world->text_box.GetIsDialogueFinished())
+		if (!world->text_box->GetIsDialogueFinished())
 		{
-			if (App::IsKeyPressed(VK_SPACE) && !is_space_pressed)
+ 			if (App::IsKeyPressed(VK_SPACE) && !is_space_pressed)
 			{
 				is_space_pressed = true;
 			}
 			if (!App::IsKeyPressed(VK_SPACE) && is_space_pressed)
 			{
 				is_space_pressed = false;
-				world->text_box.NextDialogue();
+				world->text_box->NextDialogue();
 			}
 		}
 		world->Update(deltaTime);
@@ -72,7 +72,7 @@ void Render()
 		world->DrawAllSprites();
 		world->DrawUI();
 		
-		if (!world->text_box.GetIsDialogueFinished())
+		if (!world->text_box->GetIsDialogueFinished())
 		{
 			world->DrawTextBox();
 		}
@@ -81,29 +81,6 @@ void Render()
 	{
 		world->end_screen_sprite->Draw();
 	}
-	//------------------------------------------------------------------------
-	// Example Text.
-	//------------------------------------------------------------------------
-	/*App::Print(100, 100, "Sample Text");*/
-	//------------------------------------------------------------------------
-	// Example Line Drawing.
-	//------------------------------------------------------------------------
-	/*static float a = 0.0f;
-	float r = 1.0f;
-	float g = 1.0f;
-	float b = 1.0f;
-	a += 0.1f;
-	for (int i = 0; i < 20; i++)
-	{
-
-		float sx = 200 + sinf(a + i * 0.1f)*60.0f;
-		float sy = 200 + cosf(a + i * 0.1f)*60.0f;
-		float ex = 700 - sinf(a + i * 0.1f)*60.0f;
-		float ey = 700 - cosf(a + i * 0.1f)*60.0f;
-		g = (float)i / 20.0f;
-		b = (float)i / 20.0f;
-		App::DrawLine(sx, sy, ex, ey,r,g,b);
-	}*/
 }
 //------------------------------------------------------------------------
 // Add your shutdown code here. Called when the APP_QUIT_KEY is pressed.

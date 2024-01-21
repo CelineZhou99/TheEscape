@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "Slime.h"
 #include "../BehaviourTree/Blackboard.h"
+#include "../Scenes/Scene.h"
+#include "../GameObjects/Player.h"
 
-void Slime::BehaviourTreeInit(Player* player, Scene* scene)
+void Slime::BehaviourTreeInit(Scene* scene)
 {
 	_behaviour_tree = std::make_shared<BehaviourTree>(RootNodeType::SELECTOR);
 	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::MoveTo, this, scene));
@@ -11,7 +13,6 @@ void Slime::BehaviourTreeInit(Player* player, Scene* scene)
 
 BehaviourNodeState Slime::MoveTo(Scene* scene)
 {
-	// TODO : ASK ABOUT TEMPLATE TYPE AND CASTING
 	any_type_ptr location_ptr = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_LOCATION);
 	any_type_ptr direction_ptr = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_DIRECTION);
 
@@ -26,7 +27,7 @@ BehaviourNodeState Slime::MoveTo(Scene* scene)
 	location = static_cast<Any<Vector2D>*>(location_ptr.get())->GetData();
 	direction = static_cast<Any<FacingDirection>*>(direction_ptr.get())->GetData();
 
-	// TODO : do more testing to see if 0.5 will cause any issues - then set as movement speed for slime
+	// TODO : change these numbers to be the slime's speed
 	float x, y = 0;
 	switch (direction)
 	{
@@ -85,11 +86,6 @@ BehaviourNodeState Slime::MoveTo(Scene* scene)
 	
 }
 
-BehaviourNodeState Slime::MoveToPlayer(Player* player)
-{
-	return BehaviourNodeState::SUCCESS;
-}
-
 BehaviourNodeState Slime::SetMoveToLocation(Scene* scene)
 {
 	int map_w = 0;
@@ -143,15 +139,13 @@ BehaviourNodeState Slime::SetMoveToLocation(Scene* scene)
 		return BehaviourNodeState::FAILED;
 	}
 
-	int random_index = scene->GenerateRandomBetween(0, free_locations.size() - 1);
+	int random_index = scene->GenerateRandomBetween(0, static_cast<int>(free_locations.size() - 1));
 	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_LOCATION, new Any<Vector2D>(free_locations[random_index]));
 	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_DIRECTION, new Any<FacingDirection>(free_directions[random_index]));
 
 	return BehaviourNodeState::SUCCESS;
 }
 
-// TODO: 
-// temp to avoid circular dependency between slime and slime controller
 void Slime::UpdatePosition(float move_by_x, float move_by_y, FacingDirection direction)
 {
 	GetTransform()->MoveVectorPosition(move_by_x, move_by_y);

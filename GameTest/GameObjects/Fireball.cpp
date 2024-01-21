@@ -2,6 +2,7 @@
 #include "Fireball.h"
 #include "Slime.h"
 #include "../Scenes/Scene.h"
+#include "Pot.h"
 
 void Fireball::OnCollideWithObject(GameObject* object, Scene* scene)
 {
@@ -18,6 +19,15 @@ void Fireball::OnCollideWithObject(GameObject* object, Scene* scene)
 				scene->GetGoal()->NotifySubscribers();
 			}
 			scene->RemoveFromSceneLayers(object, LayerType::CHARACTERS);
+		}
+	}
+	else if (object->GetTag() == TagType::DESTRUCTABLE)
+	{
+		Pot& pot = static_cast<Pot&>(*object);
+		pot.TakeDamage();
+		if (pot.IsDead())
+		{
+			scene->RemoveFromSceneLayers(object, LayerType::FOREGROUND);
 		}
 	}
 	scene->RemoveFromSceneLayers(this, LayerType::SPELLS);

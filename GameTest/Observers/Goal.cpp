@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Goal.h"
 #include "../Scenes/Scene.h"
+#include "../GameObjects/GameObject.h"
 
 bool Goal::IsGoalComplete()
 {

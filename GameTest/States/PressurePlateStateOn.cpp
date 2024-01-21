@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "PressurePlateStateOn.h"
 #include "../App/app.h"
+#include "../Observers/Goal.h"
 
 void PressurePlateStateOn::PlaySFX()
 {
-	// TODO: play sound
-	App::PlaySound(".\\Data\\Sounds\\SwitchOn.wav");
+	App::PlaySound(PRESSURE_PLATE_ON_SOUND);
 }
 
 void PressurePlateStateOn::UpdateGoalProgress(Goal* goal)

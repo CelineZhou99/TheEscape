@@ -5,9 +5,9 @@ V V V V V V V V V V V V
 V V V V V V V V V V V V
 V V V V V V V V V V V V
 W W W W W W W W W W W W
-W F F F F F F F F F F W
-A:U:3:B F F F F F F F F F F D:U:8:G
-W F F F F F F F F F F W
+A:U:8:B F F F F F O F F F F W
+A:U:3:B F F F F F O F F F F D:U:7:G
+A:U:9:B F F F F F O F F F F W
 W W W W W W W W W W W W
 V V V V V V V V V V V V
 V V V V V V V V V V V V

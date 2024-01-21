@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Inventory.h"
-#include "Key.h"
 
 void Inventory::AddToInventory(Item* item)
 {

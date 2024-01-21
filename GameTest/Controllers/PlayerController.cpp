@@ -20,7 +20,6 @@ void PlayerController::SetControlledActorPosition(float x, float y, FacingDirect
 
 Player* PlayerController::GetControlledActor()
 {
-    Player& player = static_cast<Player&>(*_controlled_actor);
-
-    return &player;
+    Player* player = static_cast<Player*>(_controlled_actor);
+    return player;
 }

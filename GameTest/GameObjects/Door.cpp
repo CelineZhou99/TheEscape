@@ -14,7 +14,6 @@ void Door::SetState(DoorStateType state)
 			d_state->SetSpriteImage();
 		}
 	}
-	
 }
 
 void Door::OnInteractWithPlayer(World& world)

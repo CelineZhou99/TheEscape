@@ -1,9 +1,6 @@
 #pragma once
 #include <unordered_map>
 #include <string>
-#include "../GameObjects/Vector2D.h"
-#include "../GameObjects/Renderer.h"
-#include <memory>
 
 class AnyType {};
 
@@ -20,8 +17,8 @@ private:
 	T _data;
 };
 
-using blackboard_map = std::unordered_map<std::string, std::shared_ptr<AnyType>>;
 using any_type_ptr = std::shared_ptr<AnyType>;
+using blackboard_map = std::unordered_map<std::string, any_type_ptr>;
 
 class Blackboard
 {

@@ -11,6 +11,9 @@
 #define IMAGE_PLAYER_WALK ".\\Data\\Images\\WalkAnimationS.bmp"
 
 using PlayerStateMap = std::unordered_map<PlayerStateType, std::shared_ptr<IPlayerState>>;
+using Dialogue = std::vector<const char*>;
+
+class World;
 
 class Player :
     public Actor, public IHealthSystem
@@ -23,11 +26,21 @@ public:
             {PlayerStateType::IDLE, std::make_shared<PlayerStateIdle>(this)},
             {PlayerStateType::WALK, std::make_shared<PlayerStateWalk>(this)}
             }),
-        _state_type(PlayerStateType::IDLE),
+        _enable_shoot_dialogue({
+            "Oh a gummy bear, Yum!",
+            "*NomNom*", "...",
+            "Oh god why is it so spicy??!!",
+            "Uh oh...",
+            "My stomach feels like its on fire...",
+            "[You have unlocked a new ability.]",
+            "[Use I, K, J, L, to shoot.]"
+        }),
         _inventory(std::make_shared<Inventory>()),
         _health_icon(std::make_shared<UI>(IMAGE_HEART)),
         _is_invulnerable(false),
-        _can_shoot(true) // TODO : TOGGLE BACK TO FALSE
+        _can_shoot(false),
+        _last_facing_direction(FacingDirection::DOWN),
+        _state_type(PlayerStateType::IDLE)
     {
         SetMaxHealth(5);
     }
@@ -48,15 +61,16 @@ public:
     void SetIsInvulnerable(bool is_invulnerable) { _is_invulnerable = is_invulnerable; }
 
     bool GetCanShoot() { return _can_shoot; }
-    void SetCanShoot(bool shoot) { _can_shoot = shoot; }
+    void SetCanShoot(World& world);
 
 protected:
     PlayerStateMap _player_state_map;
-    PlayerStateType _state_type;
-    FacingDirection _last_facing_direction = FacingDirection::DOWN;
+    Dialogue _enable_shoot_dialogue;
     std::shared_ptr<Inventory> _inventory;
     std::shared_ptr<UI> _health_icon;
     bool _is_invulnerable;
     bool _can_shoot;
+    FacingDirection _last_facing_direction;
+    PlayerStateType _state_type;
 };
 

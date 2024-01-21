@@ -5,6 +5,8 @@
 #include "GameObjects/Key.h"
 #include "GameObjects/Slime.h"
 #include "GameObjects/ResetButton.h"
+#include "GameObjects/GummyBear.h"
+#include "GameObjects/Fireball.h"
 
 void World::Init()
 {
@@ -16,14 +18,23 @@ void World::Init()
 
 	current_goal = std::make_shared<Goal>();
 	current_scene = std::make_unique<Scene>(current_goal.get());
+	current_scene->AddToSceneLayers(player, LayerType::CHARACTERS);
 	current_scene->LoadMap(STARTING_MAP);
 	current_goal->SetGoalType(current_scene->GetGoalType());
 	current_goal->Subscribe(current_scene.get());
 
-	current_scene->AddToSceneLayers(player, LayerType::CHARACTERS);
+	text_box = std::make_shared<TextBox>(IMAGE_TEXT_BOX);
+	text_box->SetSpriteLocation(TEXT_BOX_X, TEXT_BOX_Y);
 
-	text_box.SetSpriteLocation(TEXT_BOX_X, TEXT_BOX_Y);
-	text_box.SetDialogue(&game_start_dialogue);
+	Dialogue dialogue = {
+		"Where am I...?",
+		"I can't remember much...",
+		"I can hear the faint sound of birds from that door...",
+		"That must be the exit."
+	};
+	game_start_dialogue = std::make_shared<Dialogue>(dialogue);
+
+	text_box->SetDialogue(game_start_dialogue.get());
 }
 
 void World::Update(float deltaTime)
@@ -35,7 +46,7 @@ void World::Update(float deltaTime)
 		App::PlaySound(NORMAL_MUSIC, true);
 	}
 
-	if (!text_box.GetIsDialogueFinished()) { return; }
+	if (!text_box->GetIsDialogueFinished()) { return; }
 
 	//------------------------------------------------------------------------
 	// Handle player
@@ -44,7 +55,7 @@ void World::Update(float deltaTime)
 	if (player->GetIsInvulnerable())
 	{
 		InvulnerabilityCountdown(deltaTime);
-		player->GetRenderer()->GetSprite()->SetColor(0.66, 0.66, 0.66);
+		player->GetRenderer()->GetSprite()->SetColor(0.66f, 0.66f, 0.66f);
 	}
 	else
 	{
@@ -157,12 +168,16 @@ bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
 			}
 			else if (actor.GetTag() == TagType::ITEM)
 			{
-				// TODO: ASK HOW TO USE DYNAMIC CAST
 				Item& item = static_cast<Item&>(actor);
 				if (item.GetItemType() == ItemType::KEY || item.GetItemType() == ItemType::KEY_ESCAPE)
 				{
 					Key& key = static_cast<Key&>(item);
 					key.OnInteractWithPlayer(*this);
+				}
+				else if (item.GetItemType() == ItemType::GUMMY_BEAR)
+				{
+					GummyBear& bear = static_cast<GummyBear&>(item);
+					bear.OnInteractWithPlayer(*this);
 				}
 			}
 			else if (actor.GetTag() == TagType::BUTTON)
@@ -368,6 +383,7 @@ void World::UpdateSpells()
 		Fireball& fireball = static_cast<Fireball&>(*object.get());
 		switch (fireball.GetFacingDirection())
 		{
+			// TODO :MOVE 5 TO FIREBALL AS SPEED
 		case FacingDirection::UP:
 			fireball.UpdateActorPosition(0, 5);
 			break;
@@ -458,8 +474,8 @@ void World::DrawUI()
 
 void World::DrawTextBox()
 {
-	text_box.DrawSprite();
-	text_box.DisplayDialogue();
+	text_box->DrawSprite();
+	text_box->DisplayDialogue();
 }
 
 void World::GameEndEscaped()

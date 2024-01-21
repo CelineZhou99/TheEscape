@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "../GameObjects/Door.h"
 #include "DoorStateLocked.h"
 #include "../World.h"
 #include "../GameObjects/DungeonDoor.h"
@@ -8,7 +7,7 @@ void DoorStateLocked::SetSpriteImage()
 {
 	float x, y = 0;
 	_door->GetRenderer()->GetSprite()->GetPosition(x, y);
-	_door->GetRenderer()->SetSprite(".\\Data\\Images\\DungeonDoorLocked.bmp", 1, 1);
+	_door->GetRenderer()->SetSprite(IMAGE_DUNGEON_DOOR_LOCKED, 1, 1);
 	_door->GetRenderer()->GetSprite()->SetPosition(x, y);
 }
 
@@ -21,22 +20,21 @@ void DoorStateLocked::OnCollideWithPlayer(World& world)
 	Item* item = nullptr;
 	if (item = world.player->GetInventory()->FindInInventory(required_key_type))
 	{
-		world.text_box.SetDialogue(_dialogue_locked_right_key.get());
+		world.text_box->SetDialogue(_dialogue_locked_right_key.get());
 		App::PlaySound(DOOR_OPEN_SOUND);
 		world.player->GetInventory()->RemoveFromInventory(item);
 		_door->SetState(DoorStateType::UNLOCKED);
 	}
 	else if (item == nullptr)
 	{
-		// TODO: surely there's a better way to do this xD
 		ItemType alt_key_type = required_key_type == ItemType::KEY ? ItemType::KEY_ESCAPE : ItemType::KEY;
 		if (item = world.player->GetInventory()->FindInInventory(alt_key_type))
 		{
-			world.text_box.SetDialogue(_dialogue_locked_wrong_key.get());
+			world.text_box->SetDialogue(_dialogue_locked_wrong_key.get());
 		}
 		else
 		{
-			world.text_box.SetDialogue(_dialogue_locked_no_key.get());
+			world.text_box->SetDialogue(_dialogue_locked_no_key.get());
 		}
 	}
 }

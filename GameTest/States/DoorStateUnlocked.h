@@ -1,5 +1,6 @@
 #pragma once
 #include "IDoorState.h"
+
 class DoorStateUnlocked :
     public IDoorState
 {

@@ -10,7 +10,7 @@ BehaviourNodeState SelectorNode::AssessCurrState()
 		return BehaviourNodeState::UNDEFINED;
 	}
 
-	for (ptr child : _children)
+	for (node_ptr child : _children)
 	{
 		BehaviourNodeState child_state = child->AssessCurrState();
 		if (child_state == BehaviourNodeState::SUCCESS)

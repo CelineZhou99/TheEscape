@@ -2,10 +2,10 @@
 #include "IBehaviourNode.h"
 #include "SequenceNode.h"
 #include "SelectorNode.h"
-#include "ActionNode.h"
 #include "Blackboard.h"
+#include <functional>
 
-// TODO: MAYBE FORWARD DECLARE ALL THE H FILES AND MOVE THEM TO THE CPP FILE INSTEAD?
+class Blackboard;
 
 enum RootNodeType : uint8_t
 {
@@ -16,7 +16,7 @@ enum RootNodeType : uint8_t
 class BehaviourTree
 {
 public:
-	BehaviourTree(RootNodeType root_node_type) 
+	BehaviourTree(RootNodeType root_node_type) : _blackboard(std::make_shared<Blackboard>())
 	{
 		_id = 0;
 		if (root_node_type == RootNodeType::SELECTOR)
@@ -28,24 +28,23 @@ public:
 			_root = std::make_shared<SequenceNode>(_id);
 		}
 		++_id;
-		_blackboard = std::make_shared<Blackboard>();
 	}
 
-	ptr GetRoot() { return _root; }
+	node_ptr GetRoot() { return _root; }
 
-	int AllocateId();
+	unsigned short AllocateId();
 
 	std::shared_ptr<Blackboard> GetBlackboard() { return _blackboard; }
 
-	void AddActionNode(ptr parent, std::function<BehaviourNodeState()> action);
-	void AddSelectorNode(ptr parent);
-	void AddSequenceNode(ptr parent);
+	void AddActionNode(node_ptr parent, std::function<BehaviourNodeState()> action);
+	void AddSelectorNode(node_ptr parent);
+	void AddSequenceNode(node_ptr parent);
 
 	void Update();
 
 private:
-	int _id;
-	ptr _root;
 	std::shared_ptr<Blackboard> _blackboard;
+	node_ptr _root;
+	unsigned short _id;
 };
 
