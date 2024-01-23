@@ -24,6 +24,7 @@ void DoorStateLocked::OnCollideWithPlayer(World& world)
 		App::PlaySound(DOOR_OPEN_SOUND);
 		world.player->GetInventory()->RemoveFromInventory(item);
 		_door->SetState(DoorStateType::UNLOCKED);
+		world.current_goal->AddToUnlockedDoors(_door->GetDoorId());
 	}
 	else if (item == nullptr)
 	{

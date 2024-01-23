@@ -57,6 +57,14 @@ void Update(float deltaTime)
 			is_restart_pressed = false;
 			world->has_game_ended = false;
 			world->Init();
+			if (App::IsSoundPlaying(DEAD_MUSIC))
+			{
+				App::StopSound(DEAD_MUSIC);
+			}
+			if (App::IsSoundPlaying(END_MUSIC))
+			{
+				App::StopSound(END_MUSIC);
+			}
 		}
 	}
 }

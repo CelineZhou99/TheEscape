@@ -12,8 +12,8 @@ class PressurePlate :
     public Actor
 {
 public:
-    PressurePlate(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag) : 
-        Actor(renderer, pos_x, pos_y, tag), 
+    PressurePlate(unsigned short id, std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag) :
+        Actor(id, renderer, pos_x, pos_y, tag), 
         _pressure_plate_state_map({ 
             {PressurePlateStateType::ON, std::make_shared<PressurePlateStateOn>(this)}, 
             {PressurePlateStateType::OFF, std::make_shared<PressurePlateStateOff>(this)} 

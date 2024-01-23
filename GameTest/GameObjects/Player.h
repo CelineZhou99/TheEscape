@@ -9,29 +9,33 @@
 #define IMAGE_HEART ".\\Data\\Images\\Heart.bmp"
 #define IMAGE_PLAYER_IDLE ".\\Data\\Images\\IdleAnimationS.bmp"
 #define IMAGE_PLAYER_WALK ".\\Data\\Images\\WalkAnimationS.bmp"
+#define HURT_SOUND ".\\Data\\Sounds\\Hurt.wav"
 
 using PlayerStateMap = std::unordered_map<PlayerStateType, std::shared_ptr<IPlayerState>>;
 using Dialogue = std::vector<const char*>;
 
 class World;
+class Scene;
 
 class Player :
     public Actor, public IHealthSystem
 {
     // context class for player states
 public:
-    Player(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag) :
-        Actor(renderer, pos_x, pos_y, tag),
+    Player(unsigned short id, std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag) :
+        Actor(id, renderer, pos_x, pos_y, tag),
         _player_state_map({
             {PlayerStateType::IDLE, std::make_shared<PlayerStateIdle>(this)},
             {PlayerStateType::WALK, std::make_shared<PlayerStateWalk>(this)}
             }),
         _enable_shoot_dialogue({
-            "Oh a gummy bear, Yum!",
-            "*NomNom*", "...",
+            "Oh a gummy bear, yum!",
+            "*Nom*", 
+            "...",
             "Oh god why is it so spicy??!!",
+            "*Stomach growls*",
             "Uh oh...",
-            "My stomach feels like its on fire...",
+            "My stomach... feels like its on fire...",
             "[You have unlocked a new ability.]",
             "[Use I, K, J, L, to shoot.]"
         }),
@@ -42,7 +46,7 @@ public:
         _last_facing_direction(FacingDirection::DOWN),
         _state_type(PlayerStateType::IDLE)
     {
-        SetMaxHealth(5);
+        SetMaxHealth(3);
     }
 
     PlayerStateType GetStateType() { return _state_type; }
@@ -62,6 +66,10 @@ public:
 
     bool GetCanShoot() { return _can_shoot; }
     void SetCanShoot(World& world);
+
+    float GetSpeed() { return 2.f; }
+
+    void OnDeath(Scene* scene) override {}
 
 protected:
     PlayerStateMap _player_state_map;

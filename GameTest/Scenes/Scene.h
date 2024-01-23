@@ -44,6 +44,8 @@
 #define IMAGE_POT ".\\Data\\Images\\Pot.bmp"
 #define IMAGE_TEXT_BOX ".\\Data\\Images\\TextBox.bmp"
 
+#define SHOOT_SOUND ".\\Data\\Sounds\\Shoot.wav"
+
 #define OBJECT_STATE_INDEX 0
 #define OBJECT_ID_INDEX 1 
 #define LINKED_MAP_ID_INDEX 2
@@ -63,13 +65,19 @@ enum LayerType : uint8_t
 	COUNT,
 };
 
-using scene_layers = std::vector<std::vector<std::shared_ptr<GameObject>>>;
-using object_list = std::vector<std::shared_ptr<GameObject>>;
+using GameObjectPtr = std::shared_ptr<GameObject>;
+using RendererPtr = std::shared_ptr<Renderer>;
+
+using SceneLayersList = std::vector<std::vector<GameObjectPtr>>;
+using ObjectsList = std::vector<GameObjectPtr>;
+using GoalTypeMap = std::unordered_map<std::string, GoalType>;
+using DoorStateMap = std::unordered_map<char, DoorStateType>;
+using MapIdMap = std::unordered_map<char, char*>;
 
 class Scene : public ISubscriber
 {
 public:
-	Scene(Goal* goal) : 
+	Scene(Goal* goal) :
 		_goal_type_mapping({
 			{"N", GoalType::GOAL_NONE},
 			{"P", GoalType::GOAL_PRESSURE_PLATE},
@@ -94,6 +102,7 @@ public:
 		_goal_context({}),
 		_goal(goal),
 		_map_file_name(""),
+		_id(0),
 		_object_state(' '),
 		_object_id(' '),
 		_linked_map_id(' ')
@@ -104,8 +113,8 @@ public:
 	void Init();
 
 	void SetUpSceneLayers();
-	std::vector<std::vector<std::shared_ptr<GameObject>>> GetSceneLayers() { return _scene_layers; }
-	void AddToSceneLayers(std::shared_ptr<GameObject> object, LayerType layer);
+	SceneLayersList GetSceneLayers() { return _scene_layers; }
+	void AddToSceneLayers(GameObjectPtr object, LayerType layer);
 	void RemoveFromSceneLayers(GameObject* object, LayerType layer);
 
 	std::set<int> ReadContextFromFile(std::istringstream& iss, std::string& word);
@@ -118,8 +127,8 @@ public:
 	void MakeDungeonDoor(float i, float j, std::string& word, std::set<int> goal_door_ids, char* token, int map_w, int map_h);
 	void MakePath(float i, float j, std::string& word, char* token, int map_w, int map_h);
 	void MakeGoalRewardsTile(float i, float j);
-	void MakeKey(float i, float j);
-	void MakeKeyEscape(float i, float j);
+	std::shared_ptr<Item> MakeKey(float i, float j);
+	std::shared_ptr<Item> MakeKeyEscape(float i, float j);
 	void MakeSlime(float i, float j);
 	void MakeResetButton(float i, float j);
 	void MakeFireball(float i, float j, FacingDirection direction);
@@ -141,15 +150,17 @@ public:
 
 	const char* GetMapFileName() { return _map_file_name; }
 
+	unsigned short AllocateId() { return _id++; }
+
 private:
 	void StoreResetButtonData();
 
-	std::unordered_map<std::string, GoalType> _goal_type_mapping;
-	std::unordered_map<char, DoorStateType> _door_state_mapping;
-	std::unordered_map<char, char*> _map_id_mapping;
+	GoalTypeMap _goal_type_mapping;
+	DoorStateMap _door_state_mapping;
+	MapIdMap _map_id_mapping;
 
-	object_list _map[MAP_WIDTH][MAP_HEIGHT] = { {} };
-	scene_layers _scene_layers;
+	ObjectsList _map[MAP_WIDTH][MAP_HEIGHT] = { {} };
+	SceneLayersList _scene_layers;
 	std::vector<std::shared_ptr<Door>> _goal_doors;
 	std::vector<char> _context_reading_order = { _object_state, _object_id, _linked_map_id };
 
@@ -157,6 +168,9 @@ private:
 	Goal* _goal;
 
 	const char* _map_file_name;
+
+	unsigned short _id;
+
 	char _object_state;
 	char _object_id;
 	char _linked_map_id;

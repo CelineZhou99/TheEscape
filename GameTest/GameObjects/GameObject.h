@@ -5,10 +5,10 @@
 //------------------------------------------------------------------------
 enum TagType : uint8_t
 {
+	STATIC_OBJECT,
 	PLAYER,
 	ENEMY,
-	STATIC_OBJECT,
-	MOVABLE_OBJECT,
+	BOX,
 	PLATE,
 	DOOR,
 	ITEM,
@@ -20,18 +20,17 @@ enum TagType : uint8_t
 class GameObject
 {
 public:
-	GameObject(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag)
-		: _transform(std::make_shared<Vector2D>(pos_x, pos_y)), _renderer(renderer), _tag(tag) {}
+	GameObject(unsigned short id, std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag)
+		: _transform(std::make_shared<Vector2D>(pos_x, pos_y)), _renderer(renderer), _id(id), _tag(tag) {}
 
 	std::shared_ptr<Vector2D> GetTransform() { return _transform; }
 	std::shared_ptr<Renderer> GetRenderer() { return _renderer; }
 	TagType GetTag() { return _tag; }
 
-	// TODO : CHANGE THIS TO BE COMPARING ID INSTEAD
+	unsigned short GetId() { return _id; }
+
 	bool operator == (const GameObject* object) {
-		if (_renderer->GetFileName() == object->_renderer->GetFileName() &&
-			_transform->X() == object->_transform->X() &&
-			_transform->Y() == object->_transform->Y())
+		if (object->_id == _id)
 		{
 			return true;
 		}
@@ -41,6 +40,7 @@ public:
 protected:
 	std::shared_ptr<Vector2D> _transform;
 	std::shared_ptr<Renderer> _renderer;
+	unsigned short _id;
 	TagType _tag;
 };
 

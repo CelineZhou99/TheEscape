@@ -6,7 +6,6 @@ void DoorStateUnlocked::SetSpriteImage()
 {
 	float x, y = 0;
 	_door->GetRenderer()->GetSprite()->GetPosition(x, y);
-	// TODO : PUT STRING INTO A MAP
 	_door->GetRenderer()->SetSprite(IMAGE_DUNGEON_DOOR_UNLOCKED, 1, 1);
 	_door->GetRenderer()->GetSprite()->SetPosition(x, y);
 }
@@ -14,9 +13,9 @@ void DoorStateUnlocked::SetSpriteImage()
 void DoorStateUnlocked::OnCollideWithPlayer(World& world)
 {
 	// let player through
-	int door_id = _door->GetId();
+	int door_id = _door->GetDoorId();
 
-	std::shared_ptr<Goal> new_goal = std::make_shared<Goal>();
+	std::shared_ptr<Goal> new_goal = std::make_shared<Goal>(world);
 	world.current_goal = new_goal;
 
 	world.current_scene.reset();
@@ -67,7 +66,7 @@ void DoorStateUnlocked::OnCollideWithPlayer(World& world)
 	}
 	else
 	{
-		world.GameEndEscaped();
+		world.GameEnd(GameEndType::ESCAPED);
 	}
 
 }

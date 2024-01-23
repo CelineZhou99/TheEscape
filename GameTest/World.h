@@ -12,6 +12,7 @@
 #define END_SCREEN ".\\Data\\Images\\EndScreen.bmp"
 #define DEAD_MUSIC ".\\Data\\Sounds\\DeathTheme.wav"
 #define DEAD_SCREEN ".\\Data\\Images\\DeadScreen.bmp"
+#define BOX_MOVE_SOUND ".\\Data\\Sounds\\BoxMove.wav"
 #define PLAYER_START_X 480.0f
 #define PLAYER_START_Y 160.0f
 #define UI_START_X 32
@@ -25,6 +26,14 @@
 class Fireball;
 
 using Dialogue = std::vector<const char*>;
+using SpawnedRewardsMap = std::unordered_map<const char*, std::shared_ptr<Item>>;
+using GameObjectPtr = std::shared_ptr<GameObject>;
+
+enum GameEndType : uint8_t
+{
+	ESCAPED,
+	DEAD,
+};
 
 class World
 {
@@ -49,18 +58,19 @@ public:
 	void UpdateSpells();
 	void CheckSpellCollision(Fireball& fireball);
 
-	void GameEndEscaped();
-	void GameEndDead();
+	void GameEnd(GameEndType game_end_type);
 	//------------------------------------------------------------------------
 	// Functions for the render loop
 	//------------------------------------------------------------------------
 	void DrawAllSprites();
 	void DrawUI();
 	void DrawTextBox();
-
 	//------------------------------------------------------------------------
 	// Variables
 	//------------------------------------------------------------------------
+	SpawnedRewardsMap spawned_rewards = {};
+
+	std::vector<unsigned short> _unlocked_doors = {};
 
 	std::shared_ptr<PlayerController> player_controller = nullptr;
 	std::shared_ptr<Player> player = nullptr;

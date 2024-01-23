@@ -2,6 +2,7 @@
 #include "Actor.h"
 #include "../UI/UI.h"
 
+
 #define ITEM_COLLECT_SOUND ".\\Data\\Sounds\\ItemCollect.wav"
 
 enum ItemType : uint8_t
@@ -15,8 +16,8 @@ class Item :
     public Actor
 {
 public:
-    Item(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag, ItemType item_type) 
-        : Actor(renderer, pos_x, pos_y, tag), 
+    Item(unsigned short id, std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag, ItemType item_type)
+        : Actor(id, renderer, pos_x, pos_y, tag), 
         _ui_icon(std::make_shared<UI>(GetRenderer()->GetFileName())),
         _quantity(1),
         _item_type(item_type) {}

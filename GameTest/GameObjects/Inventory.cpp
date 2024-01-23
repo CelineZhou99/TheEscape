@@ -6,7 +6,7 @@ void Inventory::AddToInventory(Item* item)
 	std::vector<std::shared_ptr<Item>>::iterator it = 
 		std::find_if(_item_list.begin(), _item_list.end(), [item](const std::shared_ptr<Item>& i)
 		{
-			return (item->GetItemType() == i->GetItemType());
+			return i.get() == item;
 		});
 
 	if (it != _item_list.end())
@@ -24,7 +24,7 @@ void Inventory::RemoveFromInventory(Item* item)
 	std::vector<std::shared_ptr<Item>>::iterator it = 
 		std::find_if(_item_list.begin(), _item_list.end(), [item](const std::shared_ptr<Item>& i)
 		{
-			return (item->GetItemType() == i->GetItemType());
+			return i.get() == item;
 		});
 
 	if (it != _item_list.end())

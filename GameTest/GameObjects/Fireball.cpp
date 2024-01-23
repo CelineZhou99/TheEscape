@@ -10,25 +10,25 @@ void Fireball::OnCollideWithObject(GameObject* object, Scene* scene)
 	{
 		Slime& enemy = static_cast<Slime&>(*object);
 		enemy.TakeDamage();
+		App::PlaySound(IMPACT_ENEMY_SOUND);
 		if (enemy.IsDead())
 		{
-			// TODO : MOVE THIS LOGIC INTO THE ENEMY CLASS AS ON DEATH
-			if (scene->GetGoalType() == GoalType::GOAL_SLIME)
-			{
-				scene->GetGoal()->DecrementContextCount();
-				scene->GetGoal()->NotifySubscribers();
-			}
-			scene->RemoveFromSceneLayers(object, LayerType::CHARACTERS);
+			enemy.OnDeath(scene);
 		}
 	}
 	else if (object->GetTag() == TagType::DESTRUCTABLE)
 	{
 		Pot& pot = static_cast<Pot&>(*object);
 		pot.TakeDamage();
+		App::PlaySound(IMPACT_DESTRUCTABLE_SOUND);
 		if (pot.IsDead())
 		{
-			scene->RemoveFromSceneLayers(object, LayerType::FOREGROUND);
+			pot.OnDeath(scene);
 		}
+	}
+	else
+	{
+		App::PlaySound(IMPACT_OBJECT_SOUND);
 	}
 	scene->RemoveFromSceneLayers(this, LayerType::SPELLS);
 }

@@ -11,12 +11,11 @@ void ResetButton::OnInteractWithPlayer(World& world)
 	}
 
 	// Reset button will reset the position of boxes, the pressure plate states, and the goal progress
-
-	object_list foreground = world.current_scene->GetSceneLayers().at(LayerType::FOREGROUND);
+	ObjectsList foreground = world.current_scene->GetSceneLayers().at(LayerType::FOREGROUND);
 	int index = 0;
-	for (std::shared_ptr<GameObject> object : foreground)
+	for (GameObjectPtr object : foreground)
 	{
-		if (object->GetTag() == TagType::MOVABLE_OBJECT)
+		if (object->GetTag() == TagType::BOX)
 		{
 			Actor& actor = static_cast<Actor&>(*object.get());
 			actor.SetActorPosition(_original_box_locations[index].X(), _original_box_locations[index].Y());
@@ -28,8 +27,8 @@ void ResetButton::OnInteractWithPlayer(World& world)
 		}
 	}
 
-	object_list middleground = world.current_scene->GetSceneLayers().at(LayerType::MIDDLEGROUND);
-	for (std::shared_ptr<GameObject> object : middleground)
+	ObjectsList middleground = world.current_scene->GetSceneLayers().at(LayerType::MIDDLEGROUND);
+	for (GameObjectPtr object : middleground)
 	{
 		if (object->GetTag() == TagType::PLATE)
 		{

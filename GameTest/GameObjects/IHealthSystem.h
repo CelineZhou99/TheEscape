@@ -1,5 +1,7 @@
 #pragma once
 
+class Scene;
+
 class IHealthSystem
 {
 public:
@@ -7,6 +9,7 @@ public:
 	short GetHealth() { return _curr_health; }
 	virtual void TakeDamage() = 0;
 	bool IsDead();
+	virtual void OnDeath(Scene* scene) = 0;
 
 protected:
 	short _max_health = 0;

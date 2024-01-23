@@ -6,8 +6,8 @@ class ResetButton :
     public Actor, public IInteractable
 {
 public:
-    ResetButton(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag) : 
-        Actor(renderer, pos_x, pos_y, tag), _original_box_locations({}), _original_goal_context_count(0), _is_disabled(false) {}
+    ResetButton(unsigned short id, std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag) :
+        Actor(id, renderer, pos_x, pos_y, tag), _original_box_locations({}), _original_goal_context_count(0), _is_disabled(false) {}
 
     void OnInteractWithPlayer(World& world) override;
 

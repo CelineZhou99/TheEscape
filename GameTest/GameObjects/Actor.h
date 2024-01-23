@@ -12,7 +12,8 @@ class Actor :
     public GameObject
 {
 public:
-    Actor(std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag) : GameObject(renderer, pos_x, pos_y, tag)
+    Actor(unsigned short id, std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag) : 
+        GameObject(id, renderer, pos_x, pos_y, tag)
     {
         float top_left_x = pos_x - GetRenderer()->GetSprite()->GetWidth() / 2;
         float top_left_y = pos_y + GetRenderer()->GetSprite()->GetHeight() / 2;
@@ -28,6 +29,8 @@ public:
     // default facing direction on actor to be down
     // TODO : REMOVE FROM PLAYER CONTROLLER???? CREATE ACTOR CONTROLLER?
     void SetActorPosition(float x, float y, FacingDirection direction = FacingDirection::DOWN);
+
+    float GetSpeed() { return 0.f; }
    
 protected:
     std::shared_ptr<BoxCollider> _collider;

@@ -27,24 +27,23 @@ BehaviourNodeState Slime::MoveTo(Scene* scene)
 	location = static_cast<Any<Vector2D>*>(location_ptr.get())->GetData();
 	direction = static_cast<Any<FacingDirection>*>(direction_ptr.get())->GetData();
 
-	// TODO : change these numbers to be the slime's speed
 	float x, y = 0;
 	switch (direction)
 	{
 	case FacingDirection::UP:
 		x = 0;
-		y = 0.5;
+		y = GetSpeed();
 		break;
 	case FacingDirection::DOWN:
 		x = 0;
-		y = -0.5;
+		y = -GetSpeed();
 		break;
 	case FacingDirection::LEFT:
-		x = -0.5;
+		x = -GetSpeed();
 		y = 0;
 		break;
 	case FacingDirection::RIGHT:
-		x = 0.5;
+		x = GetSpeed();
 		y = 0;
 		break;
 	case FacingDirection::NONE:
@@ -54,7 +53,7 @@ BehaviourNodeState Slime::MoveTo(Scene* scene)
 	BoxCollider collider(*this->GetCollider());
 	collider.MoveColliderPosition(x, y);
 	object_list characters = scene->GetSceneLayers().at(LayerType::CHARACTERS);
-	for (std::shared_ptr<GameObject> object : characters)
+	for (game_object_ptr object : characters)
 	{
 		if (object.get() == this)
 		{
@@ -151,4 +150,14 @@ void Slime::UpdatePosition(float move_by_x, float move_by_y, FacingDirection dir
 	GetTransform()->MoveVectorPosition(move_by_x, move_by_y);
 	GetRenderer()->SetAnimationWithMovement(direction, move_by_x, move_by_y);
 	GetCollider()->MoveColliderPosition(move_by_x, move_by_y);
+}
+
+void Slime::OnDeath(Scene* scene)
+{
+	if (scene->GetGoalType() == GoalType::GOAL_SLIME)
+	{
+		scene->GetGoal()->DecrementContextCount();
+		scene->GetGoal()->NotifySubscribers();
+	}
+	scene->RemoveFromSceneLayers(this, LayerType::CHARACTERS);
 }

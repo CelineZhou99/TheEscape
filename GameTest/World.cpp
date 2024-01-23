@@ -10,14 +10,13 @@
 
 void World::Init()
 {
+	current_goal = std::make_shared<Goal>(*this);
+	current_scene = std::make_unique<Scene>(current_goal.get());
 	std::shared_ptr<Renderer> renderer(new Renderer(IMAGE_PLAYER_IDLE, 4, 4, PLAYER_START_X, PLAYER_START_Y));
-	player = std::make_shared<Player>(renderer, PLAYER_START_X, PLAYER_START_Y, TagType::PLAYER);
+	player = std::make_shared<Player>(current_scene->AllocateId(), renderer, PLAYER_START_X, PLAYER_START_Y, TagType::PLAYER);
 	player->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
-
 	player_controller = std::make_shared<PlayerController>(player.get());
 
-	current_goal = std::make_shared<Goal>();
-	current_scene = std::make_unique<Scene>(current_goal.get());
 	current_scene->AddToSceneLayers(player, LayerType::CHARACTERS);
 	current_scene->LoadMap(STARTING_MAP);
 	current_goal->SetGoalType(current_scene->GetGoalType());
@@ -26,13 +25,13 @@ void World::Init()
 	text_box = std::make_shared<TextBox>(IMAGE_TEXT_BOX);
 	text_box->SetSpriteLocation(TEXT_BOX_X, TEXT_BOX_Y);
 
-	Dialogue dialogue = {
+	Dialogue start_dialogue = {
 		"Where am I...?",
 		"I can't remember much...",
 		"I can hear the faint sound of birds from that door...",
 		"That must be the exit."
 	};
-	game_start_dialogue = std::make_shared<Dialogue>(dialogue);
+	game_start_dialogue = std::make_shared<Dialogue>(start_dialogue);
 
 	text_box->SetDialogue(game_start_dialogue.get());
 }
@@ -84,8 +83,8 @@ void World::Update(float deltaTime)
 		player->GetRenderer()->SetAnimation(direction);
 	}
 
-	object_list character_layer = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
-	for (std::shared_ptr<GameObject> character : character_layer)
+	ObjectsList character_layer = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
+	for (GameObjectPtr character : character_layer)
 	{
 		character->GetRenderer()->UpdateSpriteAnimation(deltaTime);
 		if (character->GetTag() == TagType::ENEMY)
@@ -98,10 +97,9 @@ void World::Update(float deltaTime)
 	CheckShootControls();
 	UpdateSpells();
 
-	// TODO : could make it a subscribe pattern here 
 	if (player->IsDead())
 	{
-		GameEndDead();
+		GameEnd(GameEndType::DEAD);
 		return;
 	}
 }
@@ -112,22 +110,22 @@ bool World::CalculatePlayerNextMovement(ICollider& collider, FacingDirection& di
 	if (App::IsKeyPressed('W'))
 	{
 		direction = FacingDirection::UP;
-		player_move_by_y = PLAYER_MOVE_BY;
+		player_move_by_y = player->GetSpeed();
 	}
 	else if (App::IsKeyPressed('S'))
 	{
 		direction = FacingDirection::DOWN;
-		player_move_by_y = -PLAYER_MOVE_BY;
+		player_move_by_y = -player->GetSpeed();
 	}
 	else if (App::IsKeyPressed('A'))
 	{
 		direction = FacingDirection::LEFT;
-		player_move_by_x = -PLAYER_MOVE_BY;
+		player_move_by_x = -player->GetSpeed();
 	}
 	else if (App::IsKeyPressed('D'))
 	{
 		direction = FacingDirection::RIGHT;
-		player_move_by_x = PLAYER_MOVE_BY;
+		player_move_by_x = player->GetSpeed();
 	} 
 	else
 	{
@@ -141,9 +139,9 @@ bool World::CalculatePlayerNextMovement(ICollider& collider, FacingDirection& di
 
 bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
 {
-	std::vector<std::vector<std::shared_ptr<GameObject>>> scene_layers = current_scene->GetSceneLayers();
+	SceneLayersList scene_layer = current_scene->GetSceneLayers();
 
-	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::CHARACTERS])
+	for (GameObjectPtr object : scene_layer[LayerType::CHARACTERS])
 	{
 		if (object->GetTag() == TagType::ENEMY)
 		{
@@ -155,14 +153,13 @@ bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
 			}
 		}
 	}
-	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::FOREGROUND])
+	for (GameObjectPtr object : scene_layer[LayerType::FOREGROUND])
 	{
 		Actor& actor = static_cast<Actor&>(*object.get());
 		if (player->GetCollider()->CheckCollision(collider, *actor.GetCollider()))
 		{
-			if (actor.GetTag() == TagType::MOVABLE_OBJECT)
+			if (actor.GetTag() == TagType::BOX)
 			{
-				// TODO: FIX BUG WHERE IF PLAYER TOUCHES 2 MOVABLE OBJECTS THEY WILL MOVE BOTH
 				UpdateMovableObjects(actor, direction);
 				return false;
 			}
@@ -188,7 +185,7 @@ bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
 			return false;
 		}
 	}
-	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::MIDDLEGROUND])
+	for (GameObjectPtr object : scene_layer[LayerType::MIDDLEGROUND])
 	{
 		Actor& actor = static_cast<Actor&>(*object.get());
 		if (player->GetCollider()->CheckCollision(collider, *actor.GetCollider()))
@@ -211,9 +208,9 @@ bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
 bool World::ShouldMovableObjectsMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction)
 {
 	bool should_move = true;
-	std::vector<std::vector<std::shared_ptr<GameObject>>> scene_layers = current_scene->GetSceneLayers();
+	SceneLayersList scene_layer = current_scene->GetSceneLayers();
 
-	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::FOREGROUND])
+	for (GameObjectPtr object : scene_layer[LayerType::FOREGROUND])
 	{
 		Actor& actor = static_cast<Actor&>(*object.get());
 		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor.GetCollider()))
@@ -222,7 +219,7 @@ bool World::ShouldMovableObjectsMove(Actor& actor_to_move, ICollider& collider, 
 			break;
 		}
 	}
-	for (std::shared_ptr<GameObject> object : scene_layers[LayerType::MIDDLEGROUND])
+	for (GameObjectPtr object : scene_layer[LayerType::MIDDLEGROUND])
 	{
 		Actor& actor = static_cast<Actor&>(*object.get());
 		if (actor_to_move.GetCollider()->CheckCollision(collider, *actor.GetCollider()))
@@ -271,10 +268,10 @@ void World::UpdateMovableObjects(Actor& actor, FacingDirection direction)
 
 	if (should_actor_move)
 	{
-		std::vector<std::vector<std::shared_ptr<GameObject>>> scene_layers = current_scene->GetSceneLayers();
+		SceneLayersList scene_layer = current_scene->GetSceneLayers();
 		// check if it is already colliding with any pressure plates
 		// if it is, change the state of that pressure plate
-		for (std::shared_ptr<GameObject> objects : scene_layers[LayerType::MIDDLEGROUND])
+		for (GameObjectPtr objects : scene_layer[LayerType::MIDDLEGROUND])
 		{
 			Actor& object = static_cast<Actor&>(*objects.get());
 			if (object.GetTag() == TagType::PLATE)
@@ -291,6 +288,7 @@ void World::UpdateMovableObjects(Actor& actor, FacingDirection direction)
 				}
 			}
 		}
+		App::PlaySound(BOX_MOVE_SOUND);
 		actor.UpdateActorPosition(move_by_x, move_by_y);
 	}
 }
@@ -377,24 +375,23 @@ void World::CheckShootControls()
 
 void World::UpdateSpells()
 {
-	object_list spells = current_scene->GetSceneLayers().at(LayerType::SPELLS);
-	for (std::shared_ptr<GameObject> object : spells)
+	ObjectsList spells = current_scene->GetSceneLayers().at(LayerType::SPELLS);
+	for (GameObjectPtr object : spells)
 	{
 		Fireball& fireball = static_cast<Fireball&>(*object.get());
 		switch (fireball.GetFacingDirection())
 		{
-			// TODO :MOVE 5 TO FIREBALL AS SPEED
 		case FacingDirection::UP:
-			fireball.UpdateActorPosition(0, 5);
+			fireball.UpdateActorPosition(0, fireball.GetSpeed());
 			break;
 		case FacingDirection::DOWN:
-			fireball.UpdateActorPosition(0, -5);
+			fireball.UpdateActorPosition(0, -fireball.GetSpeed());
 			break;
 		case FacingDirection::LEFT:
-			fireball.UpdateActorPosition(-5, 0);
+			fireball.UpdateActorPosition(-fireball.GetSpeed(), 0);
 			break;
 		case FacingDirection::RIGHT:
-			fireball.UpdateActorPosition(5, 0);
+			fireball.UpdateActorPosition(fireball.GetSpeed(), 0);
 			break;
 		}
 		CheckSpellCollision(fireball);
@@ -403,8 +400,8 @@ void World::UpdateSpells()
 
 void World::CheckSpellCollision(Fireball& fireball)
 {
-	object_list characters = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
-	for (std::shared_ptr<GameObject> object : characters)
+	ObjectsList characters = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
+	for (GameObjectPtr object : characters)
 	{
 		Actor& actor = static_cast<Actor&>(*object.get());
 		if (fireball.GetCollider()->CheckCollision(*fireball.GetCollider(), *actor.GetCollider()))
@@ -414,8 +411,8 @@ void World::CheckSpellCollision(Fireball& fireball)
 		}
 	}
 
-	object_list foreground = current_scene->GetSceneLayers().at(LayerType::FOREGROUND);
-	for (std::shared_ptr<GameObject> object : foreground)
+	ObjectsList foreground = current_scene->GetSceneLayers().at(LayerType::FOREGROUND);
+	for (GameObjectPtr object : foreground)
 	{
 		Actor& actor = static_cast<Actor&>(*object.get());
 		if (fireball.GetCollider()->CheckCollision(*fireball.GetCollider(), *actor.GetCollider()))
@@ -425,8 +422,8 @@ void World::CheckSpellCollision(Fireball& fireball)
 		}
 	}
 
-	object_list middleground = current_scene->GetSceneLayers().at(LayerType::MIDDLEGROUND);
-	for (std::shared_ptr<GameObject> object : middleground)
+	ObjectsList middleground = current_scene->GetSceneLayers().at(LayerType::MIDDLEGROUND);
+	for (GameObjectPtr object : middleground)
 	{
 		Actor& actor = static_cast<Actor&>(*object.get());
 		if (fireball.GetCollider()->CheckCollision(*fireball.GetCollider(), *actor.GetCollider()))
@@ -441,8 +438,8 @@ void World::DrawAllSprites()
 {
 	for (size_t i = 0; i < LayerType::COUNT; ++i)
 	{
-		std::vector<std::shared_ptr<GameObject>> objects = current_scene->GetSceneLayers().at(i);
-		for (std::shared_ptr<GameObject> actor : objects)
+		ObjectsList objects = current_scene->GetSceneLayers().at(i);
+		for (GameObjectPtr actor : objects)
 		{
 			actor->GetRenderer()->DrawSprite();
 		}
@@ -478,23 +475,16 @@ void World::DrawTextBox()
 	text_box->DisplayDialogue();
 }
 
-void World::GameEndEscaped()
+void World::GameEnd(GameEndType game_end_type)
 {
-	// TODO: MERGE THE GAME END ESCAPE AND GAME END DEAD
 	has_game_ended = true;
-	end_screen_sprite = std::make_unique<CSimpleSprite>(END_SCREEN);
+	const char* file_name = game_end_type == GameEndType::ESCAPED ? END_SCREEN : DEAD_SCREEN;
+
+	end_screen_sprite = std::make_unique<CSimpleSprite>(file_name);
 	end_screen_sprite->SetPosition(512, 384);
 
 	App::StopSound(NORMAL_MUSIC);
-	App::PlaySound(END_MUSIC);
-}
 
-void World::GameEndDead()
-{
-	has_game_ended = true;
-	end_screen_sprite = std::make_unique<CSimpleSprite>(DEAD_SCREEN);
-	end_screen_sprite->SetPosition(512, 384);
-
-	App::StopSound(NORMAL_MUSIC);
-	App::PlaySound(DEAD_MUSIC);
+	const char* music_file = game_end_type == GameEndType::ESCAPED ? END_MUSIC : DEAD_MUSIC;
+	App::PlaySound(music_file);
 }

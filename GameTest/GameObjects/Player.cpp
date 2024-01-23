@@ -20,6 +20,7 @@ void Player::TakeDamage()
 {
 	if (!_is_invulnerable)
 	{
+		App::PlaySound(HURT_SOUND);
 		--_curr_health;
 		if (!IsDead())
 		{
