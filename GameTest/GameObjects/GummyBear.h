@@ -4,7 +4,7 @@
 
 class World;
 
-using dialogue = std::vector<const char*>;
+using Dialogue = std::vector<const char*>;
 
 class GummyBear :
     public Item, public IInteractable

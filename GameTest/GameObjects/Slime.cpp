@@ -52,8 +52,8 @@ BehaviourNodeState Slime::MoveTo(Scene* scene)
 
 	BoxCollider collider(*this->GetCollider());
 	collider.MoveColliderPosition(x, y);
-	object_list characters = scene->GetSceneLayers().at(LayerType::CHARACTERS);
-	for (game_object_ptr object : characters)
+	ObjectsList characters = scene->GetSceneLayers().at(LayerType::CHARACTERS);
+	for (GameObjectPtr object : characters)
 	{
 		if (object.get() == this)
 		{

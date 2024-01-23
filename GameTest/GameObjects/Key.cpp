@@ -11,7 +11,7 @@ void Key::OnInteractWithPlayer(World& world)
 	world.current_scene->RemoveFromSceneLayers(this, LayerType::FOREGROUND);
 	
 	// remove from spawned rewards
-	spawned_reward_map::iterator it;
+	SpawnedRewardsMap::iterator it;
 	for (it = world.spawned_rewards.begin(); it != world.spawned_rewards.end(); ++it)
 	{
 		if (it->second->GetItemType() == GetItemType() &&
