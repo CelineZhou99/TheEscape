@@ -67,7 +67,7 @@ public:
     bool GetCanShoot() { return _can_shoot; }
     void SetCanShoot(World& world);
 
-    float GetSpeed() { return 2.f; }
+    float GetSpeed() { return 5.f; }
 
     void OnDeath(Scene* scene) override {}
 

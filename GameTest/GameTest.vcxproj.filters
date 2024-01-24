@@ -26,8 +26,6 @@
     <ClCompile Include="GameObjects\Door.cpp" />
     <ClCompile Include="GameObjects\Player.cpp" />
     <ClCompile Include="GameObjects\Renderer.cpp" />
-    <ClCompile Include="Controllers\Controller.cpp" />
-    <ClCompile Include="Controllers\PlayerController.cpp" />
     <ClCompile Include="Colliders\BoxCollider.cpp" />
     <ClCompile Include="Scenes\Scene.cpp" />
     <ClCompile Include="States\DoorStateLocked.cpp" />
@@ -90,8 +88,6 @@
     <ClInclude Include="GameObjects\Player.h" />
     <ClInclude Include="GameObjects\Renderer.h" />
     <ClInclude Include="GameObjects\Vector2D.h" />
-    <ClInclude Include="Controllers\Controller.h" />
-    <ClInclude Include="Controllers\PlayerController.h" />
     <ClInclude Include="Colliders\BoxCollider.h" />
     <ClInclude Include="Colliders\ICollider.h" />
     <ClInclude Include="Scenes\Scene.h" />

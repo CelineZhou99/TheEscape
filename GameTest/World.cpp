@@ -15,7 +15,6 @@ void World::Init()
 	std::shared_ptr<Renderer> renderer(new Renderer(IMAGE_PLAYER_IDLE, 4, 4, PLAYER_START_X, PLAYER_START_Y));
 	player = std::make_shared<Player>(current_scene->AllocateId(), renderer, PLAYER_START_X, PLAYER_START_Y, TagType::PLAYER);
 	player->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
-	player_controller = std::make_shared<PlayerController>(player.get());
 
 	current_scene->AddToSceneLayers(player, LayerType::CHARACTERS);
 	current_scene->LoadMap(STARTING_MAP);
@@ -74,7 +73,7 @@ void World::Update(float deltaTime)
 		player->SetState(PlayerStateType::WALK);
 		if (ShouldPlayerMove(collider, direction))
 		{
-			player_controller->UpdateControlledActorPosition(player_move_by_x, player_move_by_y, direction);
+			player->UpdateAnimatedActorPosition(player_move_by_x, player_move_by_y, direction);
 		}
 	}
 	else
@@ -231,7 +230,6 @@ bool World::ShouldMovableObjectsMove(Actor& actor_to_move, ICollider& collider, 
 			}
 			else if (actor.GetTag() == TagType::PLATE)
 			{
-				// use static cast to get the derived class
 				PressurePlate& pressure_plate = static_cast<PressurePlate&>(actor);
 				pressure_plate.SetState(PressurePlateStateType::ON, current_goal.get());
 				break;
@@ -314,6 +312,8 @@ void World::CheckShootControls()
 	int map_h = 0;
 	current_scene->GetCoordinateByPosition(*player->GetTransform(), map_w, map_h);
 
+	Vector2D player_position = *player->GetTransform();
+	
 	// spawn fireball in the direction the player selected via the arrow keys 
 	if (App::IsKeyPressed('I') && !is_up_pressed)
 	{
@@ -326,7 +326,7 @@ void World::CheckShootControls()
 		Vector2D position = current_scene->GetPositionByCoordinate(map_w, map_h + 1);
 		if (current_scene->IsSpaceFree(position))
 		{
-			current_scene->MakeFireball(position.X(), position.Y(), FacingDirection::UP);
+			current_scene->MakeFireball(player_position.X(), player_position.Y() + TILE_SIZE_HALF, FacingDirection::UP);
 		}
 	}
 
@@ -340,7 +340,7 @@ void World::CheckShootControls()
 		Vector2D position = current_scene->GetPositionByCoordinate(map_w, map_h - 1);
 		if (current_scene->IsSpaceFree(position))
 		{
-			current_scene->MakeFireball(position.X(), position.Y(), FacingDirection::DOWN);
+			current_scene->MakeFireball(player_position.X(), player_position.Y() - TILE_SIZE_HALF, FacingDirection::DOWN);
 		}
 	}
 
@@ -354,7 +354,7 @@ void World::CheckShootControls()
 		Vector2D position = current_scene->GetPositionByCoordinate(map_w - 1, map_h);
 		if (current_scene->IsSpaceFree(position))
 		{
-			current_scene->MakeFireball(position.X(), position.Y(), FacingDirection::LEFT);
+			current_scene->MakeFireball(player_position.X() - TILE_SIZE_HALF, player_position.Y(), FacingDirection::LEFT);
 		}
 	}
 
@@ -368,7 +368,7 @@ void World::CheckShootControls()
 		Vector2D position = current_scene->GetPositionByCoordinate(map_w + 1, map_h);
 		if (current_scene->IsSpaceFree(position))
 		{
-			current_scene->MakeFireball(position.X(), position.Y(), FacingDirection::RIGHT);
+			current_scene->MakeFireball(player_position.X() + TILE_SIZE_HALF, player_position.Y(), FacingDirection::RIGHT);
 		}
 	}
 }
@@ -403,6 +403,11 @@ void World::CheckSpellCollision(Fireball& fireball)
 	ObjectsList characters = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
 	for (GameObjectPtr object : characters)
 	{
+		// spells should not hit the player themselves
+		if (object->GetTag() == TagType::PLAYER)
+		{
+			continue;
+		}
 		Actor& actor = static_cast<Actor&>(*object.get());
 		if (fireball.GetCollider()->CheckCollision(*fireball.GetCollider(), *actor.GetCollider()))
 		{

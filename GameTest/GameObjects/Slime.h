@@ -4,6 +4,7 @@
 
 #define MOVE_TO_LOCATION "MoveToLocation"
 #define MOVE_TO_DIRECTION "MoveToDirection"
+#define TEMP "Temp"
 
 class Player;
 class Scene;

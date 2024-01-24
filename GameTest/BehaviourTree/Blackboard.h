@@ -13,6 +13,13 @@ public:
 
 	T& GetData() { return _data; }
 
+	bool operator == (const Any& any)
+	{
+		if (_data == any)
+			return true;
+		return false;
+	}
+
 private:
 	T _data;
 };

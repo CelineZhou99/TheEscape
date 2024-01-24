@@ -71,7 +71,7 @@ using RendererPtr = std::shared_ptr<Renderer>;
 using SceneLayersList = std::vector<std::vector<GameObjectPtr>>;
 using ObjectsList = std::vector<GameObjectPtr>;
 using GoalTypeMap = std::unordered_map<std::string, GoalType>;
-using DoorStateMap = std::unordered_map<char, DoorStateType>;
+using DoorStateContextMap = std::unordered_map<char, DoorStateType>;
 using MapIdMap = std::unordered_map<char, char*>;
 
 class Scene : public ISubscriber
@@ -99,8 +99,8 @@ public:
 		_map(),
 		_scene_layers({}),
 		_goal_doors({}),
-		_goal_context({}),
 		_goal(goal),
+		_goal_context(""),
 		_map_file_name(""),
 		_id(0),
 		_object_state(' '),
@@ -156,14 +156,14 @@ private:
 	void StoreResetButtonData();
 
 	GoalTypeMap _goal_type_mapping;
-	DoorStateMap _door_state_mapping;
+	DoorStateContextMap _door_state_mapping;
 	MapIdMap _map_id_mapping;
 
 	ObjectsList _map[MAP_WIDTH][MAP_HEIGHT] = { {} };
 	SceneLayersList _scene_layers;
 	std::vector<std::shared_ptr<Door>> _goal_doors;
 	std::vector<char> _context_reading_order = { _object_state, _object_id, _linked_map_id };
-
+	
 	std::string _goal_context;
 	Goal* _goal;
 

@@ -188,8 +188,6 @@
     <ClInclude Include="BehaviourTree\SequenceNode.h" />
     <ClInclude Include="Colliders\BoxCollider.h" />
     <ClInclude Include="Colliders\ICollider.h" />
-    <ClInclude Include="Controllers\Controller.h" />
-    <ClInclude Include="Controllers\PlayerController.h" />
     <ClInclude Include="App\app.h" />
     <ClInclude Include="App\AppSettings.h" />
     <ClInclude Include="App\main.h" />
@@ -245,8 +243,6 @@
     <ClCompile Include="BehaviourTree\SelectorNode.cpp" />
     <ClCompile Include="BehaviourTree\SequenceNode.cpp" />
     <ClCompile Include="Colliders\BoxCollider.cpp" />
-    <ClCompile Include="Controllers\Controller.cpp" />
-    <ClCompile Include="Controllers\PlayerController.cpp" />
     <ClCompile Include="App\app.cpp" />
     <ClCompile Include="App\main.cpp" />
     <ClCompile Include="App\SimpleController.cpp" />

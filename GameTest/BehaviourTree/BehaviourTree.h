@@ -37,8 +37,9 @@ public:
 	std::shared_ptr<Blackboard> GetBlackboard() { return _blackboard; }
 
 	void AddActionNode(node_ptr parent, std::function<BehaviourNodeState()> action);
-	void AddSelectorNode(node_ptr parent);
-	void AddSequenceNode(node_ptr parent);
+	std::shared_ptr<IBehaviourNode> AddSelectorNode(node_ptr parent);
+	std::shared_ptr<IBehaviourNode> AddSequenceNode(node_ptr parent);
+	std::shared_ptr<IBehaviourNode> AddDecoratorNode(node_ptr parent, std::string blackboard_variable_name, Blackboard* blackboard);
 
 	void Update();
 

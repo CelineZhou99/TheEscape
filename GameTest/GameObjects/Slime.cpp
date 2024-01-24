@@ -1,13 +1,16 @@
 #include "stdafx.h"
 #include "Slime.h"
 #include "../BehaviourTree/Blackboard.h"
+#include "../BehaviourTree/DecoratorNode.h"
 #include "../Scenes/Scene.h"
 #include "../GameObjects/Player.h"
 
 void Slime::BehaviourTreeInit(Scene* scene)
 {
 	_behaviour_tree = std::make_shared<BehaviourTree>(RootNodeType::SELECTOR);
-	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::MoveTo, this, scene));
+	std::shared_ptr<IBehaviourNode> decorator = _behaviour_tree->AddDecoratorNode(_behaviour_tree->GetRoot(), 
+		TEMP, _behaviour_tree->GetBlackboard().get());
+	_behaviour_tree->AddActionNode(decorator, std::bind(&Slime::MoveTo, this, scene));
 	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::SetMoveToLocation, this, scene));
 }
 
@@ -82,7 +85,6 @@ BehaviourNodeState Slime::MoveTo(Scene* scene)
 		return BehaviourNodeState::SUCCESS;
 	}
 	return BehaviourNodeState::RUNNING;
-	
 }
 
 BehaviourNodeState Slime::SetMoveToLocation(Scene* scene)
@@ -141,12 +143,14 @@ BehaviourNodeState Slime::SetMoveToLocation(Scene* scene)
 	int random_index = scene->GenerateRandomBetween(0, static_cast<int>(free_locations.size() - 1));
 	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_LOCATION, new Any<Vector2D>(free_locations[random_index]));
 	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_DIRECTION, new Any<FacingDirection>(free_directions[random_index]));
+	_behaviour_tree->GetBlackboard()->SetVariable(TEMP, new Any<int>(10));
 
 	return BehaviourNodeState::SUCCESS;
 }
 
 void Slime::UpdatePosition(float move_by_x, float move_by_y, FacingDirection direction)
 {
+	// TODO : change this to use the actor's functions
 	GetTransform()->MoveVectorPosition(move_by_x, move_by_y);
 	GetRenderer()->SetAnimationWithMovement(direction, move_by_x, move_by_y);
 	GetCollider()->MoveColliderPosition(move_by_x, move_by_y);

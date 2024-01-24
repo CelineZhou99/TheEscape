@@ -25,7 +25,6 @@ void Goal::DecrementContextCount()
 
 void Goal::SpawnReward(Scene* scene, const char* map_file_name)
 {
-	// TODO: FIX INCREMENTING FIRST THEN DECREMENTING BUG WILL SPAWN REWARD EVEN WHEN ITS NOT FINISHED
 	App::PlaySound(GOAL_COMPLETE_SOUND);
 
 	std::shared_ptr<Item> item = nullptr;

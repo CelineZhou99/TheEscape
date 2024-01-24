@@ -44,22 +44,22 @@ void DoorStateUnlocked::OnCollideWithPlayer(World& world)
 
 			if (world.current_scene->IsSpaceFree(top))
 			{
-				world.player_controller->SetControlledActorPosition(top.X(), top.Y() + TILE_SIZE_HALF, FacingDirection::UP);
+				world.player->SetActorPosition(top.X(), top.Y() + TILE_SIZE_HALF, FacingDirection::UP);
 				return;
 			}
 			if (world.current_scene->IsSpaceFree(down))
 			{
-				world.player_controller->SetControlledActorPosition(down.X(), down.Y() - TILE_SIZE_HALF, FacingDirection::DOWN);
+				world.player->SetActorPosition(down.X(), down.Y() - TILE_SIZE_HALF, FacingDirection::DOWN);
 				return;
 			}
 			if (world.current_scene->IsSpaceFree(left))
 			{
-				world.player_controller->SetControlledActorPosition(left.X() - TILE_SIZE_HALF, left.Y(), FacingDirection::LEFT);
+				world.player->SetActorPosition(left.X() - TILE_SIZE_HALF, left.Y(), FacingDirection::LEFT);
 				return;
 			}
 			if (world.current_scene->IsSpaceFree(right))
 			{
-				world.player_controller->SetControlledActorPosition(right.X() + TILE_SIZE_HALF, right.Y(), FacingDirection::RIGHT);
+				world.player->SetActorPosition(right.X() + TILE_SIZE_HALF, right.Y(), FacingDirection::RIGHT);
 				return;
 			}
 		}

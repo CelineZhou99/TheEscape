@@ -1,23 +1,23 @@
 #pragma once
 #include "IBehaviourNode.h"
+#include "Blackboard.h"
 
-template <typename T>
 class DecoratorNode :
     public IBehaviourNode
 {
 public:
-    // template value since decorators can assess different types of values
-    DecoratorNode(unsigned short id, T value_to_assess, T supposed_value) : 
-        IBehaviourNode(id), _value_to_assess(value_to_assess), _supposed_value(supposed_value) {}
-
-    void SetValueToAssess(const T& value_to_assess) { _value_to_assess = value_to_assess; }
+    // default decorator node will check for whether blackboard values are valid
+    DecoratorNode(unsigned short id, std::string blackboard_variable_name, Blackboard* blackboard) :
+        IBehaviourNode(id), 
+        _blackboard_variable_name(blackboard_variable_name), 
+        _blackboard(blackboard) {}
 
     bool CanHaveChildren() override { return true; }
 
     BehaviourNodeState AssessCurrState() override;
 
 private:
-    T _value_to_assess;
-    T _supposed_value;
+    std::string _blackboard_variable_name;
+    Blackboard* _blackboard;
 };
 

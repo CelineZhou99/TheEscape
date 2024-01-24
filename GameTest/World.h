@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Controllers/PlayerController.h"
 #include "GameObjects/Player.h"
 #include "Scenes/Scene.h"
 #include "UI/TextBox.h"
@@ -72,7 +71,6 @@ public:
 
 	std::vector<unsigned short> _unlocked_doors = {};
 
-	std::shared_ptr<PlayerController> player_controller = nullptr;
 	std::shared_ptr<Player> player = nullptr;
 
 	std::unique_ptr<Scene> current_scene = nullptr;

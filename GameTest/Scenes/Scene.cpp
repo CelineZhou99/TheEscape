@@ -50,32 +50,36 @@ std::set<int> Scene::ReadContextFromFile(std::istringstream& iss, std::string& w
 	std::set<int> goal_door_ids = {};
 	while (iss >> word)
 	{
-		// TODO: SWITCH TO SEPARATE BY ':'
-		std::string context = word.substr(0, 2);
+		char* w = &word[0];
+		char* token = std::strtok(w, ":");
+
+		std::string context = &token[0];
+
 		// check the goal context of the current map
 		// there can only be 1 goal context for now e.g. pressure plate, monsters
 		if (context == GOAL_CONTEXT)
 		{
-			_goal_context = word.substr(3, 1);
+			token = std::strtok(NULL, ":");
+			_goal_context = &token[0];
 		}
 		// check the goal doors (doors that will unlock when the goal is reached) of the current map
 		else if (context == GOAL_DOOR_ID)
 		{
-			std::string goal_doors = word.substr(3, word.size() - 3);
-			char* c_goal_doors = &goal_doors[0];
-			char* token = std::strtok(c_goal_doors, ",");
+			token = std::strtok(NULL, ":");
+			char* c_goal_doors = &token[0];
+			char* d_token = std::strtok(c_goal_doors, ",");
 
-			while (token != NULL)
+			while (d_token != NULL)
 			{
-				int id = atoi(&token[0]);
+				int id = atoi(&d_token[0]);
 				goal_door_ids.insert(id);
-				token = std::strtok(NULL, ",");
+				d_token = std::strtok(NULL, ",");
 			}
 		}
 		else if (context == GOAL_REWARD)
 		{
-			std::string goal_reward = word.substr(3, word.size() - 3);
-			_goal->SetGoalReward(goal_reward);
+			token = std::strtok(NULL, ":");
+			_goal->SetGoalReward(static_cast<std::string>(&token[0]));
 		}
 	}
 	return goal_door_ids;
@@ -118,7 +122,7 @@ void Scene::LoadMap(const char* file_name_text)
 				MakeWall(i, j, map_w, map_h);
 				break;
 			case SCENE_OBJECT_BOX:
-				MakeFloor(i, j);
+				MakeBox(i, j, map_w, map_h);
 				break;
 			case SCENE_OBJECT_PRESSURE_PLATE:
 				MakePressurePlate(i, j);
@@ -152,7 +156,7 @@ void Scene::LoadMap(const char* file_name_text)
 		++map_w;
 	}
 
-	if (GetGoalType() == GoalType::GOAL_PRESSURE_PLATE)
+ 	if (GetGoalType() == GoalType::GOAL_PRESSURE_PLATE)
 	{
 		StoreResetButtonData();
 	}
@@ -232,7 +236,7 @@ void Scene::MakeDungeonDoor(float i, float j, std::string& word, std::set<int> g
 
 	int id = atoi(&_context_reading_order[OBJECT_ID_INDEX]);
 
-	DoorStateMap::iterator d_it = _door_state_mapping.find(_context_reading_order[OBJECT_STATE_INDEX]);
+	DoorStateContextMap::iterator d_it = _door_state_mapping.find(_context_reading_order[OBJECT_STATE_INDEX]);
 	DoorStateType type = DoorStateType::LOCKED;
 	if (d_it != _door_state_mapping.end())
 	{
@@ -496,48 +500,51 @@ Vector2D Scene::GetPositionByCoordinate(int map_w, int map_h)
 
 void Scene::Update()
 {
-	if (_goal->IsGoalComplete())
+	if (!_goal->IsGoalComplete())
 	{
-		bool will_spawn_reward = false;
 		for (std::shared_ptr<Door> door : _goal_doors)
 		{
-			// unlock all goal doors
-			if (door->GetStateType() != DoorStateType::UNLOCKED)
-			{
-				door->SetState(DoorStateType::UNLOCKED);
-			}
-			// only spawn rewards once on first goal clear
+			// lock all goal doors only if goal has not been cleared before
 			if (!_goal->FindInUnlockedDoors(door->GetDoorId()))
 			{
-				_goal->AddToUnlockedDoors(door->GetDoorId());
-				will_spawn_reward = true;
+				door->SetState(DoorStateType::LOCKED);
 			}
 		}
+		return;
+	}
 
-		if (will_spawn_reward)
+	bool will_spawn_reward = false;
+	for (std::shared_ptr<Door> door : _goal_doors)
+	{
+		// unlock all goal doors
+		if (door->GetStateType() != DoorStateType::UNLOCKED)
 		{
-			_goal->SpawnReward(this, _map_file_name);
+			door->SetState(DoorStateType::UNLOCKED);
 		}
-
-		if (GetGoalType() == GoalType::GOAL_PRESSURE_PLATE)
+		// only spawn rewards once on first goal clear
+		if (!_goal->FindInUnlockedDoors(door->GetDoorId()))
 		{
-			for (GameObjectPtr object : _scene_layers[LayerType::FOREGROUND])
-			{
-				if (object->GetTag() == TagType::BUTTON)
-				{
-					ResetButton& button = static_cast<ResetButton&>(*object.get());
-					button.SetIsDisabled(true);
-					break;
-				}
-			}
+			_goal->AddToUnlockedDoors(door->GetDoorId());
+			will_spawn_reward = true;
 		}
 	}
-	else
+		
+	if (will_spawn_reward)
 	{
-		for (std::shared_ptr<Door> door : _goal_doors)
+		_goal->SpawnReward(this, _map_file_name);
+	}
+
+	// disable the reset button
+	if (GetGoalType() == GoalType::GOAL_PRESSURE_PLATE)
+	{
+		for (GameObjectPtr object : _scene_layers[LayerType::FOREGROUND])
 		{
-			// unlock all goal doors
-			door->SetState(DoorStateType::LOCKED);
+			if (object->GetTag() == TagType::BUTTON)
+			{
+				ResetButton& button = static_cast<ResetButton&>(*object.get());
+				button.SetIsDisabled(true);
+				return;
+			}
 		}
 	}
 }
