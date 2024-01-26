@@ -7,18 +7,19 @@ void Key::OnInteractWithPlayer(World& world)
 {
 	App::PlaySound(ITEM_COLLECT_SOUND);
 
-	world.player->GetInventory()->AddToInventory(this);
-	world.current_scene->RemoveFromSceneLayers(this, LayerType::FOREGROUND);
-	
+	world.GetPlayer()->GetInventory()->AddToInventory(this);
+	world.GetCurrScene()->RemoveItemFromMap(*_transform, this);
+	world.GetCurrScene()->RemoveFromSceneLayers(this, LayerType::FOREGROUND);
+
 	// remove from spawned rewards
 	SpawnedRewardsMap::iterator it;
-	for (it = world.spawned_rewards.begin(); it != world.spawned_rewards.end(); ++it)
+	for (it = world.GetSpawnedRewards().begin(); it != world.GetSpawnedRewards().end(); ++it)
 	{
 		if (it->second->GetItemType() == GetItemType() &&
 			it->second->GetTransform()->X() == _transform->X() &&
 			it->second->GetTransform()->Y() == _transform->Y())
 		{
-			world.spawned_rewards.erase(it);
+			world.GetSpawnedRewards().erase(it);
 			break;
 		}
 	}

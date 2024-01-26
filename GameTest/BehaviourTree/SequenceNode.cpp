@@ -10,6 +10,11 @@ BehaviourNodeState SequenceNode::AssessCurrState()
 		return BehaviourNodeState::UNDEFINED;
 	}
 
+	if (_service)
+	{
+		_service->AssessCurrState();
+	}
+
 	for (node_ptr child : _children)
 	{
 		BehaviourNodeState child_state = child->AssessCurrState();

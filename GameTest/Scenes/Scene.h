@@ -113,7 +113,7 @@ public:
 	void Init();
 
 	void SetUpSceneLayers();
-	SceneLayersList GetSceneLayers() { return _scene_layers; }
+	SceneLayersList GetSceneLayers() const { return _scene_layers; }
 	void AddToSceneLayers(GameObjectPtr object, LayerType layer);
 	void RemoveFromSceneLayers(GameObject* object, LayerType layer);
 
@@ -130,29 +130,34 @@ public:
 	std::shared_ptr<Item> MakeKey(float i, float j);
 	std::shared_ptr<Item> MakeKeyEscape(float i, float j);
 	void MakeSlime(float i, float j);
-	void MakeResetButton(float i, float j);
+	void MakeResetButton(float i, float j, int map_w, int map_h);
 	void MakeFireball(float i, float j, FacingDirection direction);
-	void MakeGummyBear(float i, float j);
-	void MakePot(float i, float j);
+	void MakeGummyBear(float i, float j, int map_w, int map_h);
+	void MakePot(float i, float j, int map_w, int map_h);
 
 	std::shared_ptr<Actor> GetDoorWithId(int id);
-	Goal* GetGoal() { return _goal; }
+	Goal* GetGoal() const { return _goal; }
 	GoalType GetGoalType();
 
 	bool IsSpaceFree(Vector2D& position);
 	void MoveObjectPositionInMap(Vector2D& old_position, Vector2D& new_position, GameObject* object);
+	void RemoveItemFromMap(Vector2D& position, GameObject* object);
 	void GetCoordinateByPosition(Vector2D& position, int& map_w, int& map_h);
-	Vector2D GetPositionByCoordinate(int map_w, int map_h);
+	Vector2D GetPositionByCoordinate(int map_w, int map_h) const;
 
-	void Update() override;
+	void UpdateSubscriber() override;
 
 	int GenerateRandomBetween(int min, int max);
 
-	const char* GetMapFileName() { return _map_file_name; }
+	const char* GetMapFileName() const { return _map_file_name; }
 
 	unsigned short AllocateId() { return _id++; }
 
+	void SpawnFireball(Vector2D& player_position, FacingDirection direction);
+
 private:
+	void RemoveObjectInMap(int map_w, int map_h, GameObject* object);
+
 	void StoreResetButtonData();
 
 	GoalTypeMap _goal_type_mapping;
@@ -160,6 +165,7 @@ private:
 	MapIdMap _map_id_mapping;
 
 	ObjectsList _map[MAP_WIDTH][MAP_HEIGHT] = { {} };
+
 	SceneLayersList _scene_layers;
 	std::vector<std::shared_ptr<Door>> _goal_doors;
 	std::vector<char> _context_reading_order = { _object_state, _object_id, _linked_map_id };

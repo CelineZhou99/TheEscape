@@ -12,12 +12,7 @@ enum DoorStateType : uint8_t
 class IDoorState
 {
 public:
-	IDoorState(Door* door) : _door(door) {}
-
 	virtual void SetSpriteImage() = 0;
 	virtual void OnCollideWithPlayer(World& world) = 0;
-
-protected:
-	Door* _door;
 };
 

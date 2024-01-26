@@ -36,27 +36,27 @@ void Goal::SpawnReward(Scene* scene, const char* map_file_name)
 	{
 		item = scene->MakeKeyEscape(_goal_reward_tile->GetTransform()->X(), _goal_reward_tile->GetTransform()->Y());
 	}
-	_world.spawned_rewards[map_file_name] = item;
+	_world.GetSpawnedRewards()[map_file_name] = item;
 }
 
 void Goal::AddToUnlockedDoors(unsigned short id)
 {
 	if (!FindInUnlockedDoors(id))
 	{
-		_world._unlocked_doors.push_back(id);
+		_world.GetUnlockedDoors().push_back(id);
 	}
 }
 
 bool Goal::FindInUnlockedDoors(unsigned short id)
 {
-	return std::find(_world._unlocked_doors.begin(), _world._unlocked_doors.end(), id) != _world._unlocked_doors.end();
+	return std::find(_world.GetUnlockedDoors().begin(), _world.GetUnlockedDoors().end(), id) != _world.GetUnlockedDoors().end();
 }
 
 std::shared_ptr<Item> Goal::FindInSpawnedRewards(const char* file_name)
 {
-	if (_world.spawned_rewards.find(file_name) != _world.spawned_rewards.end())
+	if (_world.GetSpawnedRewards().find(file_name) != _world.GetSpawnedRewards().end())
 	{
-		return _world.spawned_rewards[file_name];
+		return _world.GetSpawnedRewards()[file_name];
 	}
 	return nullptr;
 }

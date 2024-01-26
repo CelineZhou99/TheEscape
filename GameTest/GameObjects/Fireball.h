@@ -13,13 +13,16 @@ class Fireball :
 {
 public:
     Fireball(unsigned short id, std::shared_ptr<Renderer> renderer, float pos_x, float pos_y, TagType tag, FacingDirection direction) :
-        Actor(id, renderer, pos_x, pos_y, tag), _direction(direction) {}
+        Actor(id, renderer, pos_x, pos_y, tag), _direction(direction) 
+    {
+        SetSpeed(5.f);
+    }
 
     void OnCollideWithObject(GameObject* object, Scene* scene);
 
-    FacingDirection GetFacingDirection() { return _direction; }
+    void Update(float deltaTime, Scene* scene);
 
-    float GetSpeed() { return 5.f; }
+    void CheckCollision(Scene* scene);
 
 private:
     FacingDirection _direction;

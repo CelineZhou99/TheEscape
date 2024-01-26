@@ -11,7 +11,7 @@ public:
         Door(id, renderer, pos_x, pos_y, tag, state, _door_id, linked_map),
         _required_key_type(required_key_type) {}
 
-    ItemType GetRequiredKeyType() { return _required_key_type; }
+    ItemType GetRequiredKeyType() const { return _required_key_type; }
 
 private:
     ItemType _required_key_type;

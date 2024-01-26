@@ -140,13 +140,13 @@ void Scene::LoadMap(const char* file_name_text)
 				MakeSlime(i, j);
 				break;
 			case SCENE_OBJECT_RESET_BUTTON:
-				MakeResetButton(i, j);
+				MakeResetButton(i, j, map_w, map_h);
 				break;
 			case SCENE_OBJECT_GUMMY_BEAR:
-				MakeGummyBear(i, j);
+				MakeGummyBear(i, j, map_w, map_h);
 				break;
 			case SCENE_OBJECT_POT:
-				MakePot(i, j);
+				MakePot(i, j, map_w, map_h);
 				break;
 			}
 			j += TILE_SIZE_FULL;
@@ -325,6 +325,12 @@ std::shared_ptr<Item> Scene::MakeKey(float i, float j)
 	RendererPtr key_renderer = std::make_shared<Renderer>(IMAGE_KEY, 1, 1, i, j);
 	std::shared_ptr<Key> key = std::make_shared<Key>(AllocateId(), key_renderer, i, j, TagType::ITEM, ItemType::KEY);
 	_scene_layers[LayerType::FOREGROUND].push_back(key);
+
+	int map_w = 0;
+	int map_h = 0;
+	GetCoordinateByPosition(Vector2D(i, j), map_w, map_h);
+	_map[map_w][map_h].push_back(key);
+
 	return key;
 }
 
@@ -333,6 +339,12 @@ std::shared_ptr<Item> Scene::MakeKeyEscape(float i, float j)
 	RendererPtr key_renderer = std::make_shared<Renderer>(IMAGE_KEY_ESCAPE, 1, 1, i, j);
 	std::shared_ptr<Key> key = std::make_shared<Key>(AllocateId(), key_renderer, i, j, TagType::ITEM, ItemType::KEY_ESCAPE);
 	_scene_layers[LayerType::FOREGROUND].push_back(key);
+
+	int map_w = 0;
+	int map_h = 0;
+	GetCoordinateByPosition(Vector2D(i, j), map_w, map_h);
+	_map[map_w][map_h].push_back(key);
+
 	return key;
 }
 
@@ -351,23 +363,24 @@ void Scene::MakeSlime(float i, float j)
 	}
 
 	RendererPtr slime_renderer = std::make_shared<Renderer>(IMAGE_SLIME, 4, 4, i, j);
-	std::shared_ptr<Slime> slime = std::make_shared<Slime>(AllocateId(), slime_renderer, i, j, TagType::ENEMY, player, this);
+	std::shared_ptr<HealthComponent> health_component = std::make_shared<HealthComponent>(3);
+	std::shared_ptr<Slime> slime = std::make_shared<Slime>(AllocateId(), slime_renderer, i, j, TagType::ENEMY, health_component, player, this);
 	slime->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
 	slime->GetRenderer()->SetAnimation(FacingDirection::DOWN);
 	_scene_layers[LayerType::CHARACTERS].push_back(slime);
 
-	// TODO : MAKE THIS A COMPOSITE PATTERN?
 	if (GetGoalType() == GoalType::GOAL_SLIME)
 	{
 		_goal->IncrementContextCount();
 	}
 }
 
-void Scene::MakeResetButton(float i, float j)
+void Scene::MakeResetButton(float i, float j, int map_w, int map_h)
 {
 	RendererPtr button_renderer = std::make_shared<Renderer>(IMAGE_RESET_BUTTON, 1, 1, i, j);
 	std::shared_ptr<ResetButton> button = std::make_shared<ResetButton>(AllocateId(), button_renderer, i, j, TagType::BUTTON);
 	_scene_layers[LayerType::FOREGROUND].push_back(button);
+	_map[map_w][map_h].push_back(button);
 }
 
 void Scene::MakeFireball(float i, float j, FacingDirection direction)
@@ -379,7 +392,7 @@ void Scene::MakeFireball(float i, float j, FacingDirection direction)
 	App::PlaySound(SHOOT_SOUND);
 }
 
-void Scene::MakeGummyBear(float i, float j)
+void Scene::MakeGummyBear(float i, float j, int map_w, int map_h)
 {
 	MakeFloor(i, j);
 
@@ -399,15 +412,18 @@ void Scene::MakeGummyBear(float i, float j)
 	RendererPtr bear_renderer = std::make_shared<Renderer>(IMAGE_GUMMY_BEAR, 1, 1, i, j);
 	std::shared_ptr<GummyBear> bear = std::make_shared<GummyBear>(AllocateId(), bear_renderer, i, j, TagType::ITEM, ItemType::GUMMY_BEAR);
 	_scene_layers[LayerType::FOREGROUND].push_back(bear);
+	_map[map_w][map_h].push_back(bear);
 }
 
-void Scene::MakePot(float i, float j)
+void Scene::MakePot(float i, float j, int map_w, int map_h)
 {
 	MakeFloor(i, j);
 
 	RendererPtr pot_renderer = std::make_shared<Renderer>(IMAGE_POT, 1, 1, i, j);
-	std::shared_ptr<Pot> pot = std::make_shared<Pot>(AllocateId(), pot_renderer, i, j, TagType::DESTRUCTABLE);
+	std::shared_ptr<HealthComponent> health_component = std::make_shared<HealthComponent>(1);
+	std::shared_ptr<Pot> pot = std::make_shared<Pot>(AllocateId(), pot_renderer, i, j, TagType::DESTRUCTABLE, health_component);
 	_scene_layers[LayerType::FOREGROUND].push_back(pot);
+	_map[map_w][map_h].push_back(pot);
 }
 
 std::shared_ptr<Actor> Scene::GetDoorWithId(int id)
@@ -457,31 +473,31 @@ bool Scene::IsSpaceFree(Vector2D& position)
 
 void Scene::MoveObjectPositionInMap(Vector2D& old_position, Vector2D& new_position, GameObject* object)
 {
-	int old_index_w = static_cast<int>(std::floor(old_position.X() / TILE_SIZE_FULL));
-	int old_index_h = static_cast<int>(std::floor(old_position.Y() / TILE_SIZE_FULL));
+	int old_w = 0;
+	int old_h = 0;
+	GetCoordinateByPosition(old_position, old_w, old_h);
 
-	int new_index_w = static_cast<int>(std::floor(new_position.X() / TILE_SIZE_FULL));
-	int new_index_h = static_cast<int>(std::floor(new_position.Y() / TILE_SIZE_FULL));
+	int new_w = 0;
+	int new_h = 0;
+	GetCoordinateByPosition(new_position, new_w, new_h);
 
-	if (old_index_w < 0 || old_index_w >= MAP_WIDTH || old_index_h < 0 || old_index_h >= MAP_HEIGHT ||
-		new_index_w < 0 || new_index_w >= MAP_WIDTH || new_index_h < 0 || new_index_h >= MAP_HEIGHT)
+	if (old_w < 0 || old_w > MAP_WIDTH || old_h < 0 || old_h > MAP_HEIGHT ||
+		new_w < 0 || new_w > MAP_WIDTH || new_h < 0 || new_h > MAP_HEIGHT)
 	{
 		return;
 	}
 
-	ObjectsList list = _map[old_index_w][old_index_h];
-	ObjectsList::iterator it =
-		std::find_if(list.begin(), list.end(), [object](const GameObjectPtr& o)
-			{
-				return o.get() == object;
-			});
+	RemoveObjectInMap(old_w, old_h, object);
 
-	if (it != list.end())
-	{
-		_map[old_index_w][old_index_h].erase(it);
-	}
+	_map[new_w][new_h].push_back(std::make_shared<GameObject>(*object));
+}
 
-	_map[new_index_w][new_index_h].push_back(std::make_shared<GameObject>(*object));
+void Scene::RemoveItemFromMap(Vector2D& position, GameObject* object)
+{
+	int map_w = 0;
+	int map_h = 0;
+	GetCoordinateByPosition(position, map_w, map_h);
+	RemoveObjectInMap(map_w, map_h, object);
 }
 
 void Scene::GetCoordinateByPosition(Vector2D& position, int& map_w, int& map_h)
@@ -490,7 +506,7 @@ void Scene::GetCoordinateByPosition(Vector2D& position, int& map_w, int& map_h)
 	map_h = static_cast<int>(std::floor(position.Y() / TILE_SIZE_FULL));
 }
 
-Vector2D Scene::GetPositionByCoordinate(int map_w, int map_h)
+Vector2D Scene::GetPositionByCoordinate(int map_w, int map_h) const
 {
 	float x = (static_cast<float>(map_w)) * TILE_SIZE_FULL + TILE_SIZE_HALF;
 	float y = (static_cast<float>(map_h)) * TILE_SIZE_FULL + TILE_SIZE_HALF;
@@ -498,7 +514,7 @@ Vector2D Scene::GetPositionByCoordinate(int map_w, int map_h)
 	return Vector2D(x, y);
 }
 
-void Scene::Update()
+void Scene::UpdateSubscriber()
 {
 	if (!_goal->IsGoalComplete())
 	{
@@ -556,6 +572,60 @@ int Scene::GenerateRandomBetween(int min, int max)
 	std::uniform_int_distribution<> distribution(min, max);
 
 	return distribution(gen);
+}
+
+void Scene::SpawnFireball(Vector2D& player_position, FacingDirection direction)
+{
+	int map_w = 0;
+	int map_h = 0;
+	GetCoordinateByPosition(player_position, map_w, map_h);
+
+	float x = player_position.X();
+	float y = player_position.Y();
+
+	Vector2D position = Vector2D();
+
+	switch (direction)
+	{
+	case FacingDirection::UP:
+		y += TILE_SIZE_HALF;
+		position = GetPositionByCoordinate(map_w, map_h + 1);
+		break;
+	case FacingDirection::DOWN:
+		y -= TILE_SIZE_HALF;
+		position = GetPositionByCoordinate(map_w, map_h - 1);
+		break;
+	case FacingDirection::LEFT:
+		x -= TILE_SIZE_HALF;
+		position = GetPositionByCoordinate(map_w - 1, map_h);
+		break;
+	case FacingDirection::RIGHT:
+		x += TILE_SIZE_HALF;
+		position = GetPositionByCoordinate(map_w + 1, map_h);
+		break;
+	}
+
+	if (!IsSpaceFree(position))
+	{
+		return;
+	}
+
+	MakeFireball(x, y, direction);
+}
+
+void Scene::RemoveObjectInMap(int map_w, int map_h, GameObject* object)
+{
+	ObjectsList& list = _map[map_w][map_h];
+	ObjectsList::iterator it =
+		std::find_if(list.begin(), list.end(), [object](const GameObjectPtr& o)
+			{
+				return o.get() == object;
+			});
+
+	if (it != list.end())
+	{
+		list.erase(it);
+	}
 }
 
 void Scene::StoreResetButtonData()

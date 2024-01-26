@@ -13,28 +13,27 @@ void BehaviourTree::AddActionNode(node_ptr parent, std::function<BehaviourNodeSt
 	parent->AddChild(std::make_shared<ActionNode>(AllocateId(), action));
 }
 
-std::shared_ptr<IBehaviourNode> BehaviourTree::AddSelectorNode(node_ptr parent)
+std::shared_ptr<BehaviourNode> BehaviourTree::AddSelectorNode(node_ptr parent)
 {
 	std::shared_ptr<SelectorNode> selector = std::make_shared<SelectorNode>(AllocateId());
 	parent->AddChild(selector);
 	return selector;
 }
 
-std::shared_ptr<IBehaviourNode> BehaviourTree::AddSequenceNode(node_ptr parent)
+std::shared_ptr<BehaviourNode> BehaviourTree::AddSequenceNode(node_ptr parent)
 {
 	std::shared_ptr<SequenceNode> sequence = std::make_shared<SequenceNode>(AllocateId());
 	parent->AddChild(sequence);
 	return sequence;
 }
 
-std::shared_ptr<IBehaviourNode> BehaviourTree::AddDecoratorNode(node_ptr parent, std::string blackboard_variable_name, 
+std::shared_ptr<BehaviourNode> BehaviourTree::AddDecoratorNode(node_ptr parent, std::vector<std::string> blackboard_variable_names, 
 	Blackboard* blackboard)
 {
-	std::shared_ptr<DecoratorNode> decorator = std::make_shared<DecoratorNode>(AllocateId(), blackboard_variable_name, blackboard);
+	std::shared_ptr<DecoratorNode> decorator = std::make_shared<DecoratorNode>(AllocateId(), blackboard_variable_names, blackboard);
 	parent->AddChild(decorator);
 	return decorator;
 }
-
 
 void BehaviourTree::Update()
 {

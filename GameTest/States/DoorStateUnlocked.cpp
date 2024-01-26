@@ -16,50 +16,50 @@ void DoorStateUnlocked::OnCollideWithPlayer(World& world)
 	int door_id = _door->GetDoorId();
 
 	std::shared_ptr<Goal> new_goal = std::make_shared<Goal>(world);
-	world.current_goal = new_goal;
+	world.SetCurrGoal(new_goal);
 
-	world.current_scene.reset();
-	world.current_scene = std::make_unique<Scene>(world.current_goal.get());
+	world.ResetScene();
+	world.SetCurrScene();
 
 	if (_door->GetLinkedMap())
 	{
-		world.current_scene->AddToSceneLayers(world.player, LayerType::CHARACTERS);
-		world.current_scene->LoadMap(_door->GetLinkedMap());
-		world.current_goal->SetGoalType(world.current_scene->GetGoalType());
-		world.current_goal->Subscribe(world.current_scene.get());
+		world.GetCurrScene()->AddToSceneLayers(world.GetPlayer(), LayerType::CHARACTERS);
+		world.GetCurrScene()->LoadMap(_door->GetLinkedMap());
+		world.GetCurrGoal()->SetGoalType(world.GetCurrScene()->GetGoalType());
+		world.GetCurrGoal()->Subscribe(world.GetCurrScene());
 
-		std::shared_ptr<Actor> new_door = world.current_scene->GetDoorWithId(door_id);
+		std::shared_ptr<Actor> new_door = world.GetCurrScene()->GetDoorWithId(door_id);
 
 		if (new_door)
 		{
 			// check all 4 directions of new door to find a space to spawn player
 			int map_w = 0;
 			int map_h = 0;
-			world.current_scene->GetCoordinateByPosition(*new_door->GetTransform(), map_w, map_h);
+			world.GetCurrScene()->GetCoordinateByPosition(*new_door->GetTransform(), map_w, map_h);
 
-			Vector2D top = world.current_scene->GetPositionByCoordinate(map_w, map_h + 1);
-			Vector2D down = world.current_scene->GetPositionByCoordinate(map_w, map_h - 1);
-			Vector2D left = world.current_scene->GetPositionByCoordinate(map_w - 1, map_h);
-			Vector2D right = world.current_scene->GetPositionByCoordinate(map_w + 1, map_h);
+			Vector2D top = world.GetCurrScene()->GetPositionByCoordinate(map_w, map_h + 1);
+			Vector2D down = world.GetCurrScene()->GetPositionByCoordinate(map_w, map_h - 1);
+			Vector2D left = world.GetCurrScene()->GetPositionByCoordinate(map_w - 1, map_h);
+			Vector2D right = world.GetCurrScene()->GetPositionByCoordinate(map_w + 1, map_h);
 
-			if (world.current_scene->IsSpaceFree(top))
+			if (world.GetCurrScene()->IsSpaceFree(top))
 			{
-				world.player->SetActorPosition(top.X(), top.Y() + TILE_SIZE_HALF, FacingDirection::UP);
+				world.GetPlayer()->SetActorPosition(top.X(), top.Y() + TILE_SIZE_HALF, FacingDirection::UP);
 				return;
 			}
-			if (world.current_scene->IsSpaceFree(down))
+			if (world.GetCurrScene()->IsSpaceFree(down))
 			{
-				world.player->SetActorPosition(down.X(), down.Y() - TILE_SIZE_HALF, FacingDirection::DOWN);
+				world.GetPlayer()->SetActorPosition(down.X(), down.Y() - TILE_SIZE_HALF, FacingDirection::DOWN);
 				return;
 			}
-			if (world.current_scene->IsSpaceFree(left))
+			if (world.GetCurrScene()->IsSpaceFree(left))
 			{
-				world.player->SetActorPosition(left.X() - TILE_SIZE_HALF, left.Y(), FacingDirection::LEFT);
+				world.GetPlayer()->SetActorPosition(left.X() - TILE_SIZE_HALF, left.Y(), FacingDirection::LEFT);
 				return;
 			}
-			if (world.current_scene->IsSpaceFree(right))
+			if (world.GetCurrScene()->IsSpaceFree(right))
 			{
-				world.player->SetActorPosition(right.X() + TILE_SIZE_HALF, right.Y(), FacingDirection::RIGHT);
+				world.GetPlayer()->SetActorPosition(right.X() + TILE_SIZE_HALF, right.Y(), FacingDirection::RIGHT);
 				return;
 			}
 		}

@@ -11,7 +11,7 @@ void ResetButton::OnInteractWithPlayer(World& world)
 	}
 
 	// Reset button will reset the position of boxes, the pressure plate states, and the goal progress
-	ObjectsList foreground = world.current_scene->GetSceneLayers().at(LayerType::FOREGROUND);
+	ObjectsList foreground = world.GetCurrScene()->GetSceneLayers().at(LayerType::FOREGROUND);
 	int index = 0;
 	for (GameObjectPtr object : foreground)
 	{
@@ -27,7 +27,7 @@ void ResetButton::OnInteractWithPlayer(World& world)
 		}
 	}
 
-	ObjectsList middleground = world.current_scene->GetSceneLayers().at(LayerType::MIDDLEGROUND);
+	ObjectsList middleground = world.GetCurrScene()->GetSceneLayers().at(LayerType::MIDDLEGROUND);
 	for (GameObjectPtr object : middleground)
 	{
 		if (object->GetTag() == TagType::PLATE)
@@ -37,7 +37,7 @@ void ResetButton::OnInteractWithPlayer(World& world)
 		}
 	}
 
-	world.current_goal->SetContextCount(_original_goal_context_count);
+	world.GetCurrGoal()->SetContextCount(_original_goal_context_count);
 }
 
 void ResetButton::AddToOriginalBoxLocation(Vector2D& location)

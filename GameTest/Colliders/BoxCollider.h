@@ -1,12 +1,12 @@
 #pragma once
-#include "ICollider.h"
+#include "ColliderBase.h"
 
 class BoxCollider :
-    public ICollider
+    public ColliderBase
 {
 public:
-    BoxCollider(Vector2D position, float width, float height) : ICollider(position, width, height) {}
+    BoxCollider(Vector2D position, float width, float height) : ColliderBase(position, width, height) {}
 
-    bool CheckCollision(ICollider& obj_1_collider, ICollider& obj_2_collider) override;
+    bool CheckCollision(ColliderBase& obj_1_collider, ColliderBase& obj_2_collider) override;
 };
 

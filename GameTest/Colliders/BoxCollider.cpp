@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "BoxCollider.h"
 
-bool BoxCollider::CheckCollision(ICollider& obj_1_collider, ICollider& obj_2_collider)
+bool BoxCollider::CheckCollision(ColliderBase& obj_1_collider, ColliderBase& obj_2_collider)
 {
     // use AABB collision detection
     float obj_1_top_left_x = obj_1_collider.GetPosition().X();

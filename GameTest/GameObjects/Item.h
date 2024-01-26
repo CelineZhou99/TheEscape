@@ -22,9 +22,9 @@ public:
         _quantity(1),
         _item_type(item_type) {}
 
-    ItemType GetItemType() { return _item_type; }
-    short GetQuantity() { return _quantity; }
-    std::shared_ptr<UI> GetUIIcon() { return _ui_icon; }
+    ItemType GetItemType() const { return _item_type; }
+    short GetQuantity() const { return _quantity; }
+    std::shared_ptr<UI> GetUIIcon() const { return _ui_icon; }
 
     void AddQuantity();
     void SubtractQuantity();

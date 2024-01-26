@@ -4,8 +4,9 @@
 
 void GummyBear::OnInteractWithPlayer(World& world)
 {
-	world.player->GetInventory()->AddToInventory(this);
-	world.player->SetCanShoot(world);
+	world.GetPlayer()->GetInventory()->AddToInventory(this);
+	world.GetPlayer()->SetCanShoot(world);
 	App::PlaySound(ITEM_COLLECT_SOUND);
-	world.current_scene->RemoveFromSceneLayers(this, LayerType::FOREGROUND);
+	world.GetCurrScene()->RemoveItemFromMap(*_transform, this);
+	world.GetCurrScene()->RemoveFromSceneLayers(this, LayerType::FOREGROUND);
 }

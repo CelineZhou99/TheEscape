@@ -20,7 +20,7 @@ public:
             }),
         _state_type(PressurePlateStateType::OFF) {}
     
-    PressurePlateStateType GetStateType() { return _state_type; }
+    PressurePlateStateType GetStateType() const { return _state_type; }
     void SetState(PressurePlateStateType state, Goal* goal, bool is_reset = false);
 
 protected:

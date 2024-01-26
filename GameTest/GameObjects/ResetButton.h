@@ -13,7 +13,7 @@ public:
 
     void AddToOriginalBoxLocation(Vector2D& location);
 
-    unsigned short GetOriginalGoalContextCount() { return _original_goal_context_count; }
+    unsigned short GetOriginalGoalContextCount() const { return _original_goal_context_count; }
     void SetOriginalGoalContextCount(unsigned short count) { _original_goal_context_count = count; }
 
     void SetIsDisabled(bool is_disabled) { _is_disabled = is_disabled; }

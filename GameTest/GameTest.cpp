@@ -30,9 +30,9 @@ void Init()
 //------------------------------------------------------------------------
 void Update(float deltaTime)
 {
-	if (!world->has_game_ended)
+	if (!world->HasGameEnded())
 	{
-		if (!world->text_box->GetIsDialogueFinished())
+		if (!world->HasDialogueFinished())
 		{
  			if (App::IsKeyPressed(VK_SPACE) && !is_space_pressed)
 			{
@@ -41,7 +41,7 @@ void Update(float deltaTime)
 			if (!App::IsKeyPressed(VK_SPACE) && is_space_pressed)
 			{
 				is_space_pressed = false;
-				world->text_box->NextDialogue();
+				world->NextDialogue();
 			}
 		}
 		world->Update(deltaTime);
@@ -55,7 +55,7 @@ void Update(float deltaTime)
 		if (!App::IsKeyPressed('R') && is_restart_pressed)
 		{
 			is_restart_pressed = false;
-			world->has_game_ended = false;
+			world->SetHasGameEnded(false);
 			world->Init();
 			if (App::IsSoundPlaying(DEAD_MUSIC))
 			{
@@ -75,19 +75,19 @@ void Update(float deltaTime)
 //------------------------------------------------------------------------
 void Render()
 {	
-	if (!world->has_game_ended)
+	if (!world->HasGameEnded())
 	{
 		world->DrawAllSprites();
 		world->DrawUI();
 		
-		if (!world->text_box->GetIsDialogueFinished())
+		if (!world->HasDialogueFinished())
 		{
 			world->DrawTextBox();
 		}
 	}
 	else 
 	{
-		world->end_screen_sprite->Draw();
+		world->GetEndScreenSprite()->Draw();
 	}
 }
 //------------------------------------------------------------------------

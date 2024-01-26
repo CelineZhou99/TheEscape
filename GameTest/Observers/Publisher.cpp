@@ -15,6 +15,6 @@ void Publisher::NotifySubscribers()
 {
 	for (ISubscriber* subscriber : _subscriber_list)
 	{
-		subscriber->Update();
+		subscriber->UpdateSubscriber();
 	}
 }

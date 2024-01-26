@@ -11,9 +11,9 @@ void Fireball::OnCollideWithObject(GameObject* object, Scene* scene)
 		Slime& enemy = static_cast<Slime&>(*object);
 		enemy.TakeDamage();
 		App::PlaySound(IMPACT_ENEMY_SOUND);
-		if (enemy.IsDead())
+		if (enemy.GetHealthComponent()->IsDead())
 		{
-			enemy.OnDeath(scene);
+			enemy.OnDeath(scene, LayerType::CHARACTERS);
 		}
 	}
 	else if (object->GetTag() == TagType::DESTRUCTABLE)
@@ -21,14 +21,78 @@ void Fireball::OnCollideWithObject(GameObject* object, Scene* scene)
 		Pot& pot = static_cast<Pot&>(*object);
 		pot.TakeDamage();
 		App::PlaySound(IMPACT_DESTRUCTABLE_SOUND);
-		if (pot.IsDead())
+		if (pot.GetHealthComponent()->IsDead())
 		{
-			pot.OnDeath(scene);
+			pot.OnDeath(scene, LayerType::FOREGROUND);
 		}
 	}
 	else
 	{
 		App::PlaySound(IMPACT_OBJECT_SOUND);
 	}
-	scene->RemoveFromSceneLayers(this, LayerType::SPELLS);
+	// On collide with any object the fireball will disappear
+	OnDeath(scene, LayerType::SPELLS);
+}
+
+void Fireball::Update(float deltaTime, Scene* scene)
+{
+	Actor::Update(deltaTime, scene);
+
+	switch (_direction)
+	{
+	case FacingDirection::UP:
+		UpdateActorPosition(0, GetSpeed());
+		break;
+	case FacingDirection::DOWN:
+		UpdateActorPosition(0, -GetSpeed());
+		break;
+	case FacingDirection::LEFT:
+		UpdateActorPosition(-GetSpeed(), 0);
+		break;
+	case FacingDirection::RIGHT:
+		UpdateActorPosition(GetSpeed(), 0);
+		break;
+	}
+	CheckCollision(scene);
+}
+
+void Fireball::CheckCollision(Scene* scene)
+{
+	ObjectsList characters = scene->GetSceneLayers().at(LayerType::CHARACTERS);
+	for (GameObjectPtr object : characters)
+	{
+		// spells should not hit the player themselves
+		if (object->GetTag() == TagType::PLAYER)
+		{
+			continue;
+		}
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (_collider->CheckCollision(*_collider, *actor.GetCollider()))
+		{
+			OnCollideWithObject(object.get(), scene);
+			return;
+		}
+	}
+
+	ObjectsList foreground = scene->GetSceneLayers().at(LayerType::FOREGROUND);
+	for (GameObjectPtr object : foreground)
+	{
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (_collider->CheckCollision(*_collider, *actor.GetCollider()))
+		{
+			OnCollideWithObject(object.get(), scene);
+			return;
+		}
+	}
+
+	ObjectsList middleground = scene->GetSceneLayers().at(LayerType::MIDDLEGROUND);
+	for (GameObjectPtr object : middleground)
+	{
+		Actor& actor = static_cast<Actor&>(*object.get());
+		if (_collider->CheckCollision(*_collider, *actor.GetCollider()))
+		{
+			OnCollideWithObject(object.get(), scene);
+			return;
+		}
+	}
 }

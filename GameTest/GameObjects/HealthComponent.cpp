@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "IHealthSystem.h"
+#include "HealthComponent.h"
 
-bool IHealthSystem::IsDead()
+bool HealthComponent::IsDead()
 {
     return _curr_health <= 0 ? true : false;
 }

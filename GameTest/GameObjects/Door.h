@@ -24,12 +24,12 @@ public:
 		_door_id(door_id),
 		_state_type(state) {}
 
-	DoorStateType GetStateType() { return _state_type; }
+	DoorStateType GetStateType() const { return _state_type; }
 	void SetState(DoorStateType state);
 
-	unsigned short GetDoorId() { return _door_id; }
+	unsigned short GetDoorId() const { return _door_id; }
 
-	char* GetLinkedMap() { return _linked_map; }
+	char* GetLinkedMap() const { return _linked_map; }
 
 	void OnInteractWithPlayer(World& world) override;
 

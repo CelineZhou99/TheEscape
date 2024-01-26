@@ -24,7 +24,7 @@
 
 class Fireball;
 
-using Dialogue = std::vector<const char*>;
+using Dialogue = std::vector<std::string>;
 using SpawnedRewardsMap = std::unordered_map<const char*, std::shared_ptr<Item>>;
 using GameObjectPtr = std::shared_ptr<GameObject>;
 
@@ -43,19 +43,41 @@ public:
 	//------------------------------------------------------------------------
 	void Init();
 	//------------------------------------------------------------------------
+	// Getters
+	//------------------------------------------------------------------------
+	SpawnedRewardsMap& GetSpawnedRewards() { return spawned_rewards; }
+	std::vector<unsigned short>& GetUnlockedDoors() { return _unlocked_doors; }
+	std::shared_ptr<Player> GetPlayer() const { return player; }
+	Scene* GetCurrScene() const { return current_scene.get(); }
+	Goal* GetCurrGoal() const { return current_goal.get(); }
+	bool HasGameEnded() const { return has_game_ended; }
+	bool HasDialogueFinished() const { return text_box->GetIsDialogueFinished(); }
+	CSimpleSprite* GetEndScreenSprite() const { return end_screen_sprite.get(); }
+	//------------------------------------------------------------------------
+	// Setters
+	//------------------------------------------------------------------------
+	void SetHasGameEnded(bool has_ended) { has_game_ended = has_ended; }
+	void SetCurrGoal(std::shared_ptr<Goal> goal) { current_goal = goal; }
+	void ResetScene() { current_scene.reset(); }
+	void SetCurrScene() { current_scene = std::make_unique<Scene>(current_goal.get()); }
+	//------------------------------------------------------------------------
+	// Functions for Dialogue
+	//------------------------------------------------------------------------
+	void NextDialogue() { text_box->NextDialogue(); }
+	void SetDialogue(Dialogue* dialogue) { text_box->SetDialogue(dialogue); }
+	//------------------------------------------------------------------------
 	// Functions for the update loop
 	//------------------------------------------------------------------------
 	void Update(float deltaTime);
 	// returns whether the player will move
-	bool CalculatePlayerNextMovement(ICollider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y);
-	bool ShouldPlayerMove(ICollider& collider, FacingDirection& direction);
-	bool ShouldMovableObjectsMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction);
-	void UpdateMovableObjects(Actor& actor, FacingDirection direction);
-	void InvulnerabilityCountdown(float deltaTime);
+	bool CalculatePlayerNextMovement(ColliderBase& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y);
+	bool ShouldPlayerMove(ColliderBase& collider, FacingDirection& direction);
+	bool ShouldMovableObjectsMove(Actor& actor_to_move, ColliderBase& collider, FacingDirection& direction);
+	void UpdateMovableObjects(Actor& actor, FacingDirection direction, GameObject* object);
 
-	void CheckShootControls();
-	void UpdateSpells();
-	void CheckSpellCollision(Fireball& fireball);
+	bool OnKeyUp(char key, bool& key_variable);
+	bool CheckShootControls(FacingDirection& direction);
+	void UpdateSpells(float deltaTime);
 
 	void GameEnd(GameEndType game_end_type);
 	//------------------------------------------------------------------------
@@ -64,9 +86,8 @@ public:
 	void DrawAllSprites();
 	void DrawUI();
 	void DrawTextBox();
-	//------------------------------------------------------------------------
-	// Variables
-	//------------------------------------------------------------------------
+	
+private:
 	SpawnedRewardsMap spawned_rewards = {};
 
 	std::vector<unsigned short> _unlocked_doors = {};
@@ -80,9 +101,6 @@ public:
 	
 	std::shared_ptr<TextBox> text_box = nullptr;
 	std::shared_ptr<Dialogue> game_start_dialogue = nullptr;
-
-	float start_timer = 0.f;
-	float stop_timer = 2.f;
 
 	bool has_game_ended = false;
 

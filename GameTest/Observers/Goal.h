@@ -22,13 +22,13 @@ public:
     Goal(World& world) : _goal_context_count(0), _goal_type(GoalType::GOAL_NONE), _goal_reward(""), _goal_reward_tile(nullptr), _world(world) {}
 
     bool IsGoalComplete();
-    short GetContextCount() { return _goal_context_count; }
+    short GetContextCount() const { return _goal_context_count; }
     void SetContextCount(short count) { _goal_context_count = count; }
     void IncrementContextCount();
     void DecrementContextCount();
     void SpawnReward(Scene* scene, const char* map_file_name);
 
-    GoalType GetGoalType() { return _goal_type; }
+    GoalType GetGoalType() const { return _goal_type; }
     void SetGoalType(GoalType goal_type) { _goal_type = goal_type; }
 
     void SetGoalReward(std::string goal_reward) { _goal_reward = goal_reward; }

@@ -1,14 +1,16 @@
 #pragma once
-#include "IBehaviourNode.h"
+#include "BehaviourNode.h"
 
 class SelectorNode :
-    public IBehaviourNode
+    public BehaviourNode
 {
 public:
-    SelectorNode(unsigned short id) : IBehaviourNode(id) {}
+    SelectorNode(unsigned short id) : BehaviourNode(id) {}
 
-    bool CanHaveChildren() override { return true; }
+    bool CanHaveChildren() const override { return true; }
+    bool CanAttachService() const override { return true; }
 
     BehaviourNodeState AssessCurrState() override;
+
 };
 

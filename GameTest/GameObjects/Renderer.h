@@ -32,9 +32,9 @@ public:
 	void SetSprite(const char* file_name, unsigned int columns, unsigned int rows);
 	void SetSpritePosition(float x, float y, FacingDirection direction);
 
-	std::shared_ptr<CSimpleSprite> GetSprite() { return _sprite; }
+	std::shared_ptr<CSimpleSprite> GetSprite() const { return _sprite; }
 
-	const char* GetFileName() { return _file_name; }
+	const char* GetFileName() const { return _file_name; }
 
 private:
 	std::shared_ptr<CSimpleSprite> _sprite;

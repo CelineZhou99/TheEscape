@@ -7,6 +7,8 @@
 #define DIALOGUE_CONTINUE_X 768
 #define DIALOGUE_CONTINUE_Y 16
 
+using Dialogue = std::vector<std::string>;
+
 class TextBox :
     public UI
 {
@@ -14,14 +16,14 @@ public:
     TextBox(const char* file_name, unsigned int columns = 1, unsigned int rows = 1) : UI(file_name), 
         _dialogue(nullptr), _dialogue_index(0), _is_dialogue_finished(true) {}
 
-    void SetDialogue(std::vector<const char*>* dialogue);
+    void SetDialogue(Dialogue* dialogue);
     void DisplayDialogue();
     void NextDialogue();
 
-    bool GetIsDialogueFinished() { return _is_dialogue_finished; }
+    bool GetIsDialogueFinished() const { return _is_dialogue_finished; }
 
 private:
-    std::vector<const char*>* _dialogue;
+    Dialogue* _dialogue;
     unsigned short _dialogue_index;
     bool _is_dialogue_finished;
 };

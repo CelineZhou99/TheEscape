@@ -1,14 +1,16 @@
 #pragma once
-#include "IBehaviourNode.h"
+#include "BehaviourNode.h"
 #include <functional>
 
 class ActionNode :
-    public IBehaviourNode
+    public BehaviourNode
 {
 public:
-    ActionNode(unsigned short id, std::function<BehaviourNodeState()> action) : IBehaviourNode(id), _action(action) {}
+    ActionNode(unsigned short id, std::function<BehaviourNodeState()> action) : 
+        BehaviourNode(id), _action(action) {}
 
-    bool CanHaveChildren() override { return false; }
+    bool CanHaveChildren() const override { return false; }
+    bool CanAttachService() const override { return true; }
 
     BehaviourNodeState AssessCurrState() override;
 

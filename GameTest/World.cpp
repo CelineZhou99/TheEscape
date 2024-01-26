@@ -7,13 +7,15 @@
 #include "GameObjects/ResetButton.h"
 #include "GameObjects/GummyBear.h"
 #include "GameObjects/Fireball.h"
+#include "GameObjects/HealthComponent.h"
 
 void World::Init()
 {
 	current_goal = std::make_shared<Goal>(*this);
 	current_scene = std::make_unique<Scene>(current_goal.get());
 	std::shared_ptr<Renderer> renderer(new Renderer(IMAGE_PLAYER_IDLE, 4, 4, PLAYER_START_X, PLAYER_START_Y));
-	player = std::make_shared<Player>(current_scene->AllocateId(), renderer, PLAYER_START_X, PLAYER_START_Y, TagType::PLAYER);
+	std::shared_ptr<HealthComponent> health_component = std::make_shared<HealthComponent>(3);
+	player = std::make_shared<Player>(current_scene->AllocateId(), renderer, PLAYER_START_X, PLAYER_START_Y, TagType::PLAYER, health_component);
 	player->GetRenderer()->CreateSpriteAnimation(ANIMATION_SPEED, { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 });
 
 	current_scene->AddToSceneLayers(player, LayerType::CHARACTERS);
@@ -49,61 +51,55 @@ void World::Update(float deltaTime)
 	//------------------------------------------------------------------------
 	// Handle player
 	//------------------------------------------------------------------------
-
-	if (player->GetIsInvulnerable())
-	{
-		InvulnerabilityCountdown(deltaTime);
-		player->GetRenderer()->GetSprite()->SetColor(0.66f, 0.66f, 0.66f);
-	}
-	else
-	{
-		player->GetRenderer()->GetSprite()->SetColor(1, 1, 1);
-	}
-
 	BoxCollider collider(*player->GetCollider());
 	FacingDirection direction = player->GetLastFacingDirection();
 	float player_move_by_x = 0;
 	float player_move_by_y = 0;
 
-	// rename this better 
-	bool player_will_move = CalculatePlayerNextMovement(collider, direction, player_move_by_x, player_move_by_y);
+	bool player_requested_move = CalculatePlayerNextMovement(collider, direction, player_move_by_x, player_move_by_y);
 
-	if (player_will_move)
+	bool player_will_move = false;
+
+	if (player_requested_move)
 	{
-		player->SetState(PlayerStateType::WALK);
-		if (ShouldPlayerMove(collider, direction))
-		{
-			player->UpdateAnimatedActorPosition(player_move_by_x, player_move_by_y, direction);
-		}
-	}
-	else
-	{
-		player->SetState(PlayerStateType::IDLE);
-		player->GetRenderer()->SetAnimation(direction);
+		player_will_move = ShouldPlayerMove(collider, direction);
 	}
 
-	ObjectsList character_layer = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
-	for (GameObjectPtr character : character_layer)
+	player->Update(deltaTime, player_requested_move, player_will_move, direction, player_move_by_x, player_move_by_y);
+
+	ObjectsList character_list = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
+	for (GameObjectPtr character : character_list)
 	{
-		character->GetRenderer()->UpdateSpriteAnimation(deltaTime);
 		if (character->GetTag() == TagType::ENEMY)
 		{
 			Slime& enemy = static_cast<Slime&>(*character.get());
-			enemy.GetBehaviourTree()->Update();
+			enemy.Update(deltaTime, current_scene.get());
+		}
+		else
+		{
+			character->Update(deltaTime, current_scene.get());
 		}
 	}
 
-	CheckShootControls();
-	UpdateSpells();
+	if (player->GetCanShoot())
+	{
+		FacingDirection spell_direction = FacingDirection::NONE;
+		if (CheckShootControls(spell_direction))
+		{
+			current_scene->SpawnFireball(*player->GetTransform(), spell_direction);
+		}
+	}
 
-	if (player->IsDead())
+	UpdateSpells(deltaTime);
+
+	if (player->GetHealthComponent()->IsDead())
 	{
 		GameEnd(GameEndType::DEAD);
 		return;
 	}
 }
 
-bool World::CalculatePlayerNextMovement(ICollider& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
+bool World::CalculatePlayerNextMovement(ColliderBase& collider, FacingDirection& direction, float& player_move_by_x, float& player_move_by_y)
 {
 	bool player_will_move = true;
 	if (App::IsKeyPressed('W'))
@@ -136,7 +132,7 @@ bool World::CalculatePlayerNextMovement(ICollider& collider, FacingDirection& di
 	return player_will_move;
 }
 
-bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
+bool World::ShouldPlayerMove(ColliderBase& collider, FacingDirection& direction)
 {
 	SceneLayersList scene_layer = current_scene->GetSceneLayers();
 
@@ -159,7 +155,7 @@ bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
 		{
 			if (actor.GetTag() == TagType::BOX)
 			{
-				UpdateMovableObjects(actor, direction);
+				UpdateMovableObjects(actor, direction, object.get());
 				return false;
 			}
 			else if (actor.GetTag() == TagType::ITEM)
@@ -204,7 +200,7 @@ bool World::ShouldPlayerMove(ICollider& collider, FacingDirection& direction)
 	return true;
 }
 
-bool World::ShouldMovableObjectsMove(Actor& actor_to_move, ICollider& collider, FacingDirection& direction)
+bool World::ShouldMovableObjectsMove(Actor& actor_to_move, ColliderBase& collider, FacingDirection& direction)
 {
 	bool should_move = true;
 	SceneLayersList scene_layer = current_scene->GetSceneLayers();
@@ -239,7 +235,7 @@ bool World::ShouldMovableObjectsMove(Actor& actor_to_move, ICollider& collider, 
 	return should_move;
 }
 
-void World::UpdateMovableObjects(Actor& actor, FacingDirection direction)
+void World::UpdateMovableObjects(Actor& actor, FacingDirection direction, GameObject* object)
 {
 	float move_by_x = 0;
 	float move_by_y = 0;
@@ -287,155 +283,75 @@ void World::UpdateMovableObjects(Actor& actor, FacingDirection direction)
 			}
 		}
 		App::PlaySound(BOX_MOVE_SOUND);
+		Vector2D old_position = *actor.GetTransform();
 		actor.UpdateActorPosition(move_by_x, move_by_y);
+		current_scene->MoveObjectPositionInMap(old_position, *actor.GetTransform(), object);
 	}
 }
 
-void World::InvulnerabilityCountdown(float deltaTime)
+bool World::OnKeyUp(char key, bool& key_variable)
 {
-	start_timer += deltaTime / 1000;
-	if (start_timer >= stop_timer)
+	if (App::IsKeyPressed(key) && !key_variable)
 	{
-		start_timer = 0.f;
-		player->SetIsInvulnerable(false);
+		key_variable = true;
 	}
+	if (!App::IsKeyPressed(key) && key_variable)
+	{
+		key_variable = false;
+		return true;
+	}
+	return false;
 }
 
-void World::CheckShootControls()
+bool World::CheckShootControls(FacingDirection& direction)
 {
-	if (!player->GetCanShoot())
+	// I, K, J, L corresponds to UP, DOWN, LEFT, RIGHT for spell directions
+	// if two keys are pressed and released at the same time, only one direction will work
+	if (OnKeyUp('I', is_up_pressed))
 	{
-		return;
-	}
-
-	int map_w = 0;
-	int map_h = 0;
-	current_scene->GetCoordinateByPosition(*player->GetTransform(), map_w, map_h);
-
-	Vector2D player_position = *player->GetTransform();
-	
-	// spawn fireball in the direction the player selected via the arrow keys 
-	if (App::IsKeyPressed('I') && !is_up_pressed)
-	{
-		is_up_pressed = true;
-	}
-	if (!App::IsKeyPressed('I') && is_up_pressed)
-	{
-		is_up_pressed = false;
-		// spawn fireball on key release
-		Vector2D position = current_scene->GetPositionByCoordinate(map_w, map_h + 1);
-		if (current_scene->IsSpaceFree(position))
-		{
-			current_scene->MakeFireball(player_position.X(), player_position.Y() + TILE_SIZE_HALF, FacingDirection::UP);
-		}
-	}
-
-	if (App::IsKeyPressed('K') && !is_down_pressed)
-	{
-		is_down_pressed = true;
-	}
-	if (!App::IsKeyPressed('K') && is_down_pressed)
-	{
+		direction = FacingDirection::UP;
 		is_down_pressed = false;
-		Vector2D position = current_scene->GetPositionByCoordinate(map_w, map_h - 1);
-		if (current_scene->IsSpaceFree(position))
-		{
-			current_scene->MakeFireball(player_position.X(), player_position.Y() - TILE_SIZE_HALF, FacingDirection::DOWN);
-		}
-	}
-
-	if (App::IsKeyPressed('J') && !is_left_pressed)
-	{
-		is_left_pressed = true;
-	}
-	if (!App::IsKeyPressed('J') && is_left_pressed)
-	{
 		is_left_pressed = false;
-		Vector2D position = current_scene->GetPositionByCoordinate(map_w - 1, map_h);
-		if (current_scene->IsSpaceFree(position))
-		{
-			current_scene->MakeFireball(player_position.X() - TILE_SIZE_HALF, player_position.Y(), FacingDirection::LEFT);
-		}
+		is_right_pressed = false;
+		return true;
 	}
 
-	if (App::IsKeyPressed('L') && !is_right_pressed)
+	if (OnKeyUp('K', is_down_pressed))
 	{
-		is_right_pressed = true;
-	}
-	if (!App::IsKeyPressed('L') && is_right_pressed)
-	{
+		direction = FacingDirection::DOWN;
+		is_up_pressed = false;
+		is_left_pressed = false;
 		is_right_pressed = false;
-		Vector2D position = current_scene->GetPositionByCoordinate(map_w + 1, map_h);
-		if (current_scene->IsSpaceFree(position))
-		{
-			current_scene->MakeFireball(player_position.X() + TILE_SIZE_HALF, player_position.Y(), FacingDirection::RIGHT);
-		}
+		return true;
 	}
+
+	if (OnKeyUp('J', is_left_pressed))
+	{
+		direction = FacingDirection::LEFT;
+		is_up_pressed = false;
+		is_down_pressed = false;
+		is_right_pressed = false;
+		return true;
+	}
+
+	if (OnKeyUp('L', is_right_pressed))
+	{
+		direction = FacingDirection::RIGHT;
+		is_up_pressed = false;
+		is_down_pressed = false;
+		is_left_pressed = false;
+		return true;
+	}
+	return false;
 }
 
-void World::UpdateSpells()
+void World::UpdateSpells(float deltaTime)
 {
 	ObjectsList spells = current_scene->GetSceneLayers().at(LayerType::SPELLS);
 	for (GameObjectPtr object : spells)
 	{
 		Fireball& fireball = static_cast<Fireball&>(*object.get());
-		switch (fireball.GetFacingDirection())
-		{
-		case FacingDirection::UP:
-			fireball.UpdateActorPosition(0, fireball.GetSpeed());
-			break;
-		case FacingDirection::DOWN:
-			fireball.UpdateActorPosition(0, -fireball.GetSpeed());
-			break;
-		case FacingDirection::LEFT:
-			fireball.UpdateActorPosition(-fireball.GetSpeed(), 0);
-			break;
-		case FacingDirection::RIGHT:
-			fireball.UpdateActorPosition(fireball.GetSpeed(), 0);
-			break;
-		}
-		CheckSpellCollision(fireball);
-	}
-}
-
-void World::CheckSpellCollision(Fireball& fireball)
-{
-	ObjectsList characters = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
-	for (GameObjectPtr object : characters)
-	{
-		// spells should not hit the player themselves
-		if (object->GetTag() == TagType::PLAYER)
-		{
-			continue;
-		}
-		Actor& actor = static_cast<Actor&>(*object.get());
-		if (fireball.GetCollider()->CheckCollision(*fireball.GetCollider(), *actor.GetCollider()))
-		{
-			fireball.OnCollideWithObject(object.get(), current_scene.get());
-			return;
-		}
-	}
-
-	ObjectsList foreground = current_scene->GetSceneLayers().at(LayerType::FOREGROUND);
-	for (GameObjectPtr object : foreground)
-	{
-		Actor& actor = static_cast<Actor&>(*object.get());
-		if (fireball.GetCollider()->CheckCollision(*fireball.GetCollider(), *actor.GetCollider()))
-		{
-			fireball.OnCollideWithObject(object.get(), current_scene.get());
-			return;
-		}
-	}
-
-	ObjectsList middleground = current_scene->GetSceneLayers().at(LayerType::MIDDLEGROUND);
-	for (GameObjectPtr object : middleground)
-	{
-		Actor& actor = static_cast<Actor&>(*object.get());
-		if (fireball.GetCollider()->CheckCollision(*fireball.GetCollider(), *actor.GetCollider()))
-		{
-			fireball.OnCollideWithObject(object.get(), current_scene.get());
-			return;
-		}
+		fireball.Update(deltaTime, current_scene.get());
 	}
 }
 
@@ -455,7 +371,7 @@ void World::DrawUI()
 {
 	float x = UI_START_X;
 	float y = UI_START_Y;
-	for (size_t i = 0; i < player->GetHealth(); ++i)
+	for (size_t i = 0; i < player->GetHealthComponent()->GetHealth(); ++i)
 	{
 		player->GetHealthIcon()->SetSpriteLocation(x, y);
 		player->GetHealthIcon()->DrawSprite();

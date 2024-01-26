@@ -4,31 +4,46 @@
 #include "../BehaviourTree/DecoratorNode.h"
 #include "../Scenes/Scene.h"
 #include "../GameObjects/Player.h"
+#include "../BehaviourTree/SetPlayerInRangeService.h"
 
 void Slime::BehaviourTreeInit(Scene* scene)
 {
-	_behaviour_tree = std::make_shared<BehaviourTree>(RootNodeType::SELECTOR);
-	std::shared_ptr<IBehaviourNode> decorator = _behaviour_tree->AddDecoratorNode(_behaviour_tree->GetRoot(), 
-		TEMP, _behaviour_tree->GetBlackboard().get());
+	Player* player = nullptr;
+	ObjectsList character_list = scene->GetSceneLayers().at(LayerType::CHARACTERS);
+
+	for (GameObjectPtr character : character_list)
+	{
+		if (character->GetTag() == TagType::PLAYER)
+		{
+			player = static_cast<Player*>(character.get());
+			break;
+		}
+	}
+
+	_behaviour_tree = std::make_shared<BehaviourTree>(RootNodeType::SEQUENCE);
+
+	node_ptr service = std::make_shared<SetPlayerInRangeService>(_behaviour_tree->AllocateId(), player, this, scene, _behaviour_tree->GetBlackboard().get());
+	_behaviour_tree->GetRoot()->SetService(service);
+
+	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::ChangeColour, this));
+
+	node_ptr selector = _behaviour_tree->AddSelectorNode(_behaviour_tree->GetRoot());
+
+	std::vector<std::string> decorator_variable_list = { BLACKBOARD_MOVE_TO_LOCATION, BLACKBOARD_MOVE_TO_DIRECTION };
+	node_ptr decorator = _behaviour_tree->AddDecoratorNode(selector,
+		decorator_variable_list, _behaviour_tree->GetBlackboard().get());
+
 	_behaviour_tree->AddActionNode(decorator, std::bind(&Slime::MoveTo, this, scene));
-	_behaviour_tree->AddActionNode(_behaviour_tree->GetRoot(), std::bind(&Slime::SetMoveToLocation, this, scene));
+	_behaviour_tree->AddActionNode(selector, std::bind(&Slime::SetMoveToLocation, this, scene));
 }
 
 BehaviourNodeState Slime::MoveTo(Scene* scene)
 {
-	any_type_ptr location_ptr = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_LOCATION);
-	any_type_ptr direction_ptr = _behaviour_tree->GetBlackboard()->GetVariable(MOVE_TO_DIRECTION);
+	any_type_ptr location_ptr = _behaviour_tree->GetBlackboard()->GetVariable(BLACKBOARD_MOVE_TO_LOCATION);
+	any_type_ptr direction_ptr = _behaviour_tree->GetBlackboard()->GetVariable(BLACKBOARD_MOVE_TO_DIRECTION);
 
-	Vector2D location = Vector2D();
-	FacingDirection direction = FacingDirection::NONE;
-
-	if (!location_ptr || !direction_ptr)
-	{
-		return BehaviourNodeState::FAILED;
-	}
-	
-	location = static_cast<Any<Vector2D>*>(location_ptr.get())->GetData();
-	direction = static_cast<Any<FacingDirection>*>(direction_ptr.get())->GetData();
+	Vector2D location = static_cast<Any<Vector2D>*>(location_ptr.get())->GetData();
+	FacingDirection direction = static_cast<Any<FacingDirection>*>(direction_ptr.get())->GetData();
 
 	float x, y = 0;
 	switch (direction)
@@ -75,16 +90,32 @@ BehaviourNodeState Slime::MoveTo(Scene* scene)
 		}
 	}
 
-	UpdatePosition(x, y, direction);
+	UpdateAnimatedActorPosition(x, y, direction);
 
 	if (_transform->X() == location.X() && _transform->Y() == location.Y())
 	{
-		_behaviour_tree->GetBlackboard()->RemoveVariable(MOVE_TO_LOCATION);
-		_behaviour_tree->GetBlackboard()->RemoveVariable(MOVE_TO_DIRECTION);
+		_behaviour_tree->GetBlackboard()->RemoveVariable(BLACKBOARD_MOVE_TO_LOCATION);
+		_behaviour_tree->GetBlackboard()->RemoveVariable(BLACKBOARD_MOVE_TO_DIRECTION);
 
 		return BehaviourNodeState::SUCCESS;
 	}
 	return BehaviourNodeState::RUNNING;
+}
+
+BehaviourNodeState Slime::ChangeColour()
+{
+	any_type_ptr player_ptr = _behaviour_tree->GetBlackboard()->GetVariable(BLACKBOARD_PLAYER);
+
+	if (player_ptr)
+	{
+		_renderer->GetSprite()->SetColor(1.0f, 0.f, 0.32f);
+	}
+	else
+	{
+		_renderer->GetSprite()->SetColor(1, 1, 1);
+	}
+
+	return BehaviourNodeState::SUCCESS;
 }
 
 BehaviourNodeState Slime::SetMoveToLocation(Scene* scene)
@@ -141,27 +172,26 @@ BehaviourNodeState Slime::SetMoveToLocation(Scene* scene)
 	}
 
 	int random_index = scene->GenerateRandomBetween(0, static_cast<int>(free_locations.size() - 1));
-	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_LOCATION, new Any<Vector2D>(free_locations[random_index]));
-	_behaviour_tree->GetBlackboard()->SetVariable(MOVE_TO_DIRECTION, new Any<FacingDirection>(free_directions[random_index]));
-	_behaviour_tree->GetBlackboard()->SetVariable(TEMP, new Any<int>(10));
+	_behaviour_tree->GetBlackboard()->SetVariable(BLACKBOARD_MOVE_TO_LOCATION, new Any<Vector2D>(free_locations[random_index]));
+	_behaviour_tree->GetBlackboard()->SetVariable(BLACKBOARD_MOVE_TO_DIRECTION, new Any<FacingDirection>(free_directions[random_index]));
 
 	return BehaviourNodeState::SUCCESS;
 }
 
-void Slime::UpdatePosition(float move_by_x, float move_by_y, FacingDirection direction)
+void Slime::OnDeath(Scene* scene, LayerType layer)
 {
-	// TODO : change this to use the actor's functions
-	GetTransform()->MoveVectorPosition(move_by_x, move_by_y);
-	GetRenderer()->SetAnimationWithMovement(direction, move_by_x, move_by_y);
-	GetCollider()->MoveColliderPosition(move_by_x, move_by_y);
-}
+	Actor::OnDeath(scene, layer);
 
-void Slime::OnDeath(Scene* scene)
-{
 	if (scene->GetGoalType() == GoalType::GOAL_SLIME)
 	{
 		scene->GetGoal()->DecrementContextCount();
 		scene->GetGoal()->NotifySubscribers();
 	}
-	scene->RemoveFromSceneLayers(this, LayerType::CHARACTERS);
+}
+
+void Slime::Update(float deltaTime, Scene* scene)
+{
+	Actor::Update(deltaTime, scene);
+
+	_behaviour_tree->Update();
 }
