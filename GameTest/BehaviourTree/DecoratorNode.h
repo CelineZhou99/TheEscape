@@ -13,7 +13,7 @@ public:
         _blackboard(blackboard) {}
 
     bool CanHaveChildren() const override { return true; }
-    bool CanAttachService() const override { return true; }
+    bool CanAttachService() const override { return false; }
 
     BehaviourNodeState AssessCurrState() override;
 

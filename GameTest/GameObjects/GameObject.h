@@ -40,7 +40,7 @@ public:
 		return false;
 	}
 
-	void Update(float deltaTime, Scene* scene);
+	virtual void Update(float deltaTime, Scene* scene);
 
 protected:
 	std::shared_ptr<Vector2D> _transform;

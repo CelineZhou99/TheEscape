@@ -51,12 +51,14 @@ public:
 	Scene* GetCurrScene() const { return current_scene.get(); }
 	Goal* GetCurrGoal() const { return current_goal.get(); }
 	bool HasGameEnded() const { return has_game_ended; }
+	bool HasGameReset() const { return has_game_reset; }
 	bool HasDialogueFinished() const { return text_box->GetIsDialogueFinished(); }
 	CSimpleSprite* GetEndScreenSprite() const { return end_screen_sprite.get(); }
 	//------------------------------------------------------------------------
 	// Setters
 	//------------------------------------------------------------------------
 	void SetHasGameEnded(bool has_ended) { has_game_ended = has_ended; }
+	void SetHasGameReset(bool has_reset) { has_game_reset = has_reset; }
 	void SetCurrGoal(std::shared_ptr<Goal> goal) { current_goal = goal; }
 	void ResetScene() { current_scene.reset(); }
 	void SetCurrScene() { current_scene = std::make_unique<Scene>(current_goal.get()); }
@@ -103,6 +105,7 @@ private:
 	std::shared_ptr<Dialogue> game_start_dialogue = nullptr;
 
 	bool has_game_ended = false;
+	bool has_game_reset = false;
 
 	bool is_up_pressed = false;
 	bool is_down_pressed = false;

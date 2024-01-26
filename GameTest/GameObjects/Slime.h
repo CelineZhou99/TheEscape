@@ -31,7 +31,7 @@ public:
 
     void OnDeath(Scene* scene, LayerType layer);
 
-    void Update(float deltaTime, Scene* scene);
+    void Update(float deltaTime, Scene* scene) override;
 
 private:
     int _danger_range;

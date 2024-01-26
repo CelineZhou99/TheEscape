@@ -55,6 +55,10 @@ void Update(float deltaTime)
 		if (!App::IsKeyPressed('R') && is_restart_pressed)
 		{
 			is_restart_pressed = false;
+			if (!world->HasGameReset())
+			{
+				world->SetHasGameReset(true);
+			}
 			world->SetHasGameEnded(false);
 			world->Init();
 			if (App::IsSoundPlaying(DEAD_MUSIC))

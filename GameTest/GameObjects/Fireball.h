@@ -20,7 +20,7 @@ public:
 
     void OnCollideWithObject(GameObject* object, Scene* scene);
 
-    void Update(float deltaTime, Scene* scene);
+    void Update(float deltaTime, Scene* scene) override;
 
     void CheckCollision(Scene* scene);
 

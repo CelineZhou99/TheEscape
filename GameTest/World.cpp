@@ -11,6 +11,8 @@
 
 void World::Init()
 {
+	spawned_rewards = {};
+	_unlocked_doors = {};
 	current_goal = std::make_shared<Goal>(*this);
 	current_scene = std::make_unique<Scene>(current_goal.get());
 	std::shared_ptr<Renderer> renderer(new Renderer(IMAGE_PLAYER_IDLE, 4, 4, PLAYER_START_X, PLAYER_START_Y));
@@ -32,6 +34,11 @@ void World::Init()
 		"I can hear the faint sound of birds from that door...",
 		"That must be the exit."
 	};
+	if (has_game_reset)
+	{
+		start_dialogue.push_back("...");
+		start_dialogue.push_back("Wait... why do I feel a sense of deja vu...?");
+	}
 	game_start_dialogue = std::make_shared<Dialogue>(start_dialogue);
 
 	text_box->SetDialogue(game_start_dialogue.get());
@@ -70,15 +77,7 @@ void World::Update(float deltaTime)
 	ObjectsList character_list = current_scene->GetSceneLayers().at(LayerType::CHARACTERS);
 	for (GameObjectPtr character : character_list)
 	{
-		if (character->GetTag() == TagType::ENEMY)
-		{
-			Slime& enemy = static_cast<Slime&>(*character.get());
-			enemy.Update(deltaTime, current_scene.get());
-		}
-		else
-		{
-			character->Update(deltaTime, current_scene.get());
-		}
+		character->Update(deltaTime, current_scene.get());
 	}
 
 	if (player->GetCanShoot())
@@ -350,8 +349,7 @@ void World::UpdateSpells(float deltaTime)
 	ObjectsList spells = current_scene->GetSceneLayers().at(LayerType::SPELLS);
 	for (GameObjectPtr object : spells)
 	{
-		Fireball& fireball = static_cast<Fireball&>(*object.get());
-		fireball.Update(deltaTime, current_scene.get());
+		object->Update(deltaTime, current_scene.get());
 	}
 }
 
